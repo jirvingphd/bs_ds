@@ -1626,7 +1626,6 @@ from sklearn import svm
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
-# from bs_ds import list2df
 from sklearn.pipeline import Pipeline
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
