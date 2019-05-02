@@ -11,13 +11,13 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-with open('requirements.txt') as req_file:
-    requirements = req_file.read()
+# with open('requirements.txt') as req_file:
+#     requirements = req_file.read()
 
 setup_requirements = [ ]
 
 test_requirements = [ ]
-
+requirements = [Click>=6.0, numpy>=1.15.4, pandas>=0.24.1, seaborn>=0.9.0, matplotlib>=3.0.2, scikit-learn>=0.0, pydotplus>=2.0.2, scipy>=1.2.1, xgboost>=0.80, IPython>=7.2.0]
 setup(
     author="James Irving",
     author_email='james.irving.phd@outlook.com',
@@ -26,11 +26,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
