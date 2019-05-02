@@ -77,10 +77,10 @@ table.dataframe th:not(:empty), table.dataframe td{
 """
 # HTML('<style>.output {flex-direction: row;}</style>')
 # HTML(f"<style>{CSS}</style>")
-def html_off():
-    HTML(f"<style></style>")
-def html_on(CSS=CSS):
-    HTML(f'<style>{CSS}</style>')
+# def html_off():
+#     HTML('<style></style>')
+# def html_on(CSS):
+#     HTML('<style>%s</style>'.format(CSS))
 
 ##
 import_dict = {'pandas':'pd',
@@ -1713,4 +1713,4 @@ def thick_pipe(features, target, n_components,
     
     return class_dict
 
-HTML(f"<style>{CSS}</style>")
+# HTML(f"<style>{CSS}</style>")
