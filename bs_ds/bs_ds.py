@@ -845,7 +845,7 @@ def select_pca(features, n_components_list):
     explained variance ratio
     '''
     
-    from JMI_MVM import list2df
+    from bs_ds import list2df
     from sklearn.decomposition import PCA
     
     # Create list to store results in
@@ -1626,7 +1626,7 @@ from sklearn import svm
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
-from JMI_MVM import list2df
+from bs_ds import list2df
 from sklearn.pipeline import Pipeline
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
@@ -1670,7 +1670,7 @@ def thick_pipe(features, target, n_components,
     'accuracy', 'model'. values are: accuracy score,and the classification model.
      values for train/test splits. """
     
-    from JMI_MVM import list2df
+    from bs_ds import list2df
     from sklearn.pipeline import Pipeline
     from sklearn.decomposition import PCA
     from sklearn.model_selection import train_test_split
