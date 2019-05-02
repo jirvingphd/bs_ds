@@ -17,7 +17,7 @@ with open('HISTORY.rst') as history_file:
 setup_requirements = [ ]
 
 test_requirements = [ ]
-requirements = [Click>=6.0, numpy>=1.15.4, pandas>=0.24.1, seaborn>=0.9.0, matplotlib>=3.0.2, scikit-learn>=0.0, pydotplus>=2.0.2, scipy>=1.2.1, xgboost>=0.80, IPython>=7.2.0]
+requirements = ['Click','numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'xgboost' 'IPython']
 setup(
     author="James Irving",
     author_email='james.irving.phd@outlook.com',
