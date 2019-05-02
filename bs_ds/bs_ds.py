@@ -1622,7 +1622,7 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
 
  
 # check_estimator(MetaClassifier())
-
+from sklearn import svm
 
 def thick_pipe(features, target, n_components,
                classifiers=[
