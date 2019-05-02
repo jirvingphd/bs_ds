@@ -36,6 +36,7 @@ pd.set_option('display.html.border',2)
 pd.set_option('display.notebook_repr_htm',True)
 pd.set_option('display.max_columns',None)
 
+```CSS
 CSS = """
 table.dataframe td, table.dataframe th { /* This is for the borders for columns)*/
     border: 2px solid black
@@ -75,7 +76,9 @@ table.dataframe th:not(:empty), table.dataframe td{
     border-right: 1px solid white;
     text-align: center;
 }
+```
 """
+```python
 # HTML('<style>.output {flex-direction: row;}</style>')
 # HTML(f"<style>{CSS}</style>")
 # def html_off():
