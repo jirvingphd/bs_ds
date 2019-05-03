@@ -2,6 +2,6 @@ bs_ds
 =====
 
 .. toctree::
-   :maxdepth: 0
+   :maxdepth: 4
 
    bs_ds
