@@ -802,7 +802,7 @@ def scale_data(data, method='minmax', log=False):
         
     else:
         scaled = np.squeeze(scaled)
-        scaled = pd.Series(scaled, name=data.name) 
+        scaled = pd.Series(scaled) 
         df_scaled = pd.DataFrame(scaled, index=data.index)
         
     return df_scaled
@@ -876,7 +876,7 @@ def train_test_dict(X, y, test_size=.25, random_state=42):
     """
 
     train_test = {}
-    X_train, y_train, X_test, y_test = train_test_split(X, y, test_size, random_state)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size, random_state)
     train_test['X_train'] = X_train
     train_test['y_train'] = y_train
     train_test['X_test'] = X_test
@@ -1724,5 +1724,28 @@ def thick_pipe(features, target, n_components,
     display(list2df(results))
     
     return class_dict
+
+
+    def check_df_for_columns(df, columns=None):
+    """
+    Checks df for presence of columns.
+
+    args:
+    8**********>
+    df: pd.DataFrame to find columns in
+    columns: str or list of str. column names
+    """
+    if not columns:
+        print('check_df_for_columns expected to be passed a list of column names.')
+    else:
+        for column in columns:
+            if not column in df.columns:
+                continue
+            else:
+                print(f'{column} is a valid column name')
+    pass
+
+
+
 
 # HTML(f"<style>{CSS}</style>")
