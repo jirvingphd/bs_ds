@@ -1,21 +1,20 @@
-.. bs_ds documentation master file, created by
-   sphinx-quickstart on Fri May  3 03:08:59 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to bs_ds's documentation!
-=================================
+======================================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
    :caption: Contents:
 
-   bs_ds
-
+   readme
+   installation
+   usage
+   modules
+   contributing
+   authors
+   history
 
 Indices and tables
 ==================
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

@@ -2,8 +2,8 @@
 
 """Top-level package for bs_ds."""
 
-__author__ = """James M. Irving, Michael M. Moravetz"""
+__author__ = """James Irving, Michael Moravetz"""
 __email__ = 'james.irving.phd@outlook.com'
-__version__ = '0.1.6'
+__version__ = '0.2.0'
 
 from .bs_ds import *

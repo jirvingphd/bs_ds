@@ -16,7 +16,7 @@ bs_ds
 
 
 
-BroadSteel_DataScience tools.
+A collection of tools from bootcamp.
 
 
 * Free software: GNU General Public License v3
