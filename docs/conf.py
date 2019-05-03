@@ -156,7 +156,7 @@ texinfo_documents = [
      u'bs_ds Documentation',
      author,
      'bs_ds',
-     'BraodSteel DataScience Bootcamp.',
+     'BroadSteel DataScience Bootcamp.',
      'Miscellaneous'),
 ]
 
