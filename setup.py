@@ -20,7 +20,7 @@ with open('HISTORY.rst') as history_file:
 
 def setup(app):
     app.connect('builder-inited', run_apidoc)
-setup_requirements = [ ]
+setup_requirements = [ 'sphinx']
 version = '0.1.6'
 test_requirements = [ ]
 requirements = ['Click','numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'xgboost' , 'IPython']
