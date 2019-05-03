@@ -13,7 +13,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('bs_ds\\'))
+sys.path.insert(0, os.path.abspath('\\bs_ds\\'))
 
 
 # -- Project information -----------------------------------------------------
