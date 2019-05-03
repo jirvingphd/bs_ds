@@ -2,7 +2,7 @@ Welcome to bs_ds's documentation!
 ======================================
 
 .. toctree::
-   :maxdepth: 0
+   :maxdepth: 1
    :caption: Contents:
 
    installation
