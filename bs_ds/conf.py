@@ -12,12 +12,12 @@
 #
 # import os
 # import sys
-# sys.path.insert(0, 'D:\\Users\\James\\Dropbox (Personal)\\CODING\\My Python Code\\bs_ds\\bs_ds')
+# sys.path.insert(0, 'D:\\Users\\James\\Dropbox (Personal)\\CODING\\My Python Code\\bs_ds\\docs')
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'bs_ds'
+project = 'docs'
 copyright = '2019, Author'
 author = 'Author'
 
