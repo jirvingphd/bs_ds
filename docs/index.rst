@@ -5,7 +5,6 @@ Welcome to bs_ds's documentation!
    :maxdepth: 1
    :caption: Contents:
 
-   readme
    installation
    usage
    modules
