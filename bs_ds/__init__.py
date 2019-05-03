@@ -7,3 +7,5 @@ __email__ = 'james.irving.phd@outlook.com'
 __version__ = '0.2.3'
 
 from .bs_ds import *
+
+print(f'View our documentation at https://bs-ds.readthedocs.io/en/latest/')

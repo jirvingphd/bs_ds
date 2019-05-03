@@ -32,7 +32,7 @@ import bs_ds
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode','sphinx.ext.napoleon','sphinx.ext.apidoc']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode','sphinx.ext.apidoc']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -70,14 +70,14 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store','cli']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-add_module_names = True
+add_module_names = False
 
 
 # -- Options for HTML output -------------------------------------------
@@ -168,7 +168,7 @@ def run_apidoc(_):
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 	cur_dir = os.path.abspath(os.path.dirname(__file__))
 	module = os.path.join(cur_dir,"..","bs_ds")
-	main(['-e','-o', cur_dir, module, '--force'])
+	main(['-M','-e','-o', cur_dir, module, '--force'])
 
 def setup(app):
 	app.connect('builder-inited', run_apidoc)
