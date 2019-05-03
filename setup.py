@@ -17,6 +17,9 @@ with open('HISTORY.rst') as history_file:
 # with open('requirements.txt') as req_file:
 #     requirements = req_file.read()
 
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
 setup_requirements = [ ]
 version = '0.1.6'
 test_requirements = [ ]
