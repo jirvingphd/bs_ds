@@ -1,0 +1,30 @@
+ package
+========
+
+Submodules
+----------
+
+bs\_ds module
+-------------
+
+.. automodule:: bs_ds
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+conf module
+-----------
+
+.. automodule:: conf
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: 
+    :members:
+    :undoc-members:
+    :show-inheritance:

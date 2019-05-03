@@ -56,6 +56,6 @@ setup(
             'project': ('setup.py', 'bs_ds'),
             'version': ('setup.py', version),
             'release': ('setup.py', ''),
-            'source_dir': ('setup.py', 'docs/')}
+            'source_dir': ('setup.py', 'build/')}
             }
 )
