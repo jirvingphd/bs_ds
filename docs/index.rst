@@ -7,7 +7,7 @@ Welcome to bs_ds's documentation!
 
    installation
    usage
-   modules
+   bs_ds
    contributing
    authors
    history

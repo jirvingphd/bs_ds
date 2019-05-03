@@ -5,13 +5,7 @@ bs\_ds package
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
-bs\_ds.cli module
------------------
-
-.. automodule:: bs_ds.cli
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 
