@@ -12,6 +12,14 @@ bs\_ds.bs\_ds module
     :undoc-members:
     :show-inheritance:
 
+bs\_ds.conf module
+------------------
+
+.. automodule:: bs_ds.conf
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------
