@@ -4,7 +4,7 @@ Welcome to bs_ds's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-    bs_ds
+
    readme
    installation
    usage
