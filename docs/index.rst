@@ -2,7 +2,7 @@ Welcome to bs_ds's documentation!
 ======================================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
     bs_ds
    readme
