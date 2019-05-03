@@ -5,7 +5,8 @@ Credits
 Development Lead
 ----------------
 
-* James Irving <james.irving.phd@outlook.com>
+* James M. Irving <james.irving.phd@outlook.com>
+* Michael V. Moravetz <moravetzmichael@gmail.com>
 
 Contributors
 ------------
