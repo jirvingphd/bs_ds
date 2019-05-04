@@ -1726,7 +1726,8 @@ def thick_pipe(features, target, n_components,
     return class_dict
 
 
-    def check_df_for_columns(df, columns=None):
+def check_df_for_columns(df, columns=None):
+
     """
     Checks df for presence of columns.
 
@@ -1745,6 +1746,85 @@ def thick_pipe(features, target, n_components,
                 print(f'{column} is a valid column name')
     pass
 
+
+def check_unique(df, columns=None):
+
+    """
+    Prints unique values for all columns in dataframe. If passed list of columns,
+    it will only print results for those columns
+    8************  >
+    Params:
+    df: pandas DataFrame
+
+    columns: list containing names of columns (strings)
+    ********************
+
+    Returns: None
+        prints values only
+    """
+    if columns is None:
+        columns = df.columns
+    for col in columns:
+        nunique = df[col].nunique()
+        print(f"{col} has {nunique} unique values:\nType: {df[col].dtype}\n Values: {df[col].unique()}\n")  
+    pass
+
+
+def check_numeric(df, unique_check=True, return_list=False):
+
+    """
+    Iterates through columns and checks for possible numeric features labeled as objects.
+    Params:
+    ******************
+    df: pandas DataFrame
+    
+    unique_check: bool. (default=True)
+        If true, distplays interactive interface for checking unique values in columns.
+        
+    return_list: bool, (default=False)
+        If True, returns a list of column names with possible numeric types.
+    **********>
+    Returns: list of column names if return_list=True
+    """
+    
+    display_list = [['Column', 'Numeric values', 'Percent']]
+    outlist = []
+
+    # Iterate through columns
+    for col in df.columns:
+
+        # Check for object dtype, 
+        if df[col].dtype == 'object':
+
+            # If object, check for numeric
+            if df[col].str.isnumeric().any():
+
+                # If numeric, get counts
+                vals = df[col].str.isnumeric().sum()
+                percent = df[col].str.isnumeric().sum()/len(df[col])
+                display_list.append([col, vals, percent])
+                outlist.append(col)          
+
+    display(list2df(display_list))
+
+    if unique_check:
+        unique = input("display unique values? (Enter y for all columns, column name or n to quit):")
+
+        while unique != 'n':
+
+            if unique == 'y':
+                check_unique(df, outlist)
+                break
+
+            elif unique in outlist:
+                name = [unique]
+                check_unique(df, name)
+
+            unique = input('Enter column name or n to quit:')
+
+    if return_list:
+        return outlist
+    pass
 
 
 
