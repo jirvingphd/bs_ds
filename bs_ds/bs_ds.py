@@ -1727,25 +1727,25 @@ def thick_pipe(features, target, n_components,
 
 
     def check_df_for_columns(df, columns=None):
-    """
-    Checks df for presence of columns.
+        """
+        Checks df for presence of columns.
 
-    args:
-    8**********>
-    df: pd.DataFrame to find columns in
-    columns: str or list of str. column names
-    """
-    if not columns:
-        print('check_df_for_columns expected to be passed a list of column names.')
-    else:
-        for column in columns:
-            if not column in df.columns:
-                continue
-            else:
-                print(f'{column} is a valid column name')
-    pass
-
-
+        args:
+        8**********>
+        df: pd.DataFrame to find columns in
+        columns: str or list of str. column names
+        """
+        if not columns:
+            print('check_df_for_columns expected to be passed a list of column names.')
+        else:
+            for column in columns:
+                if not column in df.columns:
+                    continue
+                else:
+                    print(f'{column} is a valid column name')
+        pass
 
 
-# HTML(f"<style>{CSS}</style>")
+
+
+    # HTML(f"<style>{CSS}</style>")
