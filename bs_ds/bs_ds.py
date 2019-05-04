@@ -740,8 +740,8 @@ def plot_wide_kde_thin_bars(series1,sname1, series2, sname2):
         ax[1].tick_params(axis=x,labelsize=fontTicks['fontsize']) 
 
         ax1=ax[1]
-        test = ax1.get_xticklabels()
-        labels = [x.get_text() for x in test]
+        # test = ax1.get_xticklabels()
+        # labels = [x.get_text() for x in test]
         ax1.set_xticklabels([plotS1['label'],plotS2['label']], rotation=45,ha='center')
         
 
@@ -1360,21 +1360,25 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
         can be used with PipeLine and other sklearn estimators. Must be passed primary list of estimator(s)
         and secondary(meta) classifier. Secondary model trains a predicts on primary level estimators.
 
-    Parameters:
-    _-_-_-_-_-_-_-_-_-
+    Parameters:    --------------------------
 
     classifiers : {array-like} shape = [n_estimators]
         list of instantiated sklearn estimators.
+
     meta_classifier : instatiated sklearn estimator.
         This is the secondary estimator that makes the final prediction based on predicted values
         of classifiers.
+
     use_probability : bool, (default=False) If True calling fit will train meta_classifier on the predicted probabilities
         instead of predicted class labels.
+
     double_down : bool, (default=False) If True, calling fit will train meta_classifier on both the primary 
         classifiers predicted lables and the original dataset. Otherwise meta_classifier will only be 
         trained on primary classifier's predicted labels.
+
     average_probability : bool, (default = False) If True, calling fit will fit the meta_classifier with averaged 
         the probabalities from primiary predictions.
+
     clones : bool, (default = True), If True, calling fit will fit deep copies of classifiers and meta classifier 
         leaving the original estimators unmodified. False will fit the passed in classifiers directly.  This param 
         is for use with non-sklearn estimators who cannot are not compatible with being cloned.  This may be unecesary
@@ -1383,14 +1387,13 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
     
 
     Attributes:
-    _-_-_-_-_-_-_-_-
-
+    --------------
     clfs_ : list, fitted classifers (primary classifiers)
     meta_clf_ : estimator, (secondary classifier)
     meta_features_ : predictions from primary classifiers
 
     Methods:
-    8_-_-_-_-_-_-_-_-
+   ----------------
     fit(X, y, sample_weight=None): fit entire ensemble with training data, including fitting meta_classifier with meta_data
             params: (See sklearns fit model for any estimator)
                     X : {array-like}, shape = [n_samples, n_features]
@@ -1404,7 +1407,9 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
     predict_meta(X): predict meta_features, primarily used to train meta_classifier, but can be used for base ensemeble performance
     predict_probs(X) : Predict label probabilities for X.
 
-    EXAMPLE******************************************EXAMPLE*******************************************EXAMPLE
+
+
+   ***************************************** EXAMPLE*******************************************
     EXAMPLE:          # Instantiate classifier objects for base ensemble
 
                 >>>>  xgb = XGBClassifier()   
@@ -1438,7 +1443,7 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
 
                 time elapsed: 6.66 minutes
                 MetaClassifier Accuracy Score: 99.9   Get it!
-    8***********************************************************************************************>
+    ***********************************************************************************************>
     """
 
 
@@ -1456,20 +1461,20 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
         
 
 
-    def fit(self, X, y, sample_weight=None):
+    def fit(self, X, y, sample_weight=None,verbose=True):
 
         """
         Fit base classifiers with data and meta-classifier with predicted data from base classifiers.
         
         Parameters:
-        .-.-.-.-.-.-.-.-.-.-.
+        .--------------.-.
         X : {array-like}, shape =[n_samples, n_features]
             Training data m number of samples and number of features
         y : {array-like}, shape = [n_samples] or [n_samples, n_outputs]
             Target feature values.
         
         Returns:
-        .-.-.-.-.-.-.-.-.-.-.
+        .--------------.-.
         
         self : object, 
             Fitted MetaClassifier
@@ -1539,11 +1544,11 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
         Predicts on base estimators to get meta_features for MetaClassifier.
         
         Parameters:
-        -.-.-.-.-.-.-.-.-
+        --------------
         X : np.array, shape=[n_samples, n_features]
 
         Returns:
-        -.-.-.-.-.-.-.-.-
+        --------------
         meta_features : np.array, shape=[n_samples, n_classifiers]
             the 'new X' for the MetaClassifier to predict with.
         
@@ -1570,11 +1575,11 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
         Predict probabilities for X
         
         Parameters:
-        -.-.-.-.-.-.-.-.-
+        --------------
         X : np.array, shape=[n_samples, n_features]
 
         Returns:
-        -.-.-.-.-.-.-.-.-
+        --------------
         probabilities : array-like,  shape = [n_samples, n_classes] 
 
         """
@@ -1597,11 +1602,11 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
         Predicts target values. 
         
         Parameters:
-        -.-.-.-.-.-.-.-.-
+        --------------
         X : np.array, shape=[n_samples, n_features]
 
         Returns:
-        -.-.-.-.-.-.-.-.-
+        --------------
         predicted labels : array-like,  shape = [n_samples] or [n_samples, n_outputs] 
 
         """
@@ -1726,26 +1731,21 @@ def thick_pipe(features, target, n_components,
     return class_dict
 
 
-    def check_df_for_columns(df, columns=None):
-        """
-        Checks df for presence of columns.
+def check_df_for_columns(df, columns=None):
+    """
+    Checks df for presence of columns.
 
-        args:
-        8**********>
-        df: pd.DataFrame to find columns in
-        columns: str or list of str. column names
-        """
-        if not columns:
-            print('check_df_for_columns expected to be passed a list of column names.')
-        else:
-            for column in columns:
-                if not column in df.columns:
-                    continue
-                else:
-                    print(f'{column} is a valid column name')
-        pass
-
-
-
-
-    # HTML(f"<style>{CSS}</style>")
+    args:
+    **********
+    df: pd.DataFrame to find columns in
+    columns: str or list of str. column names
+    """
+    if not columns:
+        print('check_df_for_columns expected to be passed a list of column names.')
+    else:
+        for column in columns:
+            if not column in df.columns:
+                continue
+            else:
+                print(f'{column} is a valid column name')
+    pass
