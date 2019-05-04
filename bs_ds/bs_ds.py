@@ -96,25 +96,31 @@ df_imported.columns=['Module/Package Handle']
 display(df_imported)
 ## DataFrame Creation, Inspection, and Exporting
 def inspect_df(df,n_rows=3):
-    """Displays df.head(),df.info(),df.describe() for dataframe. 
-    Ex: inspect_df(df)"""
-    pd.set_option('display.precision',3)
-    pd.set_option('display.html.border',2)
-    pd.set_option('display.notebook_repr_htm',True)
+    """ EDA: 
+    Show all pandas inspection tables. 
+    Displays df.head(),, df.info(), df.describe()
+    Reduces precision to 3 for visilbity  
+    Ex: inspect_df(df)
+    """
+    with pd.option_context("display.max_rows", 10, "display.max_columns", None ,
+       'display.precision',3,'display.notebook_repr_htm',True):
     display(df.head(n_rows))
     display(df.info()), display(df.describe())
 
 def list2df(list):#, sort_values='index'):
-    """ Take a list where each row becomes a dataframe row and the row[0] contains the columns names.
+    """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
     Ex: list_results = [["Test","N","p-val"]] #... (some sort of analysis performed to produce results)
         list_results.append([test_Name,length(data),p])
         list2df(list_results)
     """    
-    df_list = pd.DataFrame(list[1:],columns=list[0])        
-    return df_list
+        with pd.option_context("display.max_rows", 10, "display.max_columns", None ,
+       'display.precision',3,'display.notebook_repr_htm',True):
+
+            df_list = pd.DataFrame(list[1:],columns=list[0])        
+            return df_list
 
 def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
-    """Take a df, a list of strings or regular expression and recursively 
+    """EDA: Take a df, a list of strings or regular expression and recursively 
     removes all matching column names containing those strings or expressions.
     # Example: if the df_in columns are ['price','sqft','sqft_living','sqft15','sqft_living15','floors','bedrooms']
     df_out = drop_cols(df_in, ['sqft','bedroom'])
@@ -139,10 +145,18 @@ def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
 
 # def highlight (helper: hover)
 def hover(hover_color="gold"):
+    """DataFrame Styler: 
+        Called by highlight to highlight row below cursor. 
+        Changes html background color. 
+    """
     from IPython.display import HTML
     return dict(selector="tr:hover",
                 props=[("background-color", "%s" % hover_color)])
 def highlight(df,hover_color="gold"):
+    """DataFrame Styler:
+        Highlight row when hovering.
+        Accept and valid CSS colorname as hover_color.
+    """
     styles = [
         hover(hover_color),
         dict(selector="th", props=[("font-size", "115%"),
@@ -155,7 +169,8 @@ def highlight(df,hover_color="gold"):
 
 
 def color_true_green(val):
-    """Changes text color to green if value is True
+    """DataFrame Styler: 
+    Changes text color to green if value is True
     Ex: style_df = df.style.applymap(color_true_green)
         style_df #to display"""
     color='green' if val==True else 'black'
@@ -163,21 +178,22 @@ def color_true_green(val):
 
 # Style dataframe for easy visualization
 def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
-    """
-    Takes a df, any valid matplotlib colormap column names(matplotlib.org/tutorials/colors/colormaps.html) 
-    and returns a dataframe with a gradient colormap applied to column values.
+    """DataFrame Styler: 
+    Takes a df, any valid matplotlib colormap column names
+    (matplotlib.org/tutorials/colors/colormaps.html) and
+    returns a dataframe with a gradient colormap applied to column values.
     Ex. color_scale_columns(df,"YlGn")
     
     Parameters:
     -----------
     df: DataFrame containing columns to style.
     subset: Names of columns to color-code.
-    cmap: Any matplotlib colormap. https://matplotlib.org/tutorials/colors/colormaps.html
-    Colormap to use instead of default seaborn green.  
+    cmap: Any matplotlib colormap. 
+    https://matplotlib.org/tutorials/colors/colormaps.html
     
     Returns:
     ----------
-    df_style : df.style
+    df_style s
 
     """ 
     from IPython.display import display  
@@ -292,7 +308,7 @@ def viz_tree(tree_object):
 
 # EDA / Plotting Functions
 def multiplot(df):
-    """Plots results from df.corr() in a correlation heat map for multicollinearity.
+    """EDA: Plots results from df.corr() in a correlation heat map for multicollinearity.
     Returns fig, ax objects"""
     import seaborn as sns
     sns.set(style="white")
@@ -324,7 +340,8 @@ def multiplot(df):
 
 # Plots histogram and scatter (vs price) side by side
 def plot_hist_scat(df, target='index'):
-    """Plots seaborne distplots and regplots for columns im datamframe vs target.
+    """EDA: Great summary plots of all columns of a df vs target columne.
+    Shows distplots and regplots for columns im datamframe vs target.
 
     Parameters:
     df (DataFrame): DataFrame.describe() columns will be used. 
@@ -559,6 +576,7 @@ def describe_outliers(df):
 #### Cohen's d
 def Cohen_d(group1, group2):
     '''Compute Cohen's d.
+    # taken directly from learn.co lesson.
     # group1: Series or NumPy array
     # group2: Series or NumPy array
     # returns a floating point number 
@@ -606,8 +624,12 @@ def subplot_imshow(images, num_images,num_rows, num_cols, figsize=(20,15)):
     return fig, ax
 #####
 ###########
-def plot_wide_kde_thin_bars(series1,sname1, series2, sname2):
-    '''Plot series1 and series 2 on wide kde plot with small mean+sem bar plot.'''
+def plot_wide_kde_thing_mean_sem_bars(series1,sname1, series2, sname2):
+    '''EDA / Hypothesis Testing: 
+    Two subplot EDA figure that plots series1 vs. series 2 against with sns.displot 
+    Large  wide kde plot with small thing mean +- standard error of the mean (sem)
+    Overlapping sem error bars is an excellent visual indicator of significant difference. 
+    .'''
     
     ## ADDING add_gridspec usage
     import pandas as pd
@@ -1091,12 +1113,13 @@ def pipe_search(estimator, params, X_train, y_train, X_test, y_test, n_component
     estimator: estimator object,
             This is assumed to implement the scikit-learn estimator interface. 
             Ex. sklearn.svm.SVC
+
     params: dict, list of dicts,
-            Dictionary with parameters names (string) as keys and lists of parameter 
-            settings to try as values, or a list of such dictionaries, in which case
-            the grids spanned by each dictionary in the list are explored.This enables
-            searching over any sequence of parameter settings.
-            MUST BE IN FORM: 'clf__param_'. ex. 'clf__C':[1, 10, 100]
+                Dictionary with parameters names (string) as keys and lists of parameter 
+                   settings to try as values, or a list of such dictionaries, in which case
+                    the grids spanned by each dictionary in the list are explored.This enables
+                    searching over any sequence of parameter settings.
+                    MUST BE IN FORM: 'clf__param_'. ex. 'clf__C':[1, 10, 100]
     X_train, y_train, X_test, y_test: 
             training and testing data to fit, test to model
     n_components: int, float, None or str. default='mle'
