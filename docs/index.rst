@@ -1,14 +1,15 @@
 Welcome to bs_ds's documentation!
 ======================================
 .. image:: bs_ds_logo.png
+    :width: 400px
 
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
 
+   bs_ds
    installation
    usage
-   bs_ds
    contributing
    authors
    history
