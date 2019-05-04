@@ -127,8 +127,10 @@ def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
     df_out.columns # will output: ['price','floors']
     
     Parameters:
-        DF -- input dataframe to remove columns from.
-        regex_list -- list of string patterns or regexp to remove.
+        DF -- 
+            Input dataframe to remove columns from.
+        regex_list -- 
+            list of string patterns or regexp to remove.
     
     Returns:
         df_dropped -- input df without the dropped columns. 
@@ -145,9 +147,12 @@ def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
 
 # def highlight (helper: hover)
 def hover(hover_color="gold"):
-    """DataFrame Styler: 
-        Called by highlight to highlight row below cursor. 
+    """DataFrame Styler: Called by highlight to highlight row below cursor. 
         Changes html background color. 
+
+        Parameters:
+
+        hover_Color 
     """
     from IPython.display import HTML
     return dict(selector="tr:hover",
@@ -182,18 +187,24 @@ def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
     Takes a df, any valid matplotlib colormap column names
     (matplotlib.org/tutorials/colors/colormaps.html) and
     returns a dataframe with a gradient colormap applied to column values.
-    Ex. color_scale_columns(df,"YlGn")
+
+    Example:
+    df_styled = color_scale_columns(df,cmap = "YlGn",subset=['Columns','to','color'])
     
     Parameters:
     -----------
-    df: DataFrame containing columns to style.
-    subset: Names of columns to color-code.
-    cmap: Any matplotlib colormap. 
-    https://matplotlib.org/tutorials/colors/colormaps.html
+        df: 
+            DataFrame containing columns to style.
+    subset:
+         Names of columns to color-code.
+    cmap: 
+        Any matplotlib colormap. 
+        https://matplotlib.org/tutorials/colors/colormaps.html
     
     Returns:
     ----------
-    df_style s
+        df_style:
+            styled dataframe.
 
     """ 
     from IPython.display import display  
@@ -229,13 +240,23 @@ def performance_roc_auc(y_true,y_pred):
     return roc_auc_perc
 
 def tune_params_trees(param_name, param_values, DecisionTreeObject, X,Y,test_size=0.25,perform_metric='r2_mse'):
-    '''Takes a parame_name (str), param_values (list/array), a DecisionTreeObject, and a perform_metric.
-    Loops through the param_values and re-fits the model and saves performance metrics. Displays color-mapped dataframe of results and line graph.
+    '''Test Decision Tree Regressor or Classifier parameter with the values in param_values 
+     Displays color-coed dataframe of perfomance results and subplot line graphs.
+    Parameters:
+        parame_name (str)
+            name of parameter to test with values param_values
+        param_values (list/array),
+            list of parameter values to try 
+        DecisionTreeObject,
+            Existing DecisionTreeObject instance.  
+        perform_metric
+            Can either 'r2_mse' or 'roc_auc'. 
     
-    Perform_metric can be 'r2_mse' or 'roc_auc'.
     Returns:
     - df of results
-    - styled-df'''
+    - Displays styled-df
+    - Displays subplots of performance metrics. 
+    '''
 
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(test_size=test_size)
