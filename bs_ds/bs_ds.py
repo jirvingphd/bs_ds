@@ -934,7 +934,7 @@ def make_estimators_dict():
     
     """
     # instantiate classifier objects
-    xgb = XGBClassifier()
+    xgb = xgboost.XGBClassifier()
     svc = SVC()
     lr = LogisticRegression()
     gb = GradientBoostingClassifier()
@@ -1554,7 +1554,7 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
         # Get meta_features to fit MetaClassifer   
         meta_features = self.predict_meta(X)
 
-        if verbose >1:
+        if self.verbose >1:
             print("Fitting meta-classifier to meta_features")
 
         # Assess if X is sparse or not and stack horizontally
@@ -1574,7 +1574,7 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
 
         stop = time.time()
 
-        if verbose > 0:
+        if self.verbose > 0:
             print(f"Estimators Fit! Time Elapsed: {(stop-start)/60} minutes")
             print("8****************************************>")
 
