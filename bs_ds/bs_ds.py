@@ -104,8 +104,8 @@ def inspect_df(df,n_rows=3):
     """
     with pd.option_context("display.max_rows", 10, "display.max_columns", None ,
        'display.precision',3,'display.notebook_repr_htm',True):
-    display(df.head(n_rows))
-    display(df.info()), display(df.describe())
+        display(df.head(n_rows))
+        display(df.info()), display(df.describe())
 
 def list2df(list):#, sort_values='index'):
     """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
