@@ -18,4 +18,4 @@ import sklearn
 import scipy
 from .bs_ds import *
 
-print(f'View our documentation at https://bs-ds.readthedocs.io/en/latest/')
+print(f'View our documentation at https://bs-ds.readthedocs.io/en/latest/bs_ds.html')
