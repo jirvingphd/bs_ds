@@ -102,8 +102,8 @@ def inspect_df(df,n_rows=3):
     Reduces precision to 3 for visilbity  
     Ex: inspect_df(df)
     """
-    with pd.option_context("display.max_rows", 10, "display.max_columns", None ,
-       'display.precision',3,'display.notebook_repr_htm',True):
+    with pd.option_context("display.max_columns", None ,'display.precision',3,
+    'display.notebook_repr_htm',True):
         display(df.head(n_rows))
         display(df.info()), display(df.describe())
 
@@ -113,11 +113,11 @@ def list2df(list):#, sort_values='index'):
         list_results.append([test_Name,length(data),p])
         list2df(list_results)
     """    
-        with pd.option_context("display.max_rows", 10, "display.max_columns", None ,
-       'display.precision',3,'display.notebook_repr_htm',True):
+    with pd.option_context("display.max_rows", 10, "display.max_columns", None ,
+    'display.precision',3,'display.notebook_repr_htm',True):
 
-            df_list = pd.DataFrame(list[1:],columns=list[0])        
-            return df_list
+        df_list = pd.DataFrame(list[1:],columns=list[0])        
+        return df_list
 
 def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
     """EDA: Take a df, a list of strings or regular expression and recursively 
