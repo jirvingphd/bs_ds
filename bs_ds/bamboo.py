@@ -62,11 +62,17 @@ def check_unique(df, columns=None):
         prints values only
     """
     if columns is None:
-        columns = df.columns
+
+        if df == pd.Series:
+            columns = [df.name]
+
+        else:
+            columns = df.columns
 
     for col in columns:
         nunique = df[col].nunique()
         unique_df = pd.DataFrame(df[col].value_counts())
+
         print(f"\n{col} Type: {df[col].dtype}\nNumber unique values: {nunique}")
         display(unique_df)
     pass
