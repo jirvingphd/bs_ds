@@ -18,6 +18,7 @@
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #
+autodoc_mock_imports=['pandas as pd']
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
@@ -170,7 +171,7 @@ def run_apidoc(_):
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 	cur_dir = os.path.abspath(os.path.dirname(__file__))
 	module = os.path.join(cur_dir,"..","bs_ds")
-	main(['-o', cur_dir, module,'-M'])#,'--force'])
+	main(['-o', cur_dir, module,'-M','--force'])
 
 def setup(app):
 	app.connect('builder-inited', run_apidoc)
