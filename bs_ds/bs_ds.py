@@ -1875,5 +1875,63 @@ def check_numeric(df, unique_check=True, return_list=False):
     pass
 
 
+def compare_duplicates(df1, df2, to_drop=True, verbose=True, return_names_list=False):
+    """
+    Compare two dfs for duplicate columns, drop if to_drop=True, useful
+    to us before concatenating when dtypes are different between matching column names
+    and df.drop_duplicates is not an option.
+    Params:
+    --------------------
+    df1, df2 : pandas dataframe suspected of having matching columns
+    to_drop : bool, (default=True)
+        If True will give the option of dropping columns one at a time from either column. 
+    verbose: bool (default=True)
+        If True prints column names and types, set to false and return_names list=True
+        if only desire a list of column names and no interactive interface.
+    return_names_list: bool (default=False),
+        If True, will return a list of all duplicate column names.
+    --------------------
+    Returns: List of column names if return_names_list=True, else nothing.
+    """
+    catch = []
+    dropped1 = []
+    dropped2 = []
+    if verbose:
+        print("Column |   df1   |   df2   ")
+        print("*----------------------*")
+
+    # Loop through columns, inspect for duplicates
+    for col in df1.columns:
+        if col in df2.columns:
+            catch.append(col)
+            
+            if verbose:
+                print(f"{col}   {df1[col].dtype}   {df2[col].dtype}")
+            
+            # Accept user input and drop columns one by one
+            if to_drop:
+                choice = input("\nDrop this column? Enter 1. df1, 2. df2 or n for neither")
+                
+                if choice ==  "1":
+                    df1.drop(columns=col, axis=1, inplace=True)
+                    dropped1.append(col)
+                    
+                elif choice == "2":
+                    df2.drop(columns=col, axis=1, inplace=True)
+                    dropped2.append(col)
+                else:
+     
+                    continue
+    # Display dropped columns and orignating df
+    if to_drop:
+        if len(dropped1) >= 1:
+            print(f"\nDropped from df1:\n{dropped1}")
+        if len(dropped2) >= 1:
+            print(f"\nDropped from df1:\n{dropped2}")
+                  
+    if return_names_list:
+        return catch
+    else:
+        pass
 
 # HTML(f"<style>{CSS}</style>")
