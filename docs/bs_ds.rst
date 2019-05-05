@@ -3,8 +3,9 @@ bs\_ds package
 .. image:: bs_ds_logo.png
     :width: 400px
 
-:ref:`bs\_ds module`
-:ref:`bamboo module`
+.. :ref:`bs\_ds module`
+
+.. :ref:`bamboo module`
 
 bs\_ds module
 --------------------
