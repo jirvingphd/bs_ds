@@ -79,7 +79,6 @@ pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-add_module_names = False
 
 
 # -- Options for HTML output -------------------------------------------
@@ -170,7 +169,7 @@ def run_apidoc(_):
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 	cur_dir = os.path.abspath(os.path.dirname(__file__))
 	module = os.path.join(cur_dir,"..","bs_ds")
-	main(['-o', cur_dir, module, '-M','--force'])
+	main(['e'.'-o', cur_dir, module, ,'--force'])
 
 def setup(app):
 	app.connect('builder-inited', run_apidoc)
