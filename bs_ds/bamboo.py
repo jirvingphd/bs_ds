@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Collection of DataFrame inspection, styling, and  ."""
+"""Collection of DataFrame inspection, styling, and EDA plotting."""
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
