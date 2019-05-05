@@ -1,13 +1,22 @@
 bs\_ds package
 ==============
 .. image:: bs_ds_logo.png
-    :width: 250px
-    :align: center
+    :width: 400px
+
+bs\_ds module
+--------------------
+
 .. automodule:: bs_ds.bs_ds
     :members:
     :undoc-members:
     :show-inheritance:
-    :inherited-members:
 
+bamboo module
+--------------------
+
+.. automodule:: bs_ds.bamboo
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 

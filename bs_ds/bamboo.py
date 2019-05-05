@@ -104,7 +104,7 @@ def check_unique(df, columns=None):
         print(f"{col} has {nunique} unique values:\nType: {df[col].dtype}\n Values: {df[col].unique()}\n")  
     pass
 
-    ## Dataframes styling
+## Dataframes styling
 # Check columns returns the datatype, null values and unique values of input series 
 def check_column(series,nlargest='all'):
     print(f"Column: df['{series.name}']':")
