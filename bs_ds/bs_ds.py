@@ -1848,8 +1848,8 @@ def check_numeric(df, unique_check=True, return_list=False):
             if df[col].str.isnumeric().any():
 
                 # If numeric, get counts
-                vals = df[col].str.isnumeric().sum()
-                percent = df[col].str.isnumeric().sum()/len(df[col])
+                vals = df[col].str.isnumeric().sum() 
+                percent = round(df[col].str.isnumeric().sum()/len(df[col]), 1) * 100
                 display_list.append([col, vals, percent])
                 outlist.append(col)          
 
