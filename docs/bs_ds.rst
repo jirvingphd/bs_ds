@@ -3,13 +3,6 @@ bs\_ds package
 .. image:: bs_ds_logo.png
     :width: 400px
 
-
-.. :ref:`bamboo module`
-
-.. :ref:`bs\_ds module`
-
-
-
 bamboo module
 --------------------
 
@@ -18,7 +11,6 @@ bamboo module
     :undoc-members:
     :show-inheritance:
 
-
 bs\_ds module
 --------------------
 
@@ -26,5 +18,9 @@ bs\_ds module
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+
+
 
 
