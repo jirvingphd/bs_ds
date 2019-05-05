@@ -32,18 +32,6 @@ from .bamboo import list2df
 
 
 
-import_dict = {'pandas':'pd',
-                 'numpy':'np',
-                 'matplotlib':'mpl',
-                 'matplotlib.pyplot':'plt',
-                 'seaborn':'sns',
-                 'scip.stats.':'sts'}
-
-# index_range = list(range(1,len(import_dict)))
-df_imported= pd.DataFrame.from_dict(import_dict,orient='index')
-df_imported.columns=['Module/Package Handle']
-display(df_imported)
-
 
 ## James' Tree Classifier/Regressor
 

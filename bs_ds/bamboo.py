@@ -8,12 +8,39 @@ import seaborn as sns
 import scipy.stats as sts
 from IPython.display import display
 
-## Styled Dataframe
-from IPython.display import HTML
-pd.set_option('display.precision',3)
-pd.set_option('display.html.border',2)
-pd.set_option('display.notebook_repr_htm',True)
-pd.set_option('display.max_columns',None)
+def big_pandas(user_options=None):
+    """Changes the default pandas display setttings to show all columns.
+    User may replace settings with a kwd dictionary matching available options.
+    https://pandas.pydata.org/pandas-docs/stable/user_guide/options.html#available-options
+    Example:
+    user_options = {
+        'display':{
+            'colheader_justify':'left',
+            'max_rows':100},
+        'mode':{
+            'chained_assignment':None}
+            }
+    """
+    import pandas as pd
+    if user_options==None:
+        options = {
+            'display' : {
+                'max_columns' : None,
+                'expand_frame_repr':False,
+                'precision' : 4,
+            }
+        }
+    else:
+        options = user_options
+
+    for category, option in options.items():
+        for op, value in option.items():
+            pd.set_option(f'{category}.{op}', value)  # Python 3.6+
+
+def reset_pandas():
+    """Resets all pandas options back to default state."""
+    pd.reset_option('all')
+
 
 def list2df(list):#, sort_values='index'):
     """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
