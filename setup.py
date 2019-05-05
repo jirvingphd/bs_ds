@@ -15,7 +15,8 @@ requirements = ['Click','numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-lear
 
 setup_requirements = [ ]
 
-test_requirements = [ ]
+# test_requirements = [ ]
+test_requirements = requirements
 
 setup(
     author="James Irving",
