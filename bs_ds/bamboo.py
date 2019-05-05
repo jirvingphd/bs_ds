@@ -20,12 +20,58 @@ def list2df(list):#, sort_values='index'):
     Ex: list_results = [["Test","N","p-val"]] #... (some sort of analysis performed to produce results)
         list_results.append([test_Name,length(data),p])
         list2df(list_results)
-    """    
+    """
     with pd.option_context("display.max_rows", 10, "display.max_columns", None ,
     'display.precision',3,'display.notebook_repr_htm',True):
 
-        df_list = pd.DataFrame(list[1:],columns=list[0])        
+        df_list = pd.DataFrame(list[1:],columns=list[0])
         return df_list
+
+
+def check_df_for_columns(df, columns=None):
+
+    """
+    Checks df for presence of columns.
+
+    args:
+    **********
+    df: pd.DataFrame to find columns in
+    columns: str or list of str. column names
+    """
+    if not columns:
+        print('check_df_for_columns expected to be passed a list of column names.')
+    else:
+        for column in columns:
+            if not column in df.columns:
+                continue
+            else:
+                print(f'{column} is a valid column name')
+    pass
+
+
+def check_unique(df, columns=None):
+    """
+    Prints unique values for all columns in dataframe. If passed list of columns,
+    it will only print results for those columns
+    8************  >
+    Params:
+    df: pandas DataFrame
+    columns: list containing names of columns (strings)
+
+    Returns: None
+        prints values only
+    """
+    if columns is None:
+        columns = df.columns
+
+    for col in columns:
+        nunique = df[col].nunique()
+        unique_df = pd.DataFrame(df[col].value_counts())
+        print(f"\n{col} Type: {df[col].dtype}\nNumber unique values: {nunique}")
+        display(unique_df)
+    pass
+
+
 def check_numeric(df, unique_check=True, return_list=False):
 
     """
@@ -33,23 +79,23 @@ def check_numeric(df, unique_check=True, return_list=False):
     Params:
     ******************
     df: pandas DataFrame
-    
+
     unique_check: bool. (default=True)
         If true, distplays interactive interface for checking unique values in columns.
-        
+
     return_list: bool, (default=False)
         If True, returns a list of column names with possible numeric types.
     **********>
     Returns: list of column names if return_list=True
     """
-    
+
     display_list = [['Column', 'Numeric values', 'Percent']]
     outlist = []
 
     # Iterate through columns
     for col in df.columns:
 
-        # Check for object dtype, 
+        # Check for object dtype,
         if df[col].dtype == 'object':
 
             # If object, check for numeric
@@ -57,9 +103,9 @@ def check_numeric(df, unique_check=True, return_list=False):
 
                 # If numeric, get counts
                 vals = df[col].str.isnumeric().sum()
-                percent = df[col].str.isnumeric().sum()/len(df[col])
+                percent = round(df[col].str.isnumeric().sum()/len(df[col]), 1) * 100
                 display_list.append([col, vals, percent])
-                outlist.append(col)          
+                outlist.append(col)
 
     display(list2df(display_list))
 
@@ -82,52 +128,95 @@ def check_numeric(df, unique_check=True, return_list=False):
         return outlist
     pass
 
-def check_unique(df, columns=None):
 
+def compare_duplicates(df1, df2, to_drop=True, verbose=True, return_names_list=False):
     """
-    Prints unique values for all columns in dataframe. If passed list of columns,
-    it will only print results for those columns
-    8************  >
+    Compare two dfs for duplicate columns, drop if to_drop=True, useful
+    to us before concatenating when dtypes are different between matching column names
+    and df.drop_duplicates is not an option.
     Params:
-    df: pandas DataFrame
-
-    columns: list containing names of columns (strings)
-    ********************
-
-    Returns: None
-        prints values only
+    --------------------
+    df1, df2 : pandas dataframe suspected of having matching columns
+    to_drop : bool, (default=True)
+        If True will give the option of dropping columns one at a time from either column.
+    verbose: bool (default=True)
+        If True prints column names and types, set to false and return_names list=True
+        if only desire a list of column names and no interactive interface.
+    return_names_list: bool (default=False),
+        If True, will return a list of all duplicate column names.
+    --------------------
+    Returns: List of column names if return_names_list=True, else nothing.
     """
-    if columns is None:
-        columns = df.columns
-    for col in columns:
-        nunique = df[col].nunique()
-        print(f"{col} has {nunique} unique values:\nType: {df[col].dtype}\n Values: {df[col].unique()}\n")  
-    pass
+    catch = []
+    dropped1 = []
+    dropped2 = []
+    if verbose:
+        print("Column |   df1   |   df2   ")
+        print("*----------------------*")
+
+    # Loop through columns, inspect for duplicates
+    for col in df1.columns:
+        if col in df2.columns:
+            catch.append(col)
+
+            if verbose:
+                print(f"{col}   {df1[col].dtype}   {df2[col].dtype}")
+
+            # Accept user input and drop columns one by one
+            if to_drop:
+                choice = input("\nDrop this column? Enter 1. df1, 2. df2 or n for neither")
+
+                if choice ==  "1":
+                    df1.drop(columns=col, axis=1, inplace=True)
+                    dropped1.append(col)
+
+                elif choice == "2":
+                    df2.drop(columns=col, axis=1, inplace=True)
+                    dropped2.append(col)
+                else:
+
+                    continue
+    # Display dropped columns and orignating df
+    if to_drop:
+        if len(dropped1) >= 1:
+            print(f"\nDropped from df1:\n{dropped1}")
+        if len(dropped2) >= 1:
+            print(f"\nDropped from df1:\n{dropped2}")
+
+    if return_names_list:
+        return catch
+    else:
+        pass
+
 
 ## Dataframes styling
-# Check columns returns the datatype, null values and unique values of input series 
+# Check columns returns the datatype, null values and unique values of input series
 def check_column(series,nlargest='all'):
     print(f"Column: df['{series.name}']':")
     print(f"dtype: {series.dtype}")
     print(f"isna: {series.isna().sum()} out of {len(series)} - {round(series.isna().sum()/len(series)*100,3)}%")
-        
+
     print(f'\nUnique non-na values:') #,df['waterfront'].unique())
     if nlargest =='all':
         print(series.value_counts())
     else:
         print(series.value_counts().nlargest(nlargest))
 # def highlight (helper: hover)
+
+
 def hover(hover_color="gold"):
-    """DataFrame Styler: Called by highlight to highlight row below cursor. 
-        Changes html background color. 
+    """DataFrame Styler: Called by highlight to highlight row below cursor.
+        Changes html background color.
 
         Parameters:
 
-        hover_Color 
+        hover_Color
     """
     from IPython.display import HTML
     return dict(selector="tr:hover",
                 props=[("background-color", "%s" % hover_color)])
+
+
 def highlight(df,hover_color="gold"):
     """DataFrame Styler:
         Highlight row when hovering.
@@ -145,40 +234,42 @@ def highlight(df,hover_color="gold"):
 
 
 def color_true_green(val):
-    """DataFrame Styler: 
+    """DataFrame Styler:
     Changes text color to green if value is True
     Ex: style_df = df.style.applymap(color_true_green)
         style_df #to display"""
     color='green' if val==True else 'black'
-    return f'color: {color}' 
+    return f'color: {color}'
 
 # Style dataframe for easy visualization
+
+
 def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
-    """DataFrame Styler: 
+    """DataFrame Styler:
     Takes a df, any valid matplotlib colormap column names
     (matplotlib.org/tutorials/colors/colormaps.html) and
     returns a dataframe with a gradient colormap applied to column values.
 
     Example:
     df_styled = color_scale_columns(df,cmap = "YlGn",subset=['Columns','to','color'])
-    
+
     Parameters:
     -----------
-        df: 
+        df:
             DataFrame containing columns to style.
     subset:
          Names of columns to color-code.
-    cmap: 
-        Any matplotlib colormap. 
+    cmap:
+        Any matplotlib colormap.
         https://matplotlib.org/tutorials/colors/colormaps.html
-    
+
     Returns:
     ----------
         df_style:
             styled dataframe.
 
-    """ 
-    from IPython.display import display  
+    """
+    from IPython.display import display
     import seaborn as sns
     cm = matplotlib_cmap
     #     cm = sns.light_palette("green", as_cmap=True)
@@ -190,10 +281,10 @@ def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
 
     ## DataFrame Creation, Inspection, and Exporting
 def inspect_df(df,n_rows=3):
-    """ EDA: 
-    Show all pandas inspection tables. 
+    """ EDA:
+    Show all pandas inspection tables.
     Displays df.head(),, df.info(), df.describe()
-    Reduces precision to 3 for visilbity  
+    Reduces precision to 3 for visilbity
     Ex: inspect_df(df)
     """
     with pd.option_context("display.max_columns", None ,'display.precision',3,
@@ -203,20 +294,20 @@ def inspect_df(df,n_rows=3):
 
 
 def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
-    """EDA: Take a df, a list of strings or regular expression and recursively 
+    """EDA: Take a df, a list of strings or regular expression and recursively
     removes all matching column names containing those strings or expressions.
     # Example: if the df_in columns are ['price','sqft','sqft_living','sqft15','sqft_living15','floors','bedrooms']
     df_out = drop_cols(df_in, ['sqft','bedroom'])
     df_out.columns # will output: ['price','floors']
-    
+
     Parameters:
-        DF -- 
+        DF --
             Input dataframe to remove columns from.
-        regex_list -- 
+        regex_list --
             list of string patterns or regexp to remove.
-    
+
     Returns:
-        df_dropped -- input df without the dropped columns. 
+        df_dropped -- input df without the dropped columns.
     """
     regex_list=list_of_strings_or_regexp
     df_cut = df.copy()
@@ -246,7 +337,7 @@ table.dataframe td:not(:th){
     /*border: 1px solid ##e8e8ea;*/
     /*background-color: ##e8e8ea;*/
     background-color: gainsboro;
-    text-align: center; 
+    text-align: center;
     vertical-align: middle;
     font-size:10pt;
     padding: 0.7em 1em;
@@ -302,7 +393,7 @@ def multiplot(df):
 
     # Draw the heatmap with the mask and correct aspect ratio
     sns.heatmap(corr, mask=mask, annot=True, cmap=cmap, center=0,
-                
+
     square=True, linewidths=.5, cbar_kws={"shrink": .5})
     return f, ax
 
@@ -312,16 +403,16 @@ def plot_hist_scat(df, target='index'):
     Shows distplots and regplots for columns im datamframe vs target.
 
     Parameters:
-    df (DataFrame): DataFrame.describe() columns will be used. 
-    target = name of column containing target variable.assume first coluumn. 
-    
+    df (DataFrame): DataFrame.describe() columns will be used.
+    target = name of column containing target variable.assume first coluumn.
+
     Returns:
     Figures for each column vs target with 2 subplots.
    """
     import matplotlib.ticker as mtick
     import matplotlib.pyplot as plt
     import seaborn as sns
-    
+
     with plt.style.context(('dark_background')):
         ###  DEFINE AESTHETIC CUSTOMIZATIONS  -------------------------------##
         figsize=(14,10)
@@ -375,7 +466,7 @@ def plot_hist_scat(df, target='index'):
             ax[i,j].xaxis.set_major_formatter(mtick.ScalarFormatter())
 
 
-            # Set y-label 
+            # Set y-label
             ax[i,j].set_ylabel('Density',fontdict=fontAxis)
             yticklab1=ax[i,j].get_yticklabels(which='both')
             ax[i,j].set_yticklabels(labels=yticklab1,fontdict=fontTicks)
@@ -398,7 +489,7 @@ def plot_hist_scat(df, target='index'):
             scatter_kws={'s': 2, 'alpha': 0.8,'marker':'.','color':'steelblue'}
 
             # Plot regplot on ax[i,j] using line_kws and scatter_kws
-            sns.regplot(df[column], df[target], 
+            sns.regplot(df[column], df[target],
                         line_kws = line_kws,
                         scatter_kws = scatter_kws,
                         ax=ax[i,j])
@@ -421,10 +512,10 @@ def plot_hist_scat(df, target='index'):
 
             # Set y-grid
             ax[i, j].set_axisbelow(True)
-            ax[i, j].grid(axis='y',ls='--')       
+            ax[i, j].grid(axis='y',ls='--')
 
             ## ---------- Final layout adjustments ----------- ##
-            # Deleted unused subplots 
+            # Deleted unused subplots
             fig.delaxes(ax[1,1])
             fig.delaxes(ax[1,0])
 
@@ -438,91 +529,91 @@ def plot_hist_scat(df, target='index'):
 ## Mike's Plotting Functions
 def draw_violinplot(x , y, hue=None, data=None, title=None,
                     ticklabels=None, leg_label=None):
-    
+
     '''Plots a violin plot with horizontal mean line, inner stick lines
     y must be arraylike in order to plot mean line. x can be label in data'''
 
-    
+
     fig,ax = plt.subplots(figsize=(12,10))
 
     sns.violinplot(x, y, hue=hue,
                    data = data,
                    cut=2,
-                   split=True, 
+                   split=True,
                    scale='count',
                    scale_hue=True,
                    saturation=.7,
-                   alpha=.9, 
+                   alpha=.9,
                    bw=.25,
                    palette='Dark2',
                    inner='stick'
                   ).set_title(title)
-    
+
     ax.set(xlabel= x.name.title(),
           ylabel= y.name.title(),
            xticklabels=ticklabels)
-    
+
     ax.axhline( y.mean(),
                label='Total Mean',
                ls=':',
-               alpha=.2, 
+               alpha=.2,
                color='xkcd:yellow')
-    
+
     ax.legend().set_title(leg_label)
 
     plt.show()
     return fig, ax
 ## Finding outliers and statistics
-# Tukey's method using IQR to eliminate 
+# Tukey's method using IQR to eliminate
 def detect_outliers(df, n, features):
     """Uses Tukey's method to return outer of interquartile ranges to return indices if outliers in a dataframe.
     Parameters:
     df (DataFrame): DataFrame containing columns of features
-    n: default is 0, multiple outlier cutoff  
-    
+    n: default is 0, multiple outlier cutoff
+
     Returns:
     Index of outliers for .loc
-    
+
     Examples:
     Outliers_to_drop = detect_outliers(data,2,["col1","col2"]) Returning value
     df.loc[Outliers_to_drop] # Show the outliers rows
     data= data.drop(Outliers_to_drop, axis = 0).reset_index(drop=True)
 """
 
-# Drop outliers    
+# Drop outliers
 
     outlier_indices = []
     # iterate over features(columns)
     for col in features:
-        
+
         # 1st quartile (25%)
         Q1 = np.percentile(df[col], 25)
         # 3rd quartile (75%)
         Q3 = np.percentile(df[col],75)
-        
+
         # Interquartile range (IQR)
         IQR = Q3 - Q1
         # outlier step
         outlier_step = 1.5 * IQR
-        
+
         # Determine a list of indices of outliers for feature col
         outlier_list_col = df[(df[col] < Q1 - outlier_step) | (df[col] > Q3 + outlier_step )].index
-        
-        # append the found outlier indices for col to the list of outlier indices 
+
+        # append the found outlier indices for col to the list of outlier indices
         outlier_indices.extend(outlier_list_col)
-        
+
         # select observations containing more than 2 outliers
         from collections import Counter
-        outlier_indices = Counter(outlier_indices)        
+        outlier_indices = Counter(outlier_indices)
         multiple_outliers = list( k for k, v in outlier_indices.items() if v > n )
-    return multiple_outliers 
+    return multiple_outliers
 
 
 def find_outliers(column):
     quartile_1, quartile_3 = np.percentile(column, [25, 75])
     IQR = quartile_3 - quartile_1
     low_outlier = quartile_1 - (IQR * 1.5)
-    high_outlier = quartile_3 + (IQR * 1.5)    
+    high_outlier = quartile_3 + (IQR * 1.5)
     outlier_index = column[(column < low_outlier) | (column > high_outlier)].index
     return outlier_index
 
@@ -534,7 +625,7 @@ def describe_outliers(df):
     new_df = pd.DataFrame(columns=['total_outliers', 'percent_total'])
     for col in df.columns:
         outies = find_outliers(df[col])
-        out_count += len(outies) 
+        out_count += len(outies)
         new_df.loc[col] = [len(outies), round((len(outies)/len(df.index))*100, 2)]
     new_df.loc['grand_total'] = [sum(new_df['total_outliers']), sum(new_df['percent_total'])]
     return new_df
