@@ -18,6 +18,5 @@ import sklearn
 import scipy
 from .bs_ds import *
 from .bamboo import*
-
 print(f'View our documentation at https://bs-ds.readthedocs.io/en/latest/bs_ds.html')
-print(f'Recommended import method:\n from bs_ds import *\n')
+print(f'Recommended import method:\n>> from bs_ds import *\n')
