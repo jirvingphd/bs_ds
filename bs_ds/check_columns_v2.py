@@ -1,3 +1,5 @@
+import pandas as pd
+from ipython.display import display
 def check_unique(df, columns=None):
     """
     Prints unique values for all columns in dataframe. If passed list of columns,
@@ -36,7 +38,7 @@ def check_column(panda_obj, columns=None,nlargest='all'):
     """
     # Check for DF vs Series
     if type(panda_obj)==pd.core.series.Series:
-
+        series=panda_obj
         print(f"Column: df['{series.name}']':")
         print(f"dtype: {series.dtype}")
         print(f"isna: {series.isna().sum()} out of {len(series)} - {round(series.isna().sum()/len(series)*100,3)}%")
@@ -52,11 +54,12 @@ def check_column(panda_obj, columns=None,nlargest='all'):
         df = panda_obj
         for col_name in df.columns:
             col = df[col_name]
+            print("----------------------------")
             print(f"Column: df['{col_name}']':")
             print(f"dtype: {col.dtypes}")
             print(f"isna: {col.isna().sum()} out of {len(col)} - {round(col.isna().sum()/len(col)*100,3)}%")
 
-            print(f'\nUnique non-na values:')
+            print(f'\nUnique non-na values:\nnlargest={nlargest}\n-----------------')
             if nlargest =='all':
                 print(col.value_counts())
             else:
