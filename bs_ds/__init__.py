@@ -4,7 +4,7 @@
 
 __author__ = """James Irving, Michael Moravetz"""
 __email__ = 'james.irving.phd@outlook.com'
-__version__ = '0.2.9'
+__version__ = '0.2.10'
 
 import pandas as pd
 import numpy as np
