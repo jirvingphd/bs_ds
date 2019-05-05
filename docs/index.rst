@@ -4,7 +4,7 @@ Welcome to bs_ds's documentation!
     :width: 400px
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    bs_ds

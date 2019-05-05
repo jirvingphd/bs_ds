@@ -68,6 +68,7 @@ release = bs_ds.__version__
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
 language = None
+add_module_name = False
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -79,7 +80,6 @@ pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-add_module_names = False
 
 
 # -- Options for HTML output -------------------------------------------
@@ -170,7 +170,7 @@ def run_apidoc(_):
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 	cur_dir = os.path.abspath(os.path.dirname(__file__))
 	module = os.path.join(cur_dir,"..","bs_ds")
-	main(['-o', cur_dir, module, '-M','--force'])
+	main(['-o', cur_dir, module,'-M'])#,'--force'])
 
 def setup(app):
 	app.connect('builder-inited', run_apidoc)
