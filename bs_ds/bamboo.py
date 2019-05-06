@@ -126,7 +126,7 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
     Returns: list of column names if return_list=True
     """
 
-    display_list = [['Column', 'Numeric values', 'Percent']]
+    display_list = [['Column', 'Numeric values','Total Values' 'Percent']]
     outlist = []
     print(f'# of Identified Numeric Values in "Object" columns:\n')
 
@@ -148,8 +148,8 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
 
                 # If numeric, get counts
                 vals = df[col].str.isnumeric().sum()
-                percent = round(df[col].str.isnumeric().sum()/len(df[col]), 2) * 100
-                display_list.append([col, vals, percent])
+                percent = round((df[col].str.isnumeric().sum()/len(df[col]))*100, 2)
+                display_list.append([col, vals,len(df[col]), percent])
                 outlist.append(col)
 
     list2show=list2df(display_list)
@@ -188,7 +188,7 @@ def check_null(df, columns=None):
     Returns: list of column names if return_list=True
     """
 
-    display_list = [['Column', 'Null values', 'Percent']]
+    display_list = [['Column', 'Null values', 'Total Values','Percent']]
     outlist = []
     print(f'# of Identified Null Values in "Object" columns:\n')
 
@@ -210,7 +210,7 @@ def check_null(df, columns=None):
 
         # If numeric, get counts
         vals = df[col].isna().sum()
-        percent = round(vals/len(df[col]), 3) * 100
+        percent = round((vals/len(df[col]))*100, 3)
         display_list.append([col, vals, percent])
         outlist.append(col)
 
