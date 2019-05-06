@@ -178,16 +178,12 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
 def check_null(df, columns=None):
 
     """
-    Iterates through columns and checks for possible numeric features labeled as objects.
+    Iterates through columns and checks for null values and displays # and % of column.
     Params:
     ******************
     df: pandas DataFrame
 
-    unique_check: bool. (default=True)
-        If true, distplays interactive interface for checking unique values in columns.
-
-    return_list: bool, (default=False)
-        If True, returns a list of column names with possible numeric types.
+    columns: list of columns to check
     **********>
     Returns: list of column names if return_list=True
     """
