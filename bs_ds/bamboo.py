@@ -136,7 +136,7 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
     Returns: list of column names if return_list=True
     """
 
-    display_list = [['Column', 'Numeric values','Total Values' 'Percent']]
+    display_list = [['Column', 'Numeric values','Total Values', 'Percent']]
     outlist = []
     print(f'# of Identified Numeric Values in "Object" columns:\n')
 
