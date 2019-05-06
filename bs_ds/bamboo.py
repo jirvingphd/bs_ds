@@ -175,6 +175,53 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
         return outlist
     pass
 
+def check_null(df, columns=None):
+
+    """
+    Iterates through columns and checks for possible numeric features labeled as objects.
+    Params:
+    ******************
+    df: pandas DataFrame
+
+    unique_check: bool. (default=True)
+        If true, distplays interactive interface for checking unique values in columns.
+
+    return_list: bool, (default=False)
+        If True, returns a list of column names with possible numeric types.
+    **********>
+    Returns: list of column names if return_list=True
+    """
+
+    display_list = [['Column', 'Null values', 'Percent']]
+    outlist = []
+    print(f'# of Identified Null Values in "Object" columns:\n')
+
+    # Check for user column list
+    columns_to_check = []
+    if columns==None:
+        columns_to_check = df.columns
+    else:
+        columns_to_check = columns
+    # Iterate through columns
+
+    for col in columns_to_check:
+
+        # Check for object dtype,
+        # if df[col].dtype == 'object':
+
+        # If object, check for numeric
+
+        if df[col].str.isnumeric().any():
+
+            # If numeric, get counts
+            vals = df[col].isna().sum()
+            percent = round(vals/len(df[col]), 3) * 100
+            display_list.append([col, vals, percent])
+            outlist.append(col)
+
+    list2show=list2df(display_list)
+    list2show.set_index('Column',inplace=True)
+    display(list2show)
 
 class LabelLibrary():
     """A Multi-column version of sklearn LabelEncoder, which fits a LabelEncoder
@@ -451,17 +498,24 @@ def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
 
 
     ## DataFrame Creation, Inspection, and Exporting
-def inspect_df(df,n_rows=3):
+def inspect_df(df,n_rows=3,verbose=False):
     """ EDA:
     Show all pandas inspection tables.
     Displays df.head(),, df.info(), df.describe()
     Reduces precision to 3 for visilbity
     Ex: inspect_df(df)
     """
-    with pd.option_context("display.max_columns", None ,'display.precision',3,
-    'display.notebook_repr_htm',True):
-        display(df.head(n_rows))
+    with pd.option_context("display.max_columns", None ,'display.precision',4):
         display(df.info()), display(df.describe())
+
+        if verbose == True:
+            check_numeric(df,unique_check=False)
+            check_null(df)
+
+        display(df.head(n_rows))
+
+
+
 
 
 def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
