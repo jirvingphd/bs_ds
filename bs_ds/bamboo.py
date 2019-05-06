@@ -9,7 +9,7 @@ import scipy.stats as sts
 from IPython.display import display
 
 def big_pandas(user_options=None):
-    """Changes the default pandas display setttings to show all columns.
+    """Changes the default pandas display setttings to show all columns and all rows.
     User may replace settings with a kwd dictionary matching available options.
     https://pandas.pydata.org/pandas-docs/stable/user_guide/options.html#available-options
     Example:
@@ -27,6 +27,7 @@ def big_pandas(user_options=None):
             'display' : {
                 'max_columns' : None,
                 'expand_frame_repr':False,
+                'max_rows':None,
                 'precision' : 4,
             }
         }
@@ -36,6 +37,8 @@ def big_pandas(user_options=None):
     for category, option in options.items():
         for op, value in option.items():
             pd.set_option(f'{category}.{op}', value)  # Python 3.6+
+            print(f'{category}.{op}={value}')
+
 
 def reset_pandas():
     """Resets all pandas options back to default state."""
@@ -48,7 +51,7 @@ def list2df(list):#, sort_values='index'):
         list_results.append([test_Name,length(data),p])
         list2df(list_results)
     """
-    with pd.option_context("display.max_rows", 10, "display.max_columns", None ,
+    with pd.option_context("display.max_rows", None, "display.max_columns", None ,
     'display.precision',3,'display.notebook_repr_htm',True):
 
         df_list = pd.DataFrame(list[1:],columns=list[0])
@@ -88,6 +91,7 @@ def check_unique(df, columns=None):
     Returns: None
         prints values only
     """
+
     if columns is None:
 
         if df == pd.Series:
@@ -105,7 +109,7 @@ def check_unique(df, columns=None):
     pass
 
 
-def check_numeric(df, unique_check=True, return_list=False):
+def check_numeric(df, columns=None, unique_check=True, return_list=False):
 
     """
     Iterates through columns and checks for possible numeric features labeled as objects.
@@ -124,9 +128,17 @@ def check_numeric(df, unique_check=True, return_list=False):
 
     display_list = [['Column', 'Numeric values', 'Percent']]
     outlist = []
+    print(f'# of Identified Numeric Values in "Object" columns:\n')
 
+    # Check for user column list
+    columns_to_check = []
+    if columns==None:
+        columns_to_check = df.columns
+    else:
+        columns_to_check = columns
     # Iterate through columns
-    for col in df.columns:
+
+    for col in columns_to_check:
 
         # Check for object dtype,
         if df[col].dtype == 'object':
@@ -136,14 +148,16 @@ def check_numeric(df, unique_check=True, return_list=False):
 
                 # If numeric, get counts
                 vals = df[col].str.isnumeric().sum()
-                percent = round(df[col].str.isnumeric().sum()/len(df[col]), 1) * 100
+                percent = round(df[col].str.isnumeric().sum()/len(df[col]), 2) * 100
                 display_list.append([col, vals, percent])
                 outlist.append(col)
 
-    display(list2df(display_list))
+    list2show=list2df(display_list)
+    list2show.set_index('Column',inplace=True)
+    display(list2show)
 
     if unique_check:
-        unique = input("display unique values? (Enter y for all columns, column name or n to quit):")
+        unique = input("display unique values? (Enter 'y' for all columns, a column name, or 'n' to quit):")
 
         while unique != 'n':
 
@@ -349,7 +363,7 @@ def check_column(panda_obj, columns=None,nlargest='all'):
         df = panda_obj
         for col_name in df.columns:
             col = df[col_name]
-            print("----------------------------")
+            print("\n-----------------------------------------------")
             print(f"Column: df['{col_name}']':")
             print(f"dtype: {col.dtypes}")
             print(f"isna: {col.isna().sum()} out of {len(col)} - {round(col.isna().sum()/len(col)*100,3)}%")
