@@ -207,13 +207,12 @@ def check_null(df, columns=None):
 
         # If object, check for numeric
 
-        if df[col].str.isnumeric().any():
 
-            # If numeric, get counts
-            vals = df[col].isna().sum()
-            percent = round(vals/len(df[col]), 3) * 100
-            display_list.append([col, vals, percent])
-            outlist.append(col)
+        # If numeric, get counts
+        vals = df[col].isna().sum()
+        percent = round(vals/len(df[col]), 3) * 100
+        display_list.append([col, vals, percent])
+        outlist.append(col)
 
     list2show=list2df(display_list)
     list2show.set_index('Column',inplace=True)
