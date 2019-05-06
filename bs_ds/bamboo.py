@@ -95,8 +95,13 @@ def check_unique(df, columns=None):
 
     if columns is None:
 
-        if df == pd.Series:
-            columns = [df.name]
+        if type(df) == pd.Series:
+            series=df
+            nunique = series.nunique()
+            unique_df = pd.DataFrame(series.value_counts())
+
+            print(f"\n{series.name} Type: {series.dtype}\nNumber unique values: {nunique}")
+            display(unique_df)
 
         else:
             columns = df.columns
