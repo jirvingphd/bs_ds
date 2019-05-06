@@ -45,6 +45,16 @@ def reset_pandas():
     pd.reset_option('all')
 
 
+def ignore_warnings():
+    """Ignores all deprecation warnings (future,and pending categories too)."""
+    import warnings
+    warnings.simplefilter(action='ignore', category=(FutureWarning,DeprecationWarning,PendingDeprecationWarning))
+
+def reset_warnings():
+    """Restore the default warnings settings"""
+    import warnings
+    warnings.simplefilter(action='default', category=(FutureWarning,DeprecationWarning,PendingDeprecationWarning))
+
 def list2df(list):#, sort_values='index'):
     """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
     Ex: list_results = [["Test","N","p-val"]] #... (some sort of analysis performed to produce results)
