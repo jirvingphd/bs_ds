@@ -587,7 +587,7 @@ table.dataframe th:not(:empty), table.dataframe td{
 
 ##
 # EDA / Plotting Functions
-def multiplot(df):
+def multiplot(df,annot=True,fig_size=None):
     """EDA: Plots results from df.corr() in a correlation heat map for multicollinearity.
     Returns fig, ax objects"""
     import seaborn as sns
@@ -607,13 +607,18 @@ def multiplot(df):
     mask[np.triu_indices_from(mask)] = True
 
     # Set up the matplotlib figure
-    f, ax = plt.subplots(figsize=(16, 16))
+    if fig_size==None:
+        figsize=(16,16)
+    else:
+        figsize = fig_size
+
+    f, ax = plt.subplots(figsize=(figsize))
 
     # Generate a custom diverging colormap
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr, mask=mask, annot=True, cmap=cmap, center=0,
+    sns.heatmap(corr, mask=mask, annot=annot, cmap=cmap, center=0,
 
     square=True, linewidths=.5, cbar_kws={"shrink": .5})
     return f, ax
