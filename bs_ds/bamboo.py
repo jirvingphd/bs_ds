@@ -11,15 +11,6 @@ from IPython.display import display
 def big_pandas(user_options=None):
     """Changes the default pandas display setttings to show all columns and all rows.
     User may replace settings with a kwd dictionary matching available options.
-    https://pandas.pydata.org/pandas-docs/stable/user_guide/options.html#available-options
-    Example:
-    user_options = {
-        'display':{
-            'colheader_justify':'left',
-            'max_rows':100},
-        'mode':{
-            'chained_assignment':None}
-            }
     """
     import pandas as pd
     if user_options==None:
@@ -186,7 +177,6 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
     pass
 
 def check_null(df, columns=None):
-
     """
     Iterates through columns and checks for null values and displays # and % of column.
     Params:
@@ -221,7 +211,7 @@ def check_null(df, columns=None):
         # If numeric, get counts
         vals = df[col].isna().sum()
         percent = round((vals/len(df[col]))*100, 3)
-        display_list.append([col, vals, percent])
+        display_list.append([col, vals, len(df[col]), percent])
         outlist.append(col)
 
     list2show=list2df(display_list)
@@ -252,6 +242,7 @@ class LabelLibrary():
    """
 
     def __init__(self):#,df,features):
+        """creates self.index and self.encoder"""
         self.index = {}
         from sklearn.preprocessing import LabelEncoder as encoder
         self.encoder=encoder
@@ -261,8 +252,8 @@ class LabelLibrary():
 
 
     def fit(self,df,columns=None):
-
-
+        """ Creates an encoder object and fits to each columns.
+        Fit encoder is saved in the index dictionary by key=column_name"""
         if columns==None:
             columns = df.columns
 #             if any(df.isna()) == True:
@@ -275,7 +266,7 @@ class LabelLibrary():
 
             if any(df[col].isna()):
                 num_null = df[col].isna().sum()
-                print(f'For {col}: Replacing {num_null} null values with "NaN".')
+                Warning(f'For {col}: Replacing {num_null} null values with "NaN".')
                 df[col].fillna('NaN',inplace=True)
 
             # make the encoder
