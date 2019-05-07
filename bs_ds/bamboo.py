@@ -628,25 +628,50 @@ def multiplot(df,annot=True,fig_size=None):
     return f, ax
 
 # Plots histogram and scatter (vs price) side by side
-def plot_hist_scat(df, target='index'):
+def plot_hist_scat(df, target=None, figsize=(12,9),fig_style='dark_background',font_dict=None,plot_kwds=None):
     """EDA: Great summary plots of all columns of a df vs target columne.
     Shows distplots and regplots for columns im datamframe vs target.
-
     Parameters:
-    df (DataFrame): DataFrame.describe() columns will be used.
-    target = name of column containing target variable.assume first coluumn.
+        df (DataFrame):
+            DataFrame.describe() columns will be plotted.
+        target (string):
+            Name of column containing target variable.assume first column.
+        figsize (tuple):
+            Tuple for figsize. Default=(12,9).
+        fig_style:
+            Figure style to use (in this context, will not change others in notebook).
+            Default is 'dark_background'.
+        font_dict:
+            A keywork dictionry containing values for font properties under the following keys:
+            - "fontTitle": font dictioanry for titles
+            , fontAxis, fontTicks
+
+    **plot_kwds:
+        A kew_word dictionary containing any of the following keys for dictionaries containing
+        any valid matplotlib key:value pairs for plotting:
+            "hist_kws, kde_kws, line_kws,scatter_kws"
+        Accepts any valid matplotlib key:value pairs passed by searborn to matplotlib.
+        Subplot 1: hist_kws, kde_kws
+        Subplot 2: line_kws,scatter_kws
 
     Returns:
-    Figures for each column vs target with 2 subplots.
+        fig:
+            Figure object.
+        ax:
+            Subplot axes with format ax[row,col].
+            Subplot 1 = ax[0,0]; Subplot 2 = ax[0,1]
    """
     import matplotlib.ticker as mtick
     import matplotlib.pyplot as plt
     import seaborn as sns
 
-    with plt.style.context(('dark_background')):
-        ###  DEFINE AESTHETIC CUSTOMIZATIONS  -------------------------------##
-        figsize=(14,10)
+    # Set target as first column if not specified
+    if target==None:
+        target= df.iloc[:,0]
 
+    ###  DEFINE AESTHETIC CUSTOMIZATIONS  -------------------------------##
+    # Checking for user font_dict, if not setting defaults:
+    if font_dict == None:
         # Axis Label fonts
         fontTitle = {'fontsize': 16,
                    'fontweight': 'bold',
@@ -660,10 +685,59 @@ def plot_hist_scat(df, target='index'):
                    'fontweight':'bold',
                     'fontfamily':'serif'}
 
+    else:
+
+        if 'fontTitle' in font_dict.keys():
+            fontTitle = font_dict['fontTitle']
+        else:
+            fontTitle = {'fontsize': 16, 'fontweight': 'bold','fontfamily':'serif'}
+
+        if 'fontAxis' in font_dict.keys():
+            fontAxis = font_dict['fontAxis']
+        else:
+            fontAxis = {'fontsize': 14,'fontweight': 'bold', 'fontfamily':'serif'}
+
+        if 'fontTicks' in font_dict.keys():
+            fontTicks = font_dict['fontTicks']
+        else:
+            fontTicks = {'fontsize': 12,'fontweight':'bold','fontfamily':'serif'}
+
+    # Checking for user plot_kwds
+    if plot_kwds == None:
+        hist_kws = {"linewidth": 1, "alpha": 1, "color": 'steelblue','edgecolor':'w','hatch':'\\'}
+        kde_kws = {"color": "white", "linewidth": 3, "label": "KDE",'alpha':0.7}
+        line_kws={"color":"white","alpha":0.5,"lw":3,"ls":":"}
+        scatter_kws={'s': 2, 'alpha': 0.8,'marker':'.','color':'steelblue'}
+
+    else:
+        kwds = plot_kwds
+        # Define graphing keyword dictionaries for distplot (Subplot 1)
+        if 'hist_kws' in kwds.keys():
+            hist_kws = kwds['hist_kws']
+        else:
+            hist_kws = {"linewidth": 1, "alpha": 1, "color": 'steelblue','edgecolor':'w','hatch':'\\'}
+
+        if 'kde_kws' in kwds.keys():
+            kde_kws = kwds['kde_kws']
+        else:
+            kde_kws = {"color": "white", "linewidth": 3, "label": "KDE",'alpha':0.7}
+
+        # Define the kwd dictionaries for scatter and regression line (subplot 2)
+        if 'line_kws' in kwds.keys():
+            line_kws = kwds['line_kws']
+        else:
+            line_kws={"color":"white","alpha":0.5,"lw":3,"ls":":"}
+
+        if 'scatter_kws' in kwds.keys():
+            scatter_kws = kwds['scatter_kws']
+        else:
+            scatter_kws={'s': 2, 'alpha': 0.8,'marker':'.','color':'steelblue'}
+
+
+    with plt.style.context(fig_style):
         # Formatting dollar sign labels
         # fmtPrice = '${x:,.0f}'
         # tickPrice = mtick.StrMethodFormatter(fmtPrice)
-
 
         ###  PLOTTING ----------------------------- ------------------------ ##
 
@@ -677,9 +751,6 @@ def plot_hist_scat(df, target='index'):
             i,j = 0,0
             ax[i,j].set_title(column.capitalize(),fontdict=fontTitle)
 
-            # Define graphing keyword dictionaries for distplot (Subplot 1)
-            hist_kws = {"linewidth": 1, "alpha": 1, "color": 'steelblue','edgecolor':'w','hatch':'\\'}
-            kde_kws = {"color": "white", "linewidth": 3, "label": "KDE",'alpha':0.7}
 
             # Plot distplot on ax[i,j] using hist_kws and kde_kws
             sns.distplot(df[column], norm_hist=True, kde=True,
@@ -714,9 +785,7 @@ def plot_hist_scat(df, target='index'):
             i,j = 0,1
             ax[i,j].set_title(column.capitalize(),fontdict=fontTitle)
 
-            # Define the kwd dictionaries for scatter and regression line (subplot 2)
-            line_kws={"color":"white","alpha":0.5,"lw":3,"ls":":"}
-            scatter_kws={'s': 2, 'alpha': 0.8,'marker':'.','color':'steelblue'}
+
 
             # Plot regplot on ax[i,j] using line_kws and scatter_kws
             sns.regplot(df[column], df[target],
