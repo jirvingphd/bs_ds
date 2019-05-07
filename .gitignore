@@ -103,3 +103,4 @@ ENV/
 
 #Visual Code settings
 .vscode/*
+.vscode/settings.json

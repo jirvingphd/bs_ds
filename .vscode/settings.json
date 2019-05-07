@@ -2,5 +2,5 @@
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
     "python.testing.pyTestEnabled": true,
-    "python.pythonPath": "/Users/michaelmoravetz/anaconda3/envs/learn2/bin/python"
+    "python.pythonPath": "C:\\Users\\james\\Anaconda3\\envs\\learn-env-ext\\python.exe"
 }
