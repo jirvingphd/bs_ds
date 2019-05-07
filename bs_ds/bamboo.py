@@ -136,7 +136,7 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
     display_list = [['Column', 'Numeric values','Total Values', 'Percent']]
     outlist = []
     print(f'\n---------------------------------------------------\n')
-    print(f'# of Identified Numeric Values in "Object" columns:\n')
+    print(f'# of Identified Numeric Values in "Object" columns:')
 
     # Check for user column list
     columns_to_check = []
@@ -198,7 +198,7 @@ def check_null(df, columns=None):
     display_list = [['Column', 'Null values', 'Total Values','Percent']]
     outlist = []
     print(f'\n----------------------------\n')
-    print(f'# of Identified Null Values:\n')
+    print(f'# of Identified Null Values:')
 
     # Check for user column list
     columns_to_check = []
