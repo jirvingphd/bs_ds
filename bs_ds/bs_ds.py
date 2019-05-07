@@ -1237,7 +1237,7 @@ from sklearn import tree
 import xgboost
 
 
-def thick_pipe(features, target, n_components,
+def thick_pipe(features, target, n_components='mle',
                classifiers=[
                    LogisticRegression,
                    svm.SVC,
@@ -1246,7 +1246,7 @@ def thick_pipe(features, target, n_components,
                    AdaBoostClassifier,
                    GradientBoostingClassifier,
                    xgboost.sklearn.XGBClassifier
-               ], test_size=.25, split_rand=None, class_rand=None, verbose=False):
+               ], test_size=.25, random_state=42, verbose=False):
 
     """
     Takes features and target, train/test splits and runs each through pipeline,
@@ -1257,7 +1257,7 @@ def thick_pipe(features, target, n_components,
     features: pd.Dataframe, variable features
     target: pd.Series, classes/labels
     n_components: int, number of priniciple components, use select_pca() to determine this number
-    classifiers: list, classificaation models put in pipeline
+    classifiers: list, classification models put in pipeline
     test_size: float, size of test set for test_train_split (default=.25)
     split_rand: int, random_state parameter for test_train_split (default=None)
     class_rand: int, random_state parameter for classifiers (default=None)
@@ -1271,14 +1271,14 @@ def thick_pipe(features, target, n_components,
      values for train/test splits. """
 
     # from bs_ds import list2df
-    from sklearn.pipeline import Pipeline
-    from sklearn.decomposition import PCA
-    from sklearn.model_selection import train_test_split
-    from sklearn.linear_model import LogisticRegression
-    from sklearn import svm
-    from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, GradientBoostingClassifier
-    from sklearn import tree
-    import xgboost
+    # from sklearn.pipeline import Pipeline
+    # from sklearn.decomposition import PCA
+    # from sklearn.model_selection import train_test_split
+    # from sklearn.linear_model import LogisticRegression
+    # from sklearn import svm
+    # from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, GradientBoostingClassifier
+    # from sklearn import tree
+    # import xgboost
 
 
     results = [['classifier', 'score']]
@@ -1286,12 +1286,12 @@ def thick_pipe(features, target, n_components,
 
     X_train, X_test, y_train, y_test = train_test_split(features, target,
                                                         test_size=test_size,
-                                                        random_state=split_rand)
+                                                        random_state=random_state)
 
     for classifier in classifiers:
 
-        pipe = Pipeline([('pca', PCA(n_components=n_components,random_state=class_rand)),
-                         ('clf', classifier(random_state=class_rand))])
+        pipe = Pipeline([('pca', PCA(n_components=n_components,random_state=random_state)),
+                         ('clf', classifier(random_state=random_state))])
 
         if verbose:
             print(f'{classifier}:\n{pipe}')
@@ -1317,10 +1317,10 @@ def thick_pipe(features, target, n_components,
         results.append([name, accuracy])
         class_dict[name] = {'accuracy': accuracy,'model': pipe}
 
-    class_dict['X_train'] = X_train
-    class_dict['X_test'] = X_test
-    class_dict['y_train'] = y_train
-    class_dict['y_test'] = y_test
+    # class_dict['X_train'] = X_train
+    # class_dict['X_test'] = X_test
+    # class_dict['y_train'] = y_train
+    # class_dict['y_test'] = y_test
 
     display(list2df(results))
 

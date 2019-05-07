@@ -96,7 +96,7 @@ def check_unique(df, columns=None):
     if columns is None:
 
         if type(df) == pd.Series:
-            series=df
+            series = df
             nunique = series.nunique()
             unique_df = pd.DataFrame(series.value_counts())
 
@@ -138,7 +138,7 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
 
     # Check for user column list
     columns_to_check = []
-    if columns==None:
+    if columns == None:
         columns_to_check = df.columns
     else:
         columns_to_check = columns
@@ -158,7 +158,7 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
                 display_list.append([col, vals,len(df[col]), percent])
                 outlist.append(col)
 
-    list2show=list2df(display_list)
+    list2show = list2df(display_list)
     list2show.set_index('Column',inplace=True)
     display(list2show)
 
