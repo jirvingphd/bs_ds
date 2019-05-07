@@ -1,6 +1,33 @@
 # -*- coding: utf-8 -*-
 """Convience module. 'from bs_ds.importSklearn import  *' will pre-load LogisticRegression, GridSearches, Pipeline
-StandardScaler, RobustScaler, MinimaxSCaler, train_test_split, RandomForestClassifer, GradientBoostingClassifier, AdaBoostClassifier"""
+StandardScaler, RobustScaler, Minimax-SCaler, train_test_split, RandomForestClassifer, GradientBoostingClassifier, AdaBoostClassifier.
+Also imports basic standard packages from bs_ds.imports"""
+
+def start():
+    from bs_ds.bamboo import list2df
+    list_sklearn_imports = ['xgboost', 'sklearn', 'scipy', 'sklearn.svm.SVC',
+     'sklearn.linear_model.LogisticRegression', 'sklearn.linear_model.LogisticRegressionCV',
+      'sklearn.model_selection.RandomizedSearchCV', 'sklearn.model_selection.GridSearchCV',
+       'sklearn.pipeline.Pipeline', 'sklearn.decomposition.PCA', 'sklearn.preprocessing.StandardScaler',
+       'sklearn.preprocessing.RobustScaler', 'sklearn.preprocessing.MinMaxScaler', 'scipy.stats.randint',
+       'scipy.stats.expon', 'sklearn.model_selection.train_test_split', 'sklearn.ensemble.RandomForestClassifier',
+        'sklearn.ensemble.GradientBoostingClassifier', 'sklearn.ensemble.AdaBoostClassifier', 'sklearn.tree.DecisionTreeClassifier',
+        'sklearn.ensemble.VotingClassifier', 'sklearn.metrics.roc_auc_score']
+
+    list_to_display = [['#','Module']]
+    for idx, mod in enumerate(list_sklearn_imports):
+        list_to_display.append([idx,mod])
+
+    # from .bamboo import list2df
+    df = list2df(list_to_display)
+    df.set_index('#',inplace=True)
+    display(df)
+start()
+
+
+
+
+from .imports import *
 
 import xgboost
 import sklearn
