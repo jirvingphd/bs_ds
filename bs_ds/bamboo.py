@@ -130,6 +130,7 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
     **********>
     Returns: list of column names if return_list=True
     """
+    from bs_ds.bamboo import list2df
 
     display_list = [['Column', 'Numeric values','Total Values', 'Percent']]
     outlist = []
@@ -191,7 +192,7 @@ def check_null(df, columns=None):
     **********>
     Returns: list of column names if return_list=True
     """
-
+    from bs_ds.bamboo import list2df
     display_list = [['Column', 'Null values', 'Total Values','Percent']]
     outlist = []
     print(f'# of Identified Null Values in "Object" columns:\n')
@@ -498,13 +499,23 @@ def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
 
 
     ## DataFrame Creation, Inspection, and Exporting
-def inspect_df(df,n_rows=3,verbose=False):
+def inspect_df(df, n_rows=3, verbose=True):
     """ EDA:
     Show all pandas inspection tables.
-    Displays df.head(),, df.info(), df.describe()
-    Reduces precision to 3 for visilbity
-    Ex: inspect_df(df)
+    Displays df.head(), df.info(), df.describe().
+    By default also runs check_null and check_numeric to inspect
+    columns for null values and to check string columns to detect
+    numeric values. (If verbose==True)
+    Parameters:
+        df(dataframe):
+            dataframe to inspect
+        n_rows:
+            number of header rows to show (Default=3).
+        verbose:
+            If verbose==True (default), check_null and check_numeric.
+    Ex: inspect_df(df,n_rows=4)
     """
+    from bs_ds.bamboo import check_column, check_null, check_numeric, check_unique
     with pd.option_context("display.max_columns", None ,'display.precision',4):
         display(df.info()), display(df.describe())
 
