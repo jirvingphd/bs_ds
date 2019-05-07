@@ -99,7 +99,8 @@ def check_unique(df, columns=None):
     if isinstance(df, pd.Series):
         # display all the value counts
         nunique = df.nunique()
-        print(f"\n{df.name} Type: {df.dtype}\nNumber unique values: {nunique}")
+        print(f'\n----------------------------------------------------------\n')
+        print(f"{df.name} Type: {df.dtype}\nNumber unique values: {nunique}")
         return pd.DataFrame(df.value_counts())
 
     else:
@@ -134,6 +135,7 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
 
     display_list = [['Column', 'Numeric values','Total Values', 'Percent']]
     outlist = []
+    print(f'\n---------------------------------------------------\n')
     print(f'# of Identified Numeric Values in "Object" columns:\n')
 
     # Check for user column list
@@ -195,7 +197,8 @@ def check_null(df, columns=None):
     from bs_ds.bamboo import list2df
     display_list = [['Column', 'Null values', 'Total Values','Percent']]
     outlist = []
-    print(f'# of Identified Null Values in "Object" columns:\n')
+    print(f'\n----------------------------\n')
+    print(f'# of Identified Null Values:\n')
 
     # Check for user column list
     columns_to_check = []
@@ -222,6 +225,7 @@ def check_null(df, columns=None):
     list2show=list2df(display_list)
     list2show.set_index('Column',inplace=True)
     display(list2show)
+
 
 class LabelLibrary():
     """A Multi-column version of sklearn LabelEncoder, which fits a LabelEncoder
@@ -396,6 +400,7 @@ def check_column(panda_obj, columns=None,nlargest='all'):
     # Check for DF vs Series
     if type(panda_obj)==pd.core.series.Series:
         series=panda_obj
+        print(f'\n----------------------------\n')
         print(f"Column: df['{series.name}']':")
         print(f"dtype: {series.dtype}")
         print(f"isna: {series.isna().sum()} out of {len(series)} - {round(series.isna().sum()/len(series)*100,3)}%")
