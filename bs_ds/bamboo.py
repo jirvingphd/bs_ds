@@ -99,7 +99,7 @@ def check_unique(df, columns=None):
     if isinstance(df, pd.Series):
         # display all the value counts
         nunique = df.nunique()
-        print(f'\n----------------------------------------------------------\n')
+        print(f'\n---------------------------\n')
         print(f"{df.name} Type: {df.dtype}\nNumber unique values: {nunique}")
         return pd.DataFrame(df.value_counts())
 
@@ -110,7 +110,8 @@ def check_unique(df, columns=None):
         for col in columns:
             nunique = df[col].nunique()
             unique_df = pd.DataFrame(df[col].value_counts())
-            print(f"\n{col} Type: {df[col].dtype}\nNumber unique values: {nunique}")
+            print(f'\n---------------------------')
+            print(f"\n{col} Type: {df[col].dtype}\nNumber unique values: {nunique}.")
             display(unique_df)
         pass
 
