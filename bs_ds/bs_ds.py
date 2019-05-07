@@ -146,27 +146,27 @@ def viz_tree(tree_object):
 
 
 
-#### Cohen's d
-def Cohen_d(group1, group2):
-    '''Compute Cohen's d.
-    # taken directly from learn.co lesson.
-    # group1: Series or NumPy array
-    # group2: Series or NumPy array
-    # returns a floating point number
-    '''
-    diff = group1.mean() - group2.mean()
+# #### Cohen's d
+# def Cohen_d(group1, group2):
+#     '''Compute Cohen's d.
+#     # taken directly from learn.co lesson.
+#     # group1: Series or NumPy array
+#     # group2: Series or NumPy array
+#     # returns a floating point number
+#     '''
+#     diff = group1.mean() - group2.mean()
 
-    n1, n2 = len(group1), len(group2)
-    var1 = group1.var()
-    var2 = group2.var()
+#     n1, n2 = len(group1), len(group2)
+#     var1 = group1.var()
+#     var2 = group2.var()
 
-    # Calculate the pooled threshold as shown earlier
-    pooled_var = (n1 * var1 + n2 * var2) / (n1 + n2)
+#     # Calculate the pooled threshold as shown earlier
+#     pooled_var = (n1 * var1 + n2 * var2) / (n1 + n2)
 
-    # Calculate Cohen's d statistic
-    d = diff / np.sqrt(pooled_var)
+#     # Calculate Cohen's d statistic
+#     d = diff / np.sqrt(pooled_var)
 
-    return d
+#     return d
 
 
 
@@ -196,6 +196,8 @@ def subplot_imshow(images, num_images,num_rows, num_cols, figsize=(20,15)):
 
     return fig, ax
 #####
+
+
 ###########
 def plot_wide_kde_thing_mean_sem_bars(series1,sname1, series2, sname2):
     '''EDA / Hypothesis Testing:
@@ -345,7 +347,7 @@ def plot_wide_kde_thing_mean_sem_bars(series1,sname1, series2, sname2):
         return fig,ax
 
 
-def scale_data(data, method='minmax', log=False):
+def scale_data(data, scaler='standard', log=False):
 
     """Takes df or Series, scales it using desired method and returns scaled df.
 
@@ -380,15 +382,18 @@ def scale_data(data, method='minmax', log=False):
 
 
     # creates chosen scaler instance
-    if method == 'robust':
-        scaler = RobustScaler()
+    if scaler == 'robust':
+        Scaler = RobustScaler()
 
-    elif method == 'standard':
-        scaler = StandardScaler()
+    elif scaler == 'standard':
+        Scaler = StandardScaler()
 
+    elif scaler == 'minmax':
+        Scaler = MinMaxScaler()
     else:
-        scaler = MinMaxScaler()
-    scaled = scaler.fit_transform(scale)
+        print('No scaler specified. Defaulting to StandardScaler')
+        Scaler = StandardScaler()
+    scaled = Scaler.fit_transform(scale)
 
 
     # reshape and create output DataFrame
@@ -424,15 +429,16 @@ def scale_data(data, method='minmax', log=False):
 # import time
 # import re
 
-def select_pca(features, n_components_list):
+def select_pca(features, n_components_list=None):
 
     '''
-    Takes features and list of n_components to run PCA on
+    Takes features and list of n_components to run PCA on.
+    Default value of n_components_lists= None tests 2 to n_features-1.
 
     Params:
     ----------
     features: pd.Dataframe
-    n_components: list of ints to pass to PCA n_component parameter
+    n_components_list: List of n_components (ints) to test in PCA. Default = 2:n_features-1;
 
     returns:
     ----------
@@ -445,6 +451,10 @@ def select_pca(features, n_components_list):
 
     # Create list to store results in
     results = [['Model','n_components', 'Explained_Variance_ratio_']]
+
+    # If n_components_list == None, make it 1:n-1
+    if n_components_list == None:
+        n_components_list = list(range(2,len(features)-1))
 
     # Loop through list of components to do PCA on
     for n in n_components_list:
@@ -597,80 +607,110 @@ def fit_pipes(pipes_dict, train_test, predict=True, verbose=True, score='accurac
         display(list2df(score_display))
 
     return fit_pipes
-config_dict = {
-    sklearn.linear_model.LogisticRegressionCV:[{
 
-        }],
-        sklearn.linear_model.LogisticRegression:[{
-            'clf__penalty':['l1'],
-            'clf__C':[0.1, 1, 10, 15 ],
-            'clf__tol':[1e-5, 1e-4, 1e-3],
-            'clf__solver':['liblinear', 'newton-cg'],
-            'clf__n_jobs':[-1]
-            }, {
-            'clf__penalty':['l2'],
-            'clf__C':[0.1, 1, 10, 15 ],
-            'clf__tol':[1e-5, 1e-4, 1e-3],
-            'clf__solver':['lbfgs', 'sag'],
-            'clf__n_jobs':[-1]
+#write make_config_dict, and make_random_dict
+def make_config_dict(verbose=True):
+    """Generates a default dictioanry of models to test and hyperparameters
+    Returns dictionary of configuration to use in compare_pipes.
+    Parameters:
+        verbose: Defult=True, Displays contents of generated configs.
+
+    Ex: config_dict = make_config_dict()"""
+    from pprint import pprint
+
+    config_dict = {
+        sklearn.linear_model.LogisticRegressionCV:[{
+
             }],
-            sklearn.ensemble.RandomForestClassifier:[{
-                'clf__n_estimators':[10, 50, 100],
-                'clf__criterion':['gini', 'entropy'],
-                'clf__max_depth':[4, 6, 10],
-                'clf__min_samples_leaf':[0.1, 1, 5, 15],
-                'clf__min_samples_split':[0.05 ,0.1, 0.2],
+            sklearn.linear_model.LogisticRegression:[{
+                'clf__penalty':['l1'],
+                'clf__C':[0.1, 1, 10, 15 ],
+                'clf__tol':[1e-5, 1e-4, 1e-3],
+                'clf__solver':['liblinear', 'newton-cg'],
+                'clf__n_jobs':[-1]
+                }, {
+                'clf__penalty':['l2'],
+                'clf__C':[0.1, 1, 10, 15 ],
+                'clf__tol':[1e-5, 1e-4, 1e-3],
+                'clf__solver':['lbfgs', 'sag'],
                 'clf__n_jobs':[-1]
                 }],
-                sklearn.svm.SVC:[{
-                    'clf__C': [0.1, 1, 10],
-                    'clf__kernel': ['linear']
-                    },{
-                    'clf__C': [1, 10],
-                    'clf__gamma': [0.001, 0.01],
-                    'clf__kernel': ['rbf']
+                sklearn.ensemble.RandomForestClassifier:[{
+                    'clf__n_estimators':[10, 50, 100],
+                    'clf__criterion':['gini', 'entropy'],
+                    'clf__max_depth':[4, 6, 10],
+                    'clf__min_samples_leaf':[0.1, 1, 5, 15],
+                    'clf__min_samples_split':[0.05 ,0.1, 0.2],
+                    'clf__n_jobs':[-1]
                     }],
-                    sklearn.ensemble.GradientBoostingClassifier:[{
-                        'clf__loss':['deviance'],
-                        'clf__learning_rate': [0.1, 0.5, 1.0],
-                        'clf__n_estimators': [50, 100, 150]
+                    sklearn.svm.SVC:[{
+                        'clf__C': [0.1, 1, 10],
+                        'clf__kernel': ['linear']
+                        },{
+                        'clf__C': [1, 10],
+                        'clf__gamma': [0.001, 0.01],
+                        'clf__kernel': ['rbf']
                         }],
-                        xgboost.sklearn.XGBClassifier:[{
-                            'clf__learning_rate':[.001, .01],
-                            'clf__n_estimators': [1000,  100],
-                            'clf__max_depth': [3, 5]
-                            }]
-    }
+                        sklearn.ensemble.GradientBoostingClassifier:[{
+                            'clf__loss':['deviance'],
+                            'clf__learning_rate': [0.1, 0.5, 1.0],
+                            'clf__n_estimators': [50, 100, 150]
+                            }],
+                            xgboost.sklearn.XGBClassifier:[{
+                                'clf__learning_rate':[.001, .01],
+                                'clf__n_estimators': [1000,  100],
+                                'clf__max_depth': [3, 5]
+                                }]
+        }
+    if verbose >0:
+        pprint(config_dict)
+    return config_dict
 
-random_config_dict = {
-    sklearn.ensemble.RandomForestClassifier:{
-        'clf__n_estimators': [100 ,500, 1000],
-        'clf__criterion': ['gini', 'entropy'],
-        'clf__max_depth': randint(1,100),
-        'clf__max_features': randint(1,100),
-        'clf__min_samples_leaf': randint(1, 100),
-        'clf__min_samples_split': randint(2, 10),
-        'clf__n_jobs':[-1]
-        },
-        xgboost.sklearn.XGBClassifier:{
-            'clf__silent': [False],
-            'clf__max_depth': [6, 10, 15, 20],
-            'clf__learning_rate': [0.001, 0.01, 0.1, 0.2, 0,3],
-            'clf__subsample': [0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-            'clf__colsample_bytree': [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-            'clf__colsample_bylevel': [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-            'clf__min_child_weight': [0.5, 1.0, 3.0, 5.0, 7.0, 10.0],
-            'clf__gamma': [0, 0.25, 0.5, 1.0],
-            'clf__reg_lambda': [0.1, 1.0, 5.0, 10.0, 50.0, 100.0],
-            'clf__n_estimators': [100]
+
+# Meant for using random_pipes or compare_pipers with search = random
+def make_random_config_dict(verbose=True):
+    """Generates a default dictioanry of models to test and hyperparameters for a
+    random grid search. Returns dictionary of configuration to use in random_pipes or compare_pipes.
+    Parameters:
+        verbose: Defult=True, Displays contents of generated configs.
+
+    Ex: random_config_dict = make_random_config_dict()"""
+    from pprint import pprint
+    import sklearn
+    import xgboost
+
+    random_config_dict = {
+        sklearn.ensemble.RandomForestClassifier:{ # Ideal way to structure the other random searches
+            'clf__n_estimators': [100 ,500, 1000],
+            'clf__criterion': ['gini', 'entropy'],
+            'clf__max_depth': randint(1,100),
+            'clf__max_features': randint(1,100),
+            'clf__min_samples_leaf': randint(1, 100),
+            'clf__min_samples_split': randint(2, 10),
+            'clf__n_jobs':[-1]
             },
-            sklearn.svm.SVC:{
-                'clf__C': scipy.stats.expon(scale=100),
-                'clf__gamma': scipy.stats.expon(scale=.1),
-                'clf__kernel': ['linear','rbf'],
-                'clf__class_weight':['balanced', None]
-                }
-    }
+            xgboost.sklearn.XGBClassifier:{
+                'clf__silent': [False],
+                'clf__max_depth': [6, 10, 15, 20],
+                'clf__learning_rate': [0.001, 0.01, 0.1, 0.2, 0,3],
+                'clf__subsample': [0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+                'clf__colsample_bytree': [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+                'clf__colsample_bylevel': [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+                'clf__min_child_weight': [0.5, 1.0, 3.0, 5.0, 7.0, 10.0],
+                'clf__gamma': [0, 0.25, 0.5, 1.0],
+                'clf__reg_lambda': [0.1, 1.0, 5.0, 10.0, 50.0, 100.0],
+                'clf__n_estimators': [100]
+                },
+                sklearn.svm.SVC:{
+                    'clf__C': scipy.stats.expon(scale=100),
+                    'clf__gamma': scipy.stats.expon(scale=.1),
+                    'clf__kernel': ['linear','rbf'],
+                    'clf__class_weight':['balanced', None]
+                    }
+        }
+    if verbose>0:
+        pprint(random_config_dict)
+    return random_config_dict
 
 
 
@@ -853,8 +893,8 @@ def random_pipe(estimator, params, X_train, y_train, X_test, y_test, n_component
 
     return results
 
-def compare_pipes(config_dict, X_train, y_train, X_test, y_test, n_components='mle',
-                 search='random',scaler=StandardScaler(), n_iter=10, random_state=42,
+def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_components='mle',
+                 search='random',scaler=StandardScaler(), n_iter=5, random_state=42,
                   cv=3, verbose=2, n_jobs=-1):
     """
     Runs any number of estimators through pipeline and gridsearch(exhaustive or radomized) with cross validations,
@@ -903,6 +943,16 @@ def compare_pipes(config_dict, X_train, y_train, X_test, y_test, n_components='m
             context. -1 means using all processors. See Glossary for more details.
 
     """
+    if config_dict==None:
+
+        config_dict = make_config_dict(verbose)
+        print('Generating default config_dict.')
+
+
+    if config_dict =="random":
+        config_dict = make_random_config_dict(verbose)
+        print('Generating default random_config_dict.')
+
 
     #Start timer
     begin = time.time()
