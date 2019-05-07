@@ -86,33 +86,32 @@ def check_unique(df, columns=None):
     it will only print results for those columns
     8************  >
     Params:
-    df: pandas DataFrame
+    df: pandas DataFrame, or pd.Series
     columns: list containing names of columns (strings)
-
+    
     Returns: None
         prints values only
     """
-
-    if columns is None:
-
-        if type(df) == pd.Series:
-            series = df
-            nunique = series.nunique()
-            unique_df = pd.DataFrame(series.value_counts())
-
-            print(f"\n{series.name} Type: {series.dtype}\nNumber unique values: {nunique}")
-            display(unique_df)
-
-        else:
+    # check for columns
+#     if columns is None:
+        # Check if series, even though this is unnecesary because you could simply
+        # Call pd.series.sort_values()
+    if isinstance(df, pd.Series):
+        # display all the value counts
+        nunique = df.nunique()
+        print(f"\n{df.name} Type: {df.dtype}\nNumber unique values: {nunique}")
+        return pd.DataFrame(df.value_counts())
+        
+    else:
+        if columns is None:    
             columns = df.columns
-
-    for col in columns:
-        nunique = df[col].nunique()
-        unique_df = pd.DataFrame(df[col].value_counts())
-
-        print(f"\n{col} Type: {df[col].dtype}\nNumber unique values: {nunique}")
-        display(unique_df)
-    pass
+            
+        for col in columns:
+            nunique = df[col].nunique()
+            unique_df = pd.DataFrame(df[col].value_counts())
+            print(f"\n{col} Type: {df[col].dtype}\nNumber unique values: {nunique}")  
+            display(unique_df)
+        pass
 
 
 def check_numeric(df, columns=None, unique_check=True, return_list=False):

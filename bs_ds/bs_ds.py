@@ -1106,7 +1106,7 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
         # Get meta_features to fit MetaClassifer
         meta_features = self.predict_meta(X)
 
-        if self.verbose >1:
+        if self.verbose > 1:
             print("Fitting meta-classifier to meta_features")
 
         # Assess if X is sparse or not and stack horizontally
