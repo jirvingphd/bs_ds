@@ -895,7 +895,7 @@ def random_pipe(estimator, params, X_train, y_train, X_test, y_test, n_component
 
 def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_components='mle',
                  search='random',scaler=StandardScaler(), n_iter=5, random_state=42,
-                  cv=3, verbose=2, n_jobs=-1):
+                  cv=3, verbose=2, n_jobs=-1,save_pickle=False):
     """
     Runs any number of estimators through pipeline and gridsearch(exhaustive or radomized) with cross validations,
     can print dataframe with scores, returns dictionary of all results.
@@ -962,6 +962,8 @@ def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_compone
     # Loop through dictionary instantiate pipeline and grid search on each estimator.
     for k, v in config_dict.items():
 
+        name = str(k).split(".")[-1].split("'")[0]
+
         # perform RandomizedSearchCV.
         if search == 'random':
 
@@ -969,10 +971,12 @@ def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_compone
             if type (v) == list:
                 raise ValueError("'For random search, params must be dictionary, not list ")
             else:
+                print(f"Running random_pipe for {name}...\n")
                 results = random_pipe(k, v, X_train, y_train, X_test, y_test, n_components,
                                     scaler, n_iter, random_state, cv, verbose, n_jobs)
         # Perform GridSearchCV.
         elif search == 'grid':
+            print(f"Running pipe_search for {name}...\n")
             results = pipe_search(k, v, X_train, y_train, X_test, y_test, n_components,
                                         scaler, random_state, cv, verbose, n_jobs )
 
@@ -980,10 +984,22 @@ def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_compone
         else:
             raise ValueError(f"search expected 'random' or 'grid' instead got{search}")
 
+
         # append results to display list and dictionary.
         name = str(k).split(".")[-1].split("'")[0]
+        print(f"Results for {name}:\n test_score: {results['test_score']}, best_accuracy: {results['best_accuracy']}.")
+
         compare_dict[name] = results
         df_list.append([name, results['test_score'], results['best_accuracy']])
+
+        if save_pickle==True:
+            import datetime, pickle
+            currentDT = datetime.datetime.now()
+            hour_adjust = int(currentDT.strftime("%H"))-4
+            savetime = currentDT.strftime(f"_%m%d%y_{hour_adjust}-%M_%p")
+            filename = f'pickles/comp_pipes_{name}_{savetime}.sav'
+            pickle.dump(v, open(filename, 'wb'))
+
 
     # Display results if verbosity greater than 0.
     finish = time.time()
