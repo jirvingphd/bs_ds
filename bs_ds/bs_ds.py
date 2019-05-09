@@ -454,7 +454,7 @@ def select_pca(features, n_components_list=None):
 
     # If n_components_list == None, make it 1:n-1
     if n_components_list == None:
-        n_components_list = list(range(2,len(features)-1))
+        n_components_list = list(range(2,features.shape[1]-1))
 
     # Loop through list of components to do PCA on
     for n in n_components_list:
