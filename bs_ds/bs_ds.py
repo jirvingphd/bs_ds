@@ -199,7 +199,7 @@ def subplot_imshow(images, num_images,num_rows, num_cols, figsize=(20,15)):
 
 
 ###########
-def plot_wide_kde_thing_mean_sem_bars(series1,sname1, series2, sname2):
+def plot_wide_kde_thin_mean_sem_bars(series1,sname1, series2, sname2):
     '''EDA / Hypothesis Testing:
     Two subplot EDA figure that plots series1 vs. series 2 against with sns.displot
     Large  wide kde plot with small thing mean +- standard error of the mean (sem)
