@@ -4,7 +4,7 @@
 
 __author__ = """James Irving, Michael Moravetz"""
 __email__ = 'james.irving.phd@outlook.com'
-__version__ = '0.4.8'
+__version__ = '0.4.9'
 # import pandas as pd
 # import numpy as np
 # import matplotlib.pyplot as plt
