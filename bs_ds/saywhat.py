@@ -25,8 +25,9 @@ def make_stopwords(punctuation=True):
     stopwords_list += ["''", '""', '...', '``']
     return stopwords_list
 
-def process_article(article,stopwords_list=make_stopwords()):
+def process_article(article, stopwords_list=make_stopwords()):
     """Source: Learn.Co Text Classification Lab"""
+    import nltk
     tokens = nltk.word_tokenize(article)
     stopwords_removed = [token.lower() for token in tokens if token not in stopwords_list]
     return stopwords_removed
