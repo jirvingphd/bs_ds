@@ -104,3 +104,26 @@ ENV/
 #Visual Code settings
 .vscode/*
 .vscode/settings.json
+punkt/corpora/stopwords.zip
+punkt/corpora/stopwords/azerbaijani
+punkt/corpora/stopwords/arabic
+punkt/corpora/stopwords/danish
+punkt/corpora/stopwords/dutch
+punkt/corpora/stopwords/english
+punkt/corpora/stopwords/finnish
+punkt/corpora/stopwords/french
+punkt/corpora/stopwords/german
+punkt/corpora/stopwords/greek
+punkt/corpora/stopwords/hungarian
+punkt/corpora/stopwords/indonesian
+punkt/corpora/stopwords/italian
+punkt/corpora/stopwords/kazakh
+punkt/corpora/stopwords/nepali
+punkt/corpora/stopwords/norwegian
+punkt/corpora/stopwords/portuguese
+punkt/corpora/stopwords/romanian
+punkt/corpora/stopwords/russian
+punkt/corpora/stopwords/spanish
+punkt/corpora/stopwords/swedish
+punkt/corpora/stopwords/turkish
+punkt/corpora/stopwords/README

@@ -5,6 +5,7 @@
 import nltk
 from nltk.corpus import stopwords
 import string
+nltk.download('stopwords','punkt')
 from nltk import word_tokenize, FreqDist
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # from sklearn.metrics import accuracy_score
@@ -18,6 +19,7 @@ from nltk import word_tokenize, FreqDist
 def make_stopwords(punctuation=True):
     """Makes and returns a stopwords_list for enlgish combined with punctuation(default)."""
     import nltk
+    nltk.download('stopwords','punkt')
     from nltk.corpus import stopwords
     import string
     stopwords_list = []
@@ -28,6 +30,7 @@ def make_stopwords(punctuation=True):
 def process_article(article, stopwords_list=make_stopwords()):
     """Source: Learn.Co Text Classification Lab"""
     import nltk
+    nltk.download('stopwords','punkt')
     tokens = nltk.word_tokenize(article)
     stopwords_removed = [token.lower() for token in tokens if token not in stopwords_list]
     return stopwords_removed
