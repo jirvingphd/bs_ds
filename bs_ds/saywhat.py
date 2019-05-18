@@ -3,9 +3,10 @@
 """A collection of language processing tools."""
 
 import nltk
+nltk.download('stopwords','punkt')
+
 from nltk.corpus import stopwords
 import string
-nltk.download('stopwords','punkt')
 from nltk import word_tokenize, FreqDist
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # from sklearn.metrics import accuracy_score
