@@ -78,23 +78,23 @@ def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
 
 def make_CSS(show=False):
     CSS="""
-        .{
+        table.dataframe td{
         text-align: center;
         }
-        th{
+        table.dataframe th{
         background-color: black;
         color: white;
         font-family:serif;
         font-size:1.2em;
         }
-        td{
+        table.dataframe td{
         font-size:1.05em;
         font-weight:75;
         }
-        td, th{
+        table.dataframe td, th{
         text-align: center;
         }
-        caption{
+        table.dataframe caption{
         text-align: center;
         font-size:1.2em;
         color: black;
@@ -106,6 +106,7 @@ def make_CSS(show=False):
         from pprint import pprint
         pprint(CSS)
     return CSS
+
 
 # CSS="""
 #     .{
@@ -176,9 +177,11 @@ def make_CSS(show=False):
 
 def html_off():
     from IPython.display import HTML
-    HTML('<style></style>')
+    return HTML('<style></style>')
 
 def html_on(CSS=None, verbose=False):
+    """Applies HTML/CSS styling to all dataframes. 'CSS' variable is created by make_CSS() if not supplied.
+    Verbose =True will display the default CSS code used. Any valid CSS key: value pair can be passed."""
     from IPython.display import HTML
     if CSS==None:
         CSS = make_CSS()
