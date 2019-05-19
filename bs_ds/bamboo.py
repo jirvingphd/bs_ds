@@ -429,80 +429,6 @@ def check_column(panda_obj, columns=None,nlargest='all'):
                 print(col.value_counts().nlargest(nlargest))
 
 
-def hover(hover_color="gold"):
-    """DataFrame Styler: Called by highlight to highlight row below cursor.
-        Changes html background color.
-
-        Parameters:
-
-        hover_Color
-    """
-    from IPython.display import HTML
-    return dict(selector="tr:hover",
-                props=[("background-color", "%s" % hover_color)])
-
-
-def highlight(df,hover_color="gold"):
-    """DataFrame Styler:
-        Highlight row when hovering.
-        Accept and valid CSS colorname as hover_color.
-    """
-    styles = [
-        hover(hover_color),
-        dict(selector="th", props=[("font-size", "115%"),
-                                   ("text-align", "center")]),
-        dict(selector="caption", props=[("caption-side", "bottom")])
-    ]
-    html = (df.style.set_table_styles(styles)
-              .set_caption("Hover to highlight."))
-    return html
-
-
-def color_true_green(val):
-    """DataFrame Styler:
-    Changes text color to green if value is True
-    Ex: style_df = df.style.applymap(color_true_green)
-        style_df #to display"""
-    color='green' if val==True else 'black'
-    return f'color: {color}'
-
-# Style dataframe for easy visualization
-
-
-def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
-    """DataFrame Styler:
-    Takes a df, any valid matplotlib colormap column names
-    (matplotlib.org/tutorials/colors/colormaps.html) and
-    returns a dataframe with a gradient colormap applied to column values.
-
-    Example:
-    df_styled = color_scale_columns(df,cmap = "YlGn",subset=['Columns','to','color'])
-
-    Parameters:
-    -----------
-        df:
-            DataFrame containing columns to style.
-    subset:
-         Names of columns to color-code.
-    cmap:
-        Any matplotlib colormap.
-        https://matplotlib.org/tutorials/colors/colormaps.html
-
-    Returns:
-    ----------
-        df_style:
-            styled dataframe.
-
-    """
-    from IPython.display import display
-    import seaborn as sns
-    cm = matplotlib_cmap
-    #     cm = sns.light_palette("green", as_cmap=True)
-    df_style = df.style.background_gradient(cmap=cm,subset=subset)#,low=results.min(),high=results.max())
-    # Display styled dataframe
-#     display(df_style)
-    return df_style
-
 
     ## DataFrame Creation, Inspection, and Exporting
 def inspect_df(df, n_rows=3, verbose=True):
@@ -559,52 +485,6 @@ def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
     df_dropped = df_cut
     return df_dropped
 
-CSS = """
-table.dataframe td, table.dataframe th { /* This is for the borders for columns)*/
-    border: 2px solid black
-    border-collapse:collapse;
-    text-align:center;
-}
-table.dataframe th {
-    /*padding:1em 1em;*/
-    background-color: #000000;
-    color: #ffffff;
-    text-align: center;
-    font-weight: bold;
-    font-size: 12pt
-    font-weight: bold;
-    padding: 0.5em 0.5em;
-}
-table.dataframe td:not(:th){
-    /*border: 1px solid ##e8e8ea;*/
-    /*background-color: ##e8e8ea;*/
-    background-color: gainsboro;
-    text-align: center;
-    vertical-align: middle;
-    font-size:10pt;
-    padding: 0.7em 1em;
-    /*padding: 0.1em 0.1em;*/
-}
-table.dataframe tr:not(:last-child) {
-    border-bottom: 1px solid gainsboro;
-}
-table.dataframe {
-    /*border-collapse: collapse;*/
-    background-color: gainsboro; /* This is alternate rows*/
-    text-align: center;
-    border: 2px solid black;
-}
-table.dataframe th:not(:empty), table.dataframe td{
-    border-right: 1px solid white;
-    text-align: center;
-}
-"""
-# HTML('<style>.output {flex-direction: row;}</style>')
-# HTML(f"<style>{CSS}</style>")
-# def html_off():
-#     HTML('<style></style>')
-# def html_on(CSS):
-#     HTML('<style>%s</style>'.format(CSS))
 
 ##
 # EDA / Plotting Functions
