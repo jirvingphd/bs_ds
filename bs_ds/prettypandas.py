@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """A collection of function to change the aesthetics of Pandas DataFrames using CSS, html, and pandas styling."""
-from IPython.display import HTML
-import pandas as pd
+# from IPython.display import HTML
+# import pandas as pd
 def hover(hover_color="gold"):
     """DataFrame Styler: Called by highlight to highlight row below cursor.
         Changes html background color.
@@ -88,36 +88,50 @@ def make_CSS(show=False):
         font-size:1.2em;
         }
         td{
-        font-size:0.9em
+        font-size:1.05em;
+        font-weight:75;
         }
         td, th{
         text-align: center;
         }
-
-        """
+        caption{
+        text-align: center;
+        font-size:1.2em;
+        color: black;
+        font-weight: bold;
+        font-style: italic
+        }
+    """
     if show==True:
         from pprint import pprint
         pprint(CSS)
     return CSS
 
-CSS="""
-.{
-text-align: center;
-}
-th{
-background-color: black;
-color: white;
-font-family:serif;
-font-size:1.2em;
-}
-td{
-font-size:0.9em
-}
-td, th{
-text-align: center;
-}
-
-"""
+# CSS="""
+#     .{
+#     text-align: center;
+#     }
+#     th{
+#     background-color: black;
+#     color: white;
+#     font-family:serif;
+#     font-size:1.2em;
+#     }
+#     td{
+#     font-size:1.05em;
+#     font-weight:75;
+#     }
+#     td, th{
+#     text-align: center;
+#     }
+#     caption{
+#     text-align: center;
+#     font-size:1.2em;
+#     color: black;
+#     font-weight: bold;
+#     font-style: italic
+#     }
+# """
 # HTML(f"<style>{CSS}</style>")
 # CSS = """
 # table.dataframe td, table.dataframe th { /* This is for the borders for columns)*/
@@ -174,5 +188,17 @@ def html_on(CSS=None, verbose=False):
 
     return HTML(f"<style>{CSS}</style>")#.format(CSS))
 
-# HTML('<style>.output {flex-direction: row;}</style>')
-# HTML(f"<style>{CSS}</style>")
+
+def display_side_by_side(*args):
+    """Display all input dataframes side by side. Also accept captioned styler df object (df_in = df.style.set_caption('caption')
+    Modified from Source: https://stackoverflow.com/questions/38783027/jupyter-notebook-display-two-pandas-tables-side-by-side"""
+    from IPython.display import display_html
+    import pandas
+    html_str=''
+    for df in args:
+        if type(df) == pandas.io.formats.style.Styler:
+            html_str+= '&nbsp;'
+            html_str+=df.render()
+        else:
+            html_str+=df.to_html()
+    display_html(html_str.replace('table','table style="display:inline"'),raw=True)

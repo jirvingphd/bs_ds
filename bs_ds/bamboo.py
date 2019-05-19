@@ -116,7 +116,7 @@ def check_unique(df, columns=None):
         pass
 
 
-def check_numeric(df, columns=None, unique_check=True, return_list=False):
+def check_numeric(df, columns=None, unique_check=False, return_list=False):
 
     """
     Iterates through columns and checks for possible numeric features labeled as objects.
@@ -130,7 +130,7 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
     return_list: bool, (default=False)
         If True, returns a list of column names with possible numeric types.
     **********>
-    Returns: list of column names if return_list=True
+    Returns: dataframe displayed (always), list of column names if return_list=True
     """
     from bs_ds.bamboo import list2df
 
@@ -180,9 +180,11 @@ def check_numeric(df, columns=None, unique_check=True, return_list=False):
 
             unique = input('Enter column name or n to quit:')
 
-    if return_list:
-        return outlist
-    pass
+    if return_list==True:
+        return list2show, outlist
+    else:
+        return list2show
+
 
 def check_null(df, columns=None):
     """
@@ -193,7 +195,7 @@ def check_null(df, columns=None):
 
     columns: list of columns to check
     **********>
-    Returns: list of column names if return_list=True
+    Returns: displayed dataframe
     """
     from bs_ds.bamboo import list2df
     display_list = [['Column', 'Null values', 'Total Values','Percent']]
@@ -226,6 +228,7 @@ def check_null(df, columns=None):
     list2show=list2df(display_list)
     list2show.set_index('Column',inplace=True)
     display(list2show)
+    return list2show
 
 
 class LabelLibrary():
@@ -448,12 +451,21 @@ def inspect_df(df, n_rows=3, verbose=True):
     Ex: inspect_df(df,n_rows=4)
     """
     from bs_ds.bamboo import check_column, check_null, check_numeric, check_unique
+    from bs_ds.prettypandas import display_side_by_side
+    import pandas as pd
+
     with pd.option_context("display.max_columns", None ,'display.precision',4):
         display(df.info()), display(df.describe())
 
         if verbose == True:
-            check_numeric(df,unique_check=False)
-            check_null(df)
+
+            df_num = check_numeric(df,unique_check=False)
+            sdf_num = df_num.style.set_caption('Detected Numeric Values')
+
+            df_null = check_null(df)
+            sdf_null = df_null.style.set_caption('Detected Null values')
+
+            display_side_by_side(sdf_null, sdf_num)
 
         display(df.head(n_rows))
 
