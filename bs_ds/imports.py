@@ -18,5 +18,10 @@ import_dict = {'pandas':'pd',
 
 df_imported= pd.DataFrame.from_dict(import_dict,orient='index')
 df_imported.columns=['Module/Package Handle']
-display(df_imported)
+
+from .prettypandas import html_on, make_CSS,html_off
+html_on()
+df_imported
+
+print('To disable styled DataFrames use html_off().\n To re-enable use html_on().')
 

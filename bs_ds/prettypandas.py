@@ -78,23 +78,23 @@ def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
 
 def make_CSS(show=False):
     CSS="""
-        table.dataframe td{
+        table td{
         text-align: center;
         }
-        table.dataframe th{
+        table th{
         background-color: black;
         color: white;
         font-family:serif;
         font-size:1.2em;
         }
-        table.dataframe td{
+        table td{
         font-size:1.05em;
         font-weight:75;
         }
-        table.dataframe td, th{
+        table td, th{
         text-align: center;
         }
-        table.dataframe caption{
+        table caption{
         text-align: center;
         font-size:1.2em;
         color: black;

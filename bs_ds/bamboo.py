@@ -116,7 +116,7 @@ def check_unique(df, columns=None):
         pass
 
 
-def check_numeric(df, columns=None, unique_check=False, return_list=False, show_df=True):
+def check_numeric(df, columns=None, unique_check=False, return_list=False, show_df=False):
 
     """
     Iterates through columns and checks for possible numeric features labeled as objects.
@@ -189,7 +189,7 @@ def check_numeric(df, columns=None, unique_check=False, return_list=False, show_
         return styled_list2show
 
 
-def check_null(df, columns=None,show_df=True):
+def check_null(df, columns=None,show_df=False):
     """
     Iterates through columns and checks for null values and displays # and % of column.
     Params:
