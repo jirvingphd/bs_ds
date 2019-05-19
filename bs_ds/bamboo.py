@@ -116,7 +116,7 @@ def check_unique(df, columns=None):
         pass
 
 
-def check_numeric(df, columns=None, unique_check=False, return_list=False):
+def check_numeric(df, columns=None, unique_check=False, return_list=False, show_df=True):
 
     """
     Iterates through columns and checks for possible numeric features labeled as objects.
@@ -136,8 +136,8 @@ def check_numeric(df, columns=None, unique_check=False, return_list=False):
 
     display_list = [['Column', 'Numeric values','Total Values', 'Percent']]
     outlist = []
-    print(f'\n---------------------------------------------------\n')
-    print(f'# of Identified Numeric Values in "Object" columns:')
+    # print(f'\n---------------------------------------------------\n')
+    # print(f'# of Identified Numeric Values in "Object" columns:')
 
     # Check for user column list
     columns_to_check = []
@@ -163,7 +163,10 @@ def check_numeric(df, columns=None, unique_check=False, return_list=False):
 
     list2show = list2df(display_list)
     list2show.set_index('Column',inplace=True)
-    display(list2show)
+
+    styled_list2show = list2show.style.set_caption('# of Detected Numeric Values in "Object" columns:')
+    if show_df==True:
+        display(styled_list2show)
 
     if unique_check:
         unique = input("display unique values? (Enter 'y' for all columns, a column name, or 'n' to quit):")
@@ -181,12 +184,12 @@ def check_numeric(df, columns=None, unique_check=False, return_list=False):
             unique = input('Enter column name or n to quit:')
 
     if return_list==True:
-        return list2show, outlist
+        return styled_list2show, outlist
     else:
-        return list2show
+        return styled_list2show
 
 
-def check_null(df, columns=None):
+def check_null(df, columns=None,show_df=True):
     """
     Iterates through columns and checks for null values and displays # and % of column.
     Params:
@@ -200,8 +203,8 @@ def check_null(df, columns=None):
     from bs_ds.bamboo import list2df
     display_list = [['Column', 'Null values', 'Total Values','Percent']]
     outlist = []
-    print(f'\n----------------------------\n')
-    print(f'# of Identified Null Values:')
+    # print(f'\n----------------------------\n')
+    # print(f'# of Identified Null Values:')
 
     # Check for user column list
     columns_to_check = []
@@ -227,8 +230,12 @@ def check_null(df, columns=None):
 
     list2show=list2df(display_list)
     list2show.set_index('Column',inplace=True)
-    display(list2show)
-    return list2show
+
+    styled_list2show = list2show.style.set_caption('# of Identified Null Values:')
+    if show_df==True:
+        display(styled_list2show)
+
+    return styled_list2show
 
 
 class LabelLibrary():
@@ -455,17 +462,19 @@ def inspect_df(df, n_rows=3, verbose=True):
     import pandas as pd
 
     with pd.option_context("display.max_columns", None ,'display.precision',4):
-        display(df.info()), display(df.describe())
+        display(df.info()) #, display(df.describe())
 
         if verbose == True:
 
-            df_num = check_numeric(df,unique_check=False)
-            sdf_num = df_num.style.set_caption('Detected Numeric Values')
+            df_num = check_numeric(df,unique_check=False, show_df=False)
+            # sdf_num = df_num.style.set_caption('Detected Numeric Values')
 
-            df_null = check_null(df)
-            sdf_null = df_null.style.set_caption('Detected Null values')
+            df_null = check_null(df, show_df=False)
+            # sdf_null = df_null.style.set_caption('Detected Null values')
 
-            display_side_by_side(sdf_null, sdf_num)
+            display_side_by_side(df_null, df_num,df.describe())
+        else:
+            display(df.describe())
 
         display(df.head(n_rows))
 
