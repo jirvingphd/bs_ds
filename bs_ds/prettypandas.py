@@ -76,7 +76,7 @@ def color_scale_columns(df,matplotlib_cmap = "Greens",subset=None,):
 #     display(df_style)
     return df_style
 
-def make_CSS():
+def make_CSS(show=False):
     CSS="""
         .{
         text-align: center;
@@ -95,6 +95,9 @@ def make_CSS():
         }
 
         """
+    if show==True:
+        from pprint import pprint
+        pprint(CSS)
     return CSS
 
 CSS="""
@@ -115,7 +118,7 @@ text-align: center;
 }
 
 """
-HTML(f"<style>{CSS}</style>")
+# HTML(f"<style>{CSS}</style>")
 # CSS = """
 # table.dataframe td, table.dataframe th { /* This is for the borders for columns)*/
 #     border: 2px solid black
@@ -168,7 +171,8 @@ def html_on(CSS=None, verbose=False):
     if verbose==True:
         from pprint import pprint
         pprint(CSS)
-    HTML(f"<style>{CSS}</style>")#.format(CSS))
+
+    return HTML(f"<style>{CSS}</style>")#.format(CSS))
 
 # HTML('<style>.output {flex-direction: row;}</style>')
-HTML(f"<style>{CSS}</style>")
+# HTML(f"<style>{CSS}</style>")
