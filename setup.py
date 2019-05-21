@@ -43,7 +43,7 @@ setup(
     include_package_data=True,
     keywords='bs_ds',
     name='bs_ds',
-    packages=find_packages(include=['bs_ds']),
+    packages=find_packages(include=['bs_ds'], exclude=['glassboxes']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
