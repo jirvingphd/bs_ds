@@ -1,0 +1,15 @@
+"""A collection of image processing tools!"""
+
+#Your code here preview an image
+from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
+
+def show_random_img(image_array, n=1):
+    """Display n rendomly-selected images from image_array"""
+    from keras.preprocessing.image import array_to_img, img_to_array, load_img
+    i=1
+    while i <= n:
+        choice = np.random.choice(range(0,len(image_array)))
+        print(f'Image #:{choice}')
+        display(array_to_img(image_array[choice]))
+        i+=1
+    return

@@ -1401,6 +1401,8 @@ def plot_confusion_matrix(cm, classes,
                           print_matrix=True):
     """Check if Normalization Option is Set to True. If so, normalize the raw confusion matrix before visualizing
     #Other code should be equivalent to your previous function."""
+    import warnings
+    warnings.warn('Future versions will be moving plot_confusion_matrix to bs_ds.glassboxes module.')
     import itertools
     import matplotlib.pyplot as plt
     if cmap==None:
