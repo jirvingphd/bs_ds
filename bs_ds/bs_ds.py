@@ -496,6 +496,8 @@ def make_estimators_dict():
 
     """
     # instantiate classifier objects
+    import xgboost
+    # from svm import
     xgb = xgboost.XGBClassifier()
     svc = SVC()
     lr = LogisticRegression()
@@ -617,7 +619,7 @@ def make_config_dict(verbose=True):
 
     Ex: config_dict = make_config_dict()"""
     from pprint import pprint
-
+    import xgboost
     config_dict = {
         sklearn.linear_model.LogisticRegressionCV:[{
 
