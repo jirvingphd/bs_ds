@@ -19,6 +19,8 @@ def big_pandas(user_options=None):
                 'max_columns' : None,
                 'expand_frame_repr':False,
                 'max_rows':None,
+                'max_info_columns':None,
+                'max_info_rows':None,
                 'precision' : 4,
             }
         }
@@ -29,6 +31,7 @@ def big_pandas(user_options=None):
         for op, value in option.items():
             pd.set_option(f'{category}.{op}', value)  # Python 3.6+
             print(f'{category}.{op}={value}')
+    return options
 
 
 def reset_pandas():
