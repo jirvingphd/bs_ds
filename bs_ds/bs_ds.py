@@ -8,7 +8,7 @@ import matplotlib as mpl
 import seaborn as sns
 import scipy.stats as sts
 from IPython.display import display
-import xgboost
+# import xgboost
 import sklearn
 import scipy
 from sklearn.svm import SVC
