@@ -23,8 +23,8 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier,
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import VotingClassifier
 from sklearn.metrics import roc_auc_score
-import xgboost as xbg
-from xgboost import XGBClassifier
+# import xgboost as xbg
+# from xgboost import XGBClassifier
 import time
 import re
 

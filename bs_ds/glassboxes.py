@@ -7,6 +7,27 @@ from IPython.display import Image
 # from sklearn.tree import export_graphviz
 import pydotplus
 
+def plot_auc_roc_curve(y_test, y_test_pred):
+    """ Takes y_test and y_test_pred from a ML model and uses sklearn roc_curve to plot the AUC-ROC curve."""
+    from sklearn.metrics import roc_curve, auc, roc_auc_score
+    import matplotlib.pyplot as plt
+    auc = roc_auc_score(y_test, y_test_pred[:,1])
+
+    FPr, TPr, _  = roc_curve(y_test, y_test_pred[:,1])
+    auc()
+    plt.plot(FPr, TPr,label=f"AUC for Classifier:\n{round(auc,2)}" )
+
+    plt.plot([0, 1], [0, 1],  lw=2,linestyle='--')
+    plt.xlim([-0.01, 1.0])
+    plt.ylim([0.0, 1.05])
+
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.legend(loc="lower right")
+    plt.show()
+
+
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
