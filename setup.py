@@ -15,8 +15,8 @@ requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pyd
 
 setup_requirements = requirements
 
-# test_requirements = [ ]
-test_requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost','xgboost']
+test_requirements = [requirements]
+# test_requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost'] #,'xgboost']
 
 setup(
     author="James Irving",
@@ -26,8 +26,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
-
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
