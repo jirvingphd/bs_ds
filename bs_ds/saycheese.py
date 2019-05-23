@@ -6,6 +6,8 @@ from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_a
 def show_random_img(image_array, n=1):
     """Display n rendomly-selected images from image_array"""
     from keras.preprocessing.image import array_to_img, img_to_array, load_img
+    import numpy as np
+    from IPython.display import display
     i=1
     while i <= n:
         choice = np.random.choice(range(0,len(image_array)))

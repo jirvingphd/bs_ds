@@ -11,9 +11,9 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'xgboost' , 'shap','IPython','pprint','nltk','shap','lime','catboost'] #Click',
+requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'xgboost' , 'shap','IPython','pprint','nltk','lime','catboost'] #Click',
 
-setup_requirements = [ ]
+setup_requirements = requirements
 
 # test_requirements = [ ]
 test_requirements = requirements
@@ -43,7 +43,7 @@ setup(
     include_package_data=True,
     keywords='bs_ds',
     name='bs_ds',
-    packages=find_packages(include=['bs_ds'], exclude=['glassboxes']),
+    packages=find_packages(include=['bs_ds']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
