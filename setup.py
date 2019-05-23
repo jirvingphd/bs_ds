@@ -16,7 +16,7 @@ requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pyd
 setup_requirements = requirements
 
 # test_requirements = [ ]
-test_requirements = requirements
+test_requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost','xgboost']
 
 setup(
     author="James Irving",
