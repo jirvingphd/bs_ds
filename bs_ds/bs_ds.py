@@ -1289,30 +1289,22 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
 
 
 # check_estimator(MetaClassifier())
-from sklearn import svm
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
+# from sklearn import svm
+# from sklearn.linear_model import LogisticRegression
+# from sklearn.ensemble import RandomForestClassifier
 
-from sklearn.pipeline import Pipeline
-from sklearn.decomposition import PCA
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn import svm
-from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, GradientBoostingClassifier
-from sklearn import tree
-import xgboost
+# from sklearn.pipeline import Pipeline
+# from sklearn.decomposition import PCA
+# from sklearn.model_selection import train_test_split
+# from sklearn.linear_model import LogisticRegression
+# from sklearn import svm
+# from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, GradientBoostingClassifier
+# from sklearn import tree
+# import xgboost
 
 
 def thick_pipe(features, target, n_components='mle',
-               classifiers=[
-                   LogisticRegression,
-                   svm.SVC,
-                   tree.DecisionTreeClassifier,
-                   RandomForestClassifier,
-                   AdaBoostClassifier,
-                   GradientBoostingClassifier,
-                   xgboost.sklearn.XGBClassifier
-               ], test_size=.25, random_state=42, verbose=False):
+               classifiers=[ None], test_size=.25, random_state=42, verbose=False):
 
     """
     Takes features and target, train/test splits and runs each through pipeline,
@@ -1336,16 +1328,27 @@ def thick_pipe(features, target, n_components='mle',
     'accuracy', 'model'. values are: accuracy score,and the classification model.
      values for train/test splits. """
 
-    # from bs_ds import list2df
-    # from sklearn.pipeline import Pipeline
-    # from sklearn.decomposition import PCA
-    # from sklearn.model_selection import train_test_split
-    # from sklearn.linear_model import LogisticRegression
-    # from sklearn import svm
-    # from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, GradientBoostingClassifier
-    # from sklearn import tree
-    # import xgboost
+    from bs_ds import list2df
+    from sklearn.pipeline import Pipeline
+    from sklearn.decomposition import PCA
+    from sklearn.model_selection import train_test_split
 
+    # If no classifiers specified:
+    if classifiers == None:
+        from sklearn.linear_model import LogisticRegression
+        from sklearn import svm
+        from sklearn import tree
+        from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, GradientBoostingClassifier
+        import xgboost
+
+        classifiers=[
+            LogisticRegression(),
+            svm.SVC(),
+            tree.DecisionTreeClassifier(),
+            RandomForestClassifier(),
+            AdaBoostClassifier(),
+            GradientBoostingClassifier(),
+            xgboost.sklearn.XGBClassifier()]
 
     results = [['classifier', 'score']]
     class_dict = {}
