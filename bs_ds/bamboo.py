@@ -510,6 +510,19 @@ def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
     return df_dropped
 
 
+def add_filtered_col_to_df(df_source, df_to_add_to, list_of_exps):
+
+    """Takes a dataframe source with columns to copy using df.filter(regexp=(list_of_exps)),
+    with list_of_exps being a list of text expressions to find inside column names."""
+
+    import pandas as pd
+
+    for exp in list_of_exps:
+        df_to_add_to = pd.concat([df_to_add_to,  df_source.filter(regex=(exp),axis =1).copy()])
+
+    return df_to_add_to
+
+
 ##
 # EDA / Plotting Functions
 def multiplot(df,annot=True,fig_size=None):
