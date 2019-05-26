@@ -510,17 +510,23 @@ def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
     return df_dropped
 
 
-def add_filtered_col_to_df(df_source, df_to_add_to, list_of_exps):
-
+def add_filtered_col_to_df(df_source, df_to_add_to, list_of_exps, return_filtered_col_names =False):
     """Takes a dataframe source with columns to copy using df.filter(regexp=(list_of_exps)),
     with list_of_exps being a list of text expressions to find inside column names."""
-
+    import bs_ds as bs
     import pandas as pd
-
+    filtered_col_list = {}
     for exp in list_of_exps:
-        df_to_add_to = pd.concat([df_to_add_to,  df_source.filter(regex=(exp),axis =1).copy()])
+        df_temp_filtered = df_source.filter(regex=(exp),axis=1).copy()
+        filtered_col_list[exp]= list(df_temp_filtered.columns)
 
-    return df_to_add_to
+        df_to_add_to = pd.concat([df_to_add_to, df_temp_filtered])
+
+    if return_filtered_col_names == False:
+        return df_to_add_to
+    else:
+        print(filtered_col_list)
+        return df_to_add_to, filtered_col_list
 
 
 ##

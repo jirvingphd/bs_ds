@@ -20,8 +20,7 @@ df_imported= pd.DataFrame.from_dict(import_dict,orient='index')
 df_imported.columns=['Module/Package Handle']
 
 from .prettypandas import html_on, make_CSS,html_off
-html_on()
-df_imported
+display(df_imported)
 
 print('To disable styled DataFrames use html_off().\n To re-enable use html_on().')
 # def sidebar():
@@ -37,3 +36,4 @@ print('To disable styled DataFrames use html_off().\n To re-enable use html_on()
 #         #"<div align='center'><img src='data:image/png;base64,{logo_data}' /></div>".format(logo_data=logo_data) +
 #         #"<script>{bundle_data}</script>".format(bundle_data=bundle_data)
 #     #))
+html_on()
