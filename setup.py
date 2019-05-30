@@ -11,12 +11,12 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost'] #Click','xgboost' ,
+requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost','keras'] #Click','xgboost' ,
 
 setup_requirements = requirements
 
 test_requirements = [requirements]
-# test_requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost'] #,'xgboost']
+# test_requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost','keras'] #,'xgboost']
 
 setup(
     author="James Irving",
