@@ -18,10 +18,10 @@ import_dict = {'pandas':'pd',
 df_imported= pd.DataFrame.from_dict(import_dict,orient='index')
 df_imported.columns=['Module/Package Handle']
 
-from .prettypandas import html_on, make_CSS,html_off
+# from .prettypandas import html_on, make_CSS,html_off
 display(df_imported)
 
-print('To disable styled DataFrames run html_off() at the bottom of any cell.\n To re-enable use html_on() at the bottom of any cell.')
+# print('To disable styled DataFrames run html_off() at the bottom of any cell.\n To re-enable use html_on() at the bottom of any cell.')
 # def sidebar():
 #     side_jss = function(){let e=document.querySelector(%E2%80%9C.site-sidebar%E2%80%9D),t=document.querySelector(%E2%80%9C.site-main .module%E2%80%9D),l=document.querySelector(%E2%80%9C.site-main%E2%80%9D),s=document.querySelector(%E2%80%9C.site-widget%E2%80%9D);%E2%80%9Cnone%E2%80%9D==e.style.display?(e.style.display=%E2%80%9Cflex%E2%80%9D,t.style.display=%E2%80%9Cblock%E2%80%9D,l.style.right=%E2%80%9C263px%E2%80%9D,s.style.display=%E2%80%9Cblock%E2%80%9D):(e.style.display=%E2%80%9Cnone%E2%80%9D,t.style.display=%E2%80%9Cnone%E2%80%9D,l.style.right=%E2%80%9C0px%E2%80%9D,s.style.display=%E2%80%9Cnone%E2%80%9D)})();
 #     # bundle_path = os.path.join(os.path.split(__file__)[0], "resources", "bundle.js")
@@ -35,4 +35,4 @@ print('To disable styled DataFrames run html_off() at the bottom of any cell.\n 
 #         #"<div align='center'><img src='data:image/png;base64,{logo_data}' /></div>".format(logo_data=logo_data) +
 #         #"<script>{bundle_data}</script>".format(bundle_data=bundle_data)
 #     #))
-html_on()
+# html_on()
