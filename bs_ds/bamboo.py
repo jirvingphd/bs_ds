@@ -19,8 +19,7 @@ def big_pandas(user_options=None):
                 'max_columns' : None,
                 'expand_frame_repr':False,
                 'max_rows':None,
-                'max_info_columns':None,
-                'max_info_rows':None,
+                'max_info_columns':500,
                 'precision' : 4,
             }
         }
