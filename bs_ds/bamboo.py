@@ -48,17 +48,22 @@ def reset_warnings():
     import warnings
     warnings.simplefilter(action='default', category=(FutureWarning,DeprecationWarning,PendingDeprecationWarning))
 
-def list2df(list):#, sort_values='index'):
+
+def list2df(list, index_col=None):#, sort_values='index'):
     """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
     Ex: list_results = [["Test","N","p-val"]] #... (some sort of analysis performed to produce results)
         list_results.append([test_Name,length(data),p])
         list2df(list_results)
     """
-    with pd.option_context("display.max_rows", None, "display.max_columns", None ,
-    'display.precision',3,'display.notebook_repr_htm',True):
+    # with pd.option_context("display.max_rows", None, "display.max_columns", None ,
+    # 'display.precision',3,'display.notebook_repr_htm',True):
 
-        df_list = pd.DataFrame(list[1:],columns=list[0])
+    df_list = pd.DataFrame(list[1:],columns=list[0])
+    if index_col==None:
         return df_list
+    else:
+        df_list.set_index(index_col, inplace=True)
+    return df_list
 
 
 def check_df_for_columns(df, columns=None):
@@ -134,7 +139,7 @@ def check_numeric(df, columns=None, unique_check=False, return_list=False, show_
     **********>
     Returns: dataframe displayed (always), list of column names if return_list=True
     """
-    from bs_ds.bamboo import list2df
+    from .bamboo import list2df
 
     display_list = [['Column', 'Numeric values','Total Values', 'Percent']]
     outlist = []
