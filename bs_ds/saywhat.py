@@ -59,3 +59,59 @@ class W2vVectorizer(object):
         return np.array([
             np.mean([self.w2v[w] for w in words if w in self.w2v]
                    or [np.zeros(self.dimensions)], axis=0) for words in X])
+
+
+def connect_twitter_api(api_key, api_secret_key):
+    """Use tweepy to connect to the twitter-API and return tweepy api object."""
+    import tweepy, sys
+    auth = tweepy.AppAuthHandler(api_key, api_secret_key)
+    api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+
+    if (not api):
+        print("Can't authenticate.")
+        sys.exit(-1)
+
+    return api
+
+
+def search_twitter_api(api_object, searchQuery, maxTweets, fName, tweetsPerQry=100, max_id=0, sinceId=None):
+    """Take an authenticated tweepy api_object, a search queary, max# of tweets to retreive, a desintation filename.
+    Uses tweept.api.search for the searchQuery until maxTweets is reached, saved harvest tweets to fName."""
+    import sys, jsonpickle, os, tweepy
+    api = api_object
+    tweetCount = 0
+    print(f'Downloading max{maxTweets} for {searchQuery}...')
+    with open(fName, 'a+') as f:
+        while tweetCount < maxTweets:
+
+            try:
+                if (max_id <=0):
+                    if (not sinceId):
+                        new_tweets = api.search(q=searchQuery, count=tweetsPerQry, tweet_mode='extended')
+                    else:
+                        new_tweets = api.search(q=searchQuery, count=tweetsPerQry, since_id=sinceId, tweet_mode='extended')
+
+                else:
+                    if (not sinceId):
+                        new_tweets = api.search(q=searchQuery, count=tweetsPerQry, max_id=str(max_id-1), tweet_mode='extended')
+                    else:
+                        new_tweets = api.search(q=searchQuery, count=tweetsPerQry, max_id=str(max_id-1),since_id=sinceId, tweet_mode='extended')
+
+                if not new_tweets:
+                    print('No more tweets found')
+                    break
+
+                for tweet in new_tweets:
+                    f.write(jsonpickle.encode(tweet._json, unpicklable=False)+'\n')
+
+                tweetCount+=len(new_tweets)
+
+                print("Downloaded {0} tweets".format(tweetCount))
+                max_id = new_tweets[-1].id
+
+            except tweepy.TweepError as e:
+                # Just exit if any error
+                print("some error : " + str(e))
+                break
+    print ("Downloaded {0} tweets, Saved to {1}\n".format(tweetCount, fName))
+
