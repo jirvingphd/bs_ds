@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """ A collection of modified tools to visualize the inner-workings of model objects, especially Catboot Models."""
-from sklearn.externals.six import StringIO
-from IPython.display import Image
 # from sklearn.tree import export_graphviz
-import pydotplus
 
 def make_activations_model(model,idx_layers_to_show=None, verbose=True):
     """Accepts a Keras image convolution model and exports a new model,
@@ -199,3 +196,67 @@ def plot_cat_feature_importances(cb_clf):
     important_features.sort_values().plot(kind='barh')
     return important_features
 
+class Clock(object):
+    """A clock meant to be used as a timer for functions, also displays local clock time.
+    Call Clock.tic() to start a timer. Call Clock.toc to end the timer and display time elapsed."""
+    from datetime import datetime
+    from pytz import timezone
+    from tzlocal import get_localzone
+
+    def __init__(self, verbose=2):
+
+        from datetime import datetime
+        from pytz import timezone
+        from tzlocal import get_localzone
+
+        _now_utc_ = []
+        _now_local_= []
+        _now_utc_ = datetime.now(timezone('UTC'))
+        _now_local_ = _now_utc_.astimezone(get_localzone())
+
+        strformat = "%m/%d/%y - %I:%M:%S %p"
+        if verbose > 0:
+            print(f'Clock created at {_now_local_.strftime(strformat)}.')
+
+        if verbose >1:
+            print(f'\tClock.tic() to start.\n\tClock.toc() to stop')
+
+
+        self._start_utc_= []
+        self._start_local_ = []
+
+        self._end_utc_ = []
+        self._end_local_ = []
+
+        self._timezone_ = []
+        self._timezone_ = get_localzone()
+
+        self._label_ = []
+        self._verbose_ = verbose
+
+    def tic(self):
+
+        from datetime import datetime
+        from pytz import timezone
+        _start_utc_ = datetime.now(timezone('UTC'))
+        _start_local_= _start_utc_.astimezone(self._timezone_)
+
+        self._start_utc_ = _start_utc_
+        self._start_local_=_start_local_
+
+    def toc(self):
+
+        from datetime import datetime
+        from pytz import timezone
+        from tzlocal import get_localzone
+
+        _end_utc_=datetime.now(timezone('UTC'))
+        _end_local_=_end_utc_.astimezone(self._timezone_)
+
+        _elapsed_ = _end_local_ - self._start_local_
+
+        print(f'\nTime elapsed: {_elapsed_}.')
+
+        self._end_utc_=_end_utc_
+        self._end_local_=_end_local_
+        self._elapsed_ = _elapsed_
