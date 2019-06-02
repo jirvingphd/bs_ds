@@ -16,7 +16,8 @@ requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pyd
 setup_requirements = requirements
 
 test_requirements_to_add = ['tweepy','jsonpickle']
-test_requirements = [requirements.append(x) for x in test_requirements_to_add]
+test_requirements = requirements
+test_requirements = [test_requirements.append(x) for x in test_requirements_to_add]
 # test_requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost','keras'] #,'xgboost']
 
 setup(
