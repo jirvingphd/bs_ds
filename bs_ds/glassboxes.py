@@ -230,8 +230,6 @@ class Clock(object):
         from pytz import timezone
         from tzlocal import get_localzone
 
-        _now_utc_ = []
-        _now_local_= []
         self._strformat_ = []
         self._timezone_ = []
         self._timezone_ = get_localzone()
@@ -288,6 +286,8 @@ class Clock(object):
         from datetime import datetime
         from pytz import timezone
         from tzlocal import get_localzone
+        from bs_ds import list2df
+
 
         _final_end_time_ = self.get_time()
         _total_time_ = _final_end_time_ - self._start_time_
