@@ -305,7 +305,7 @@ class Clock(object):
         print(f'\tLap #{self._lap_counter_} done @ {self._lap_end_time_}\tlabel: {self._lap_label_:>{20}}\tduration: {self._lap_duration_.total_seconds()} sec)')
         self._lap_times_list_.append(['Start-End',self._start_time_.strftime(self._strformat_), self._start_label_,self._final_end_time_.strftime(self._strformat_),'Total Time:', self._total_time_.total_seconds() ])
 
-        df_lap_times = list2df(self._lap_times_list_)
+        df_lap_times = list2df(self._lap_times_list_,index_col='Lap #')
         print(f'Total Time: {_total_time_}.')
         if self._verbose_>1:
             return df_lap_times
