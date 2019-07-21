@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """Main Moule of Data Pipelines and Data Transformation functions & classes."""
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import seaborn as sns
-import scipy.stats as sts
+from .imports import *
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import matplotlib as mpl
+# import seaborn as sns
+# import scipy.stats as sts
 from IPython.display import display
 
 def list2df(list, index_col=None):#, sort_values='index'):
@@ -701,6 +702,7 @@ def fit_pipes(pipes_dict, train_test, predict=True, verbose=True, score='accurac
 
      """
     from sklearn.metrics import roc_auc_score
+    import time
     fit_pipes = {}
     score_display = [['Estimator', f'Test {score}']]
 
@@ -912,12 +914,13 @@ def pipe_search(estimator, params, X_train, y_train, X_test, y_test, n_component
                 keys are: 'test_score' , 'best_accuracy' (training validation score),
                 'best_params', 'best_estimator', 'results'
     """
+
     if scaler is None:
         from sklearn.preprocessing import StandardScaler as scaler
     from sklearn.decomposition import PCA
     from sklearn.pipeline import Pipeline
     from sklearn.model_selection import GridSearchCV
-
+    import time
 
     # create dictionary to store results.
     results = {}
@@ -1011,6 +1014,7 @@ def random_pipe(estimator, params, X_train, y_train, X_test, y_test, n_component
     from sklearn.pipeline import Pipeline
     from sklearn.decomposition import PCA
     from sklearn.model_selection import RandomizedSearchCV
+    import time
 
     if scaler is None:
         from sklearn.preprocessing import StandardScaler
@@ -1108,6 +1112,7 @@ def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_compone
             context. -1 means using all processors. See Glossary for more details.
 
     """
+    import time
     if scaler is None:
         from sklearn.preprocessing import StandardScaler
         scaler=StandardScaler()
@@ -1178,13 +1183,13 @@ def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_compone
 
     return compare_dict
 
-from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
-from sklearn.base import clone
-import numpy as np
-from scipy import sparse
-import time
-
-class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
+# from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
+# from sklearn.base import clone
+# import numpy as np
+# from scipy import sparse
+# import time
+import sklearn
+class MetaClassifier(sklearn.base.BaseEstimator, sklearn.base.ClassifierMixin, sklearn.base.TransformerMixin):
 
     """
     A model stacking classifier for sklearn classifiers. Uses Sklearn API to fit and predict,
@@ -1277,6 +1282,7 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
     ***********************************************************************************************>
     """
 
+    from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
 
     def __init__(self, classifiers=None, meta_classifier=None,
                  use_probability=False, double_down=False,
@@ -1311,6 +1317,10 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
             Fitted MetaClassifier
 
           """
+        import time
+        from scipy import sparse
+        from sklearn.base import clone
+
         start = time.time()
 
         # Make clones of classifiers and meta classifiers to preserve original
@@ -1414,7 +1424,7 @@ class MetaClassifier(BaseEstimator, ClassifierMixin, TransformerMixin):
         probabilities : array-like,  shape = [n_samples, n_classes]
 
         """
-
+        from scipy import sparse
         meta_features = self.predict_meta(X)
 
         if self.double_down == False:

@@ -1,25 +1,40 @@
 # -*- coding: utf-8 -*-
 """Convience module. 'from bs_ds.imports import *' will pre-load pd,np,plt,mpl,sns"""
+# import_dict = {'pandas':'pd',
+#                 'numpy':'np',
+#                 'matplotlib':'mpl',
+#                 'matplotlib.pyplot':'plt',
+#                 'seaborn':'sns',
+#                 'bs_ds':'bs'
+#               }
+# for package, handle in import_dict.items():
+#     exec(f'import {package} as {handle}')
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import seaborn as sns
-from IPython.display import display
-from IPython.display import HTML
+# from IPython.display import display
+# # from IPython.display import HTML
 
-import_dict = {'pandas':'pd',
-                'numpy':'np',
-                'matplotlib':'mpl',
-                'matplotlib.pyplot':'plt',
-                'seaborn':'sns'}
-
-df_imported= pd.DataFrame.from_dict(import_dict,orient='index')
-df_imported.columns=['Module/Package Handle']
+# df_imported= pd.DataFrame.from_dict(import_dict,orient='index')
+# df_imported.columns=['Module/Package Handle']
 
 # from .prettypandas import html_on, make_CSS,html_off
-display(df_imported)
+# display(df_imported)
+import pandas as pd
+from IPython.display import display
+
+imports_list = [('pandas','pd','High performance data structures and tools'),
+                ('numpy','np','scientific computing with Python'),
+                ('matplotlib','mpl',"Matplotlib's base OOP module with formatting artists"),
+                ('matplotlib.pyplot','plt',"Matplotlib's matlab-like plotting module"),
+                ('seaborn','sns',"High-level data visualization library based on matplotlib"),
+                ('bs_ds','bs','Custom data science bootcamp student package')]
+
+for package_tuple in imports_list:
+    package=package_tuple[0]
+    handle=package_tuple[1]
+    exec(f'import {package} as {handle}')
+
+df_imported= pd.DataFrame(imports_list,columns=['Package','Handle','Description'])
+display(df_imported.sort_values('Package').style.hide_index().set_caption('Loaded Packages and Handles'))
 
 # print('To disable styled DataFrames run html_off() at the bottom of any cell.\n To re-enable use html_on() at the bottom of any cell.')
 # def sidebar():

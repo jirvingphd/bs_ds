@@ -204,10 +204,11 @@ class Clock(object):
         If verbose=1, print each lap's info at the end of each lap.
         If verbose=2 (default, display instruction line, return datafarme of results.)
     """
+
     from datetime import datetime
     from pytz import timezone
     from tzlocal import get_localzone
-    from .bs_ds import list2df
+    from bs_ds import list2df
     # from bs_ds import list2df
 
     def get_time(self,local=True):
@@ -218,14 +219,15 @@ class Clock(object):
 
         _now_utc_=datetime.now(timezone('UTC'))
         _now_local_=_now_utc_.astimezone(self._timezone_)
-
         if local==True:
-            return _now_local_
+            time_now = _now_local_
+
+            return time_now#_now_local_
         else:
             return _now_utc_
 
 
-    def __init__(self, verbose=2):
+    def __init__(self, display_final_time_as_minutes=True, verbose=2):
 
         from datetime import datetime
         from pytz import timezone
@@ -237,33 +239,37 @@ class Clock(object):
         self._start_time_ = []
         self._lap_label_ = []
         self._lap_end_time_ = []
-        self._verbose_ = []
+        self._verbose_ = verbose
         self._lap_duration_ = []
         self._verbose_ = verbose
         self._prior_start_time_ = []
+        self._display_as_minutes_ = display_final_time_as_minutes
 
         strformat = "%m/%d/%y - %I:%M:%S %p"
         self._strformat_ = strformat
 
-        if self._verbose_ > 0:
-            print(f'Clock created at {self.get_time().strftime(strformat)}.')
+    #         if self._verbose_ > 0:
+    #             print(f'Clock created at {self.get_time().strftime(strformat)}.')
 
-        if self._verbose_>1:
-            print(f'\tStart: clock.tic()\tMark lap: clock.lap()\tStop: clock.toc()\n')
+    #         if self._verbose_>1:
+    #             print(f'\tStart: clock.tic()\tMark lap: clock.lap()\tStop: c_lap_times_list_lock.toc()\n')
 
 
 
     def mark_lap_list(self, label=None):
         """Used internally, appends the current laps' information when called by .lap()
-        self._lap_times_list_ = [['Lap #' , 'Start Time','Start Label','Stop Time', 'Stop Label', 'Duration']]"""
+        self._lap_times_list_ = [['Lap #' , 'Start Time','Stop Time', 'Stop Label', 'Duration']]"""
         import bs_ds as bs
 #         print(self._prior_start_time_, self._lap_end_time_)
+        if label is None:
+            label='--'
+
+        duration = self._lap_duration_.total_seconds()
         self._lap_times_list_.append([ self._lap_counter_ , # Lap #
                                       (self._prior_start_time_).strftime(self._strformat_), # This Lap's Start Time
-                                      self._start_label_, # the start label for tic
                                       self._lap_end_time_,#.strftime(self._strformat_), # stop clock time
-                                      self._lap_label_, # The Label passed with .lap()
-                                      self._lap_duration_.total_seconds()]) # the lap duration
+                                      label,#self._lap_label_, # The Label passed with .lap()
+                                      f'{duration:.3f} sec']) # the lap duration
 
 
     def tic(self, label=None ):
@@ -278,17 +284,31 @@ class Clock(object):
         self._lap_times_list_=[]
 
         # Initiate lap counter and list
-        self._lap_times_list_ = [['Lap #','Start Time','Start Label','Stop Time', 'Stop Label', 'Duration']]
+        self._lap_times_list_ = [['Lap #','Start Time','Stop Time', 'Label', 'Duration']]
         self._lap_counter_ = 0
-        print(f'Clock started at {self._start_time_.strftime(self._strformat_)}')
+        self._decorate_ = '--- '
+        decorate=self._decorate_
+        base_msg = f'{decorate}CLOCK STARTED @: {self._start_time_.strftime(self._strformat_):>{25}}'
 
-    def toc(self,label=None):
+        if label == None:
+            display_msg = base_msg+' '+ decorate
+            label='--'
+        else:
+            spacer = ' '
+            display_msg = base_msg+f'{spacer:{10}} Label: {label:{10}} {decorate}'
+        if self._verbose_>0:
+            print(display_msg)#f'---- Clock started @: {self._start_time_.strftime(self._strformat_):>{25}} {spacer:{10}} label: {label:{20}}  ----')
+
+    def toc(self,label=None, summary=True):
         """Stop the timer and displays results, appends label to final _list_lap_times entry"""
+        if label == None:
+            label='--'
         from datetime import datetime
         from pytz import timezone
         from tzlocal import get_localzone
         from bs_ds import list2df
-
+        if label is None:
+            label='--'
 
         _final_end_time_ = self.get_time()
         _total_time_ = _final_end_time_ - self._start_time_
@@ -300,16 +320,34 @@ class Clock(object):
         self._lap_end_time_ = _final_end_time_.strftime(self._strformat_)
         self._lap_duration_ = _final_end_time_ - self._prior_start_time_
         self._total_time_ = _total_time_
-        self.mark_lap_list()
-
+        self.mark_lap_list(label=label)
+        decorate=self._decorate_
         # Append Summary Line
-        print(f'\tLap #{self._lap_counter_} done @ {self._lap_end_time_}\tlabel: {self._lap_label_:>{20}}\tduration: {self._lap_duration_.total_seconds()} sec)')
-        self._lap_times_list_.append(['Start-End',self._start_time_.strftime(self._strformat_), self._start_label_,self._final_end_time_.strftime(self._strformat_),'Total Time:', self._total_time_.total_seconds() ])
+        # print(f'Lap #{self._lap_counter_} done @ {self._lap_end_time_:>{20}} label: {self._lap_label_:>{10}} duration: {self._lap_duration_.total_seconds()} sec)')
+        # total_time_to_display = self._total_time_.total_seconds()
+        if self._display_as_minutes_ == True:
+            total_seconds = self._total_time_.total_seconds()
+            total_mins = int(total_seconds // 60)
+            sec_remain = total_seconds % 60
+            total_time_to_display = f'{total_mins} min, {sec_remain:.3f} sec'
+        else:
 
-        df_lap_times = list2df(self._lap_times_list_,index_col='Lap #')
-        print(f'Total Time: {_total_time_}.')
-        if self._verbose_>1:
-            return df_lap_times
+            total_seconds = self._total_time_.total_seconds()
+            sec_remain = round(total_seconds % 60,3)
+
+            total_time_to_display = f'{sec_remain} sec'
+
+        # self._lap_times_list_.append(['TOTAL',self._start_time_.strftime(self._strformat_), self._final_end_time_.strftime(self._strformat_),total_time_to_display]) #'Total Time: ', total_time_to_display])
+
+        # print(self._lap_times_list_[-1])
+        # print('')
+        if self._verbose_>0:
+            print(f'--- TOTAL DURATION   =  {total_time_to_display:>{15}} {decorate}')
+
+        if summary:
+            self.summary()
+            # df_lap_times = list2df(self._lap_times_list_)#,index_col='Lap #')
+            # return df_lap_times.style.hide_index()
 
 
 
@@ -317,7 +355,8 @@ class Clock(object):
         """Records time, duration, and label for current lap. Output display varies with clock verbose level.
         Calls .mark_lap_list() to document results in clock._list_lap_ times."""
         from datetime import datetime
-
+        if label is None:
+            label='--'
         _end_time_ = self.get_time()
 
         # Append the lap attribute list and counter
@@ -330,6 +369,22 @@ class Clock(object):
 
         # Now set next lap's new _prior_start
         self._prior_start_time_=_end_time_
+        spacer = ' '
 
         if self._verbose_>0:
-            print(f'\tLap #{self._lap_counter_} done @ {self._lap_end_time_}\tlabel: {self._lap_label_:>{20}}\tduration: {self._lap_duration_.total_seconds()} sec)')
+            print(f'       - Lap # {self._lap_counter_} @:  {self._lap_end_time_:>{25}} {spacer:{5}} Dur: {self._lap_duration_.total_seconds():.3f} sec. {spacer:{5}}Label:  {self._lap_label_:{20}}')
+
+    def summary(self):
+        """Display dataframe summary table of Clock laps"""
+        from bs_ds import list2df
+        import pandas as pd
+        from IPython.display import display
+        df_lap_times = list2df(self._lap_times_list_)#,index_col='Lap #')
+        df_lap_times.drop('Stop Time',axis=1,inplace=True)
+        df_lap_times = df_lap_times[['Lap #','Start Time','Duration','Label']]
+        # with pd.option_context('display.colheader_justify','left'):
+        dfs = df_lap_times.style.hide_index().set_caption('Summary Table of Clocked Processes').set_properties(subset=['Start Time','Duration'],**{'width':'140px'})
+        # display(dfs.set_table_styles([dict(selector='th', props=[('text-align', 'center')])]))
+        display(dfs.set_table_styles([dict(selector='table, th', props=[('text-align', 'center')])]))
+
+
