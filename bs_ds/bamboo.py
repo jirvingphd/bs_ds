@@ -62,6 +62,7 @@ def list2df(list, index_col=None):#, sort_values='index'):
     if index_col==None:
         return df_list
     else:
+        df_list.reset_index(inplace=True)
         df_list.set_index(index_col, inplace=True)
     return df_list
 

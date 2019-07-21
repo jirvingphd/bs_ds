@@ -8,30 +8,47 @@ import matplotlib as mpl
 import seaborn as sns
 import scipy.stats as sts
 from IPython.display import display
-# import xgboost
-import sklearn
-import scipy
-from sklearn.svm import SVC
-from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from sklearn.pipeline import Pipeline
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
-from scipy.stats import randint, expon
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import VotingClassifier
-from sklearn.metrics import roc_auc_score
+from .capstone import ihelp, module_menu
+
+# import sklearn
+# import scipy
+
+# MIKE'S IMPORTS
+    # from sklearn.svm import SVC
+    # from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
+    # from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
+    # from sklearn.pipeline import Pipeline
+    # from sklearn.decomposition import PCA
+    # from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
+    # from scipy.stats import randint, expon
+    # from sklearn.model_selection import train_test_split
+    # from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+    # from sklearn.tree import DecisionTreeClassifier
+    # from sklearn.ensemble import VotingClassifier
+    # from sklearn.metrics import roc_auc_score
+
 # import xgboost as xbg
 # from xgboost import XGBClassifier
-import time
-import re
+# import time
+# import re
 
 from .bamboo import list2df
 
 
 
+######
+def make_gdrive_file_url(share_url_from_gdrive):
+    """accepts gdrive share url with format 'https://drive.google.com/open?id=`
+    and returns a pandas-usable link with format ''https://drive.google.com/uc?export=download&id='"""
+    import re
+    file_id = re.compile(r'id=(.*)')
+    fid = file_id.findall(share_url_from_gdrive)
+    prepend_url = 'https://drive.google.com/uc?export=download&id='
+    output_url = prepend_url + fid[0]
+    return output_url
+
+
+#####
 class LabelLibrary():
     """A Multi-column version of sklearn LabelEncoder, which fits a LabelEncoder
    to each column of a df and stores it in the index dictionary where
