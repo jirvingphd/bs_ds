@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+
+def reload(mod):
+    """Reloads the module from file."""
+    from importlib import reload
+    import sys
+    print(f'Reloading...\n')
+    return  reload(mod)
+
 def ihelp(any_function, show_help=False, show_code=True):
     """Call on any module or functon to display the object's
     help command printout AND/OR soruce code displayed as Markdown
@@ -27,8 +35,9 @@ def ihelp(any_function, show_help=False, show_code=True):
 
 def module_menu(mods=[x for x in dir() if '__' not in x], show_help=False, show_code=True):
     """Displays an interactive menu of all functions available in bs_ds"""
-    from bs_ds import ihelp
+    # from bs_ds import ihelp
     import bs_ds as bs
+    from bs_ds import ihelp
     ihelp(eval(f'bs.{mods}'), show_help, show_code)
     return
 

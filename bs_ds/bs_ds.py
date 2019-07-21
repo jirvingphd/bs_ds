@@ -8,8 +8,25 @@ import matplotlib as mpl
 import seaborn as sns
 import scipy.stats as sts
 from IPython.display import display
-from .capstone import ihelp, module_menu
 
+def list2df(list, index_col=None):#, sort_values='index'):
+    """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
+    Ex: list_results = [["Test","N","p-val"]] #... (some sort of analysis performed to produce results)
+        list_results.append([test_Name,length(data),p])
+        list2df(list_results)
+    """
+    # with pd.option_context("display.max_rows", None, "display.max_columns", None ,
+    # 'display.precision',3,'display.notebook_repr_htm',True):
+    import pandas as pd
+    df_list = pd.DataFrame(list[1:],columns=list[0])
+    if index_col==None:
+        return df_list
+    else:
+        df_list.reset_index(inplace=True)
+        df_list.set_index(index_col, inplace=True)
+    return df_list
+
+# from .bs_ds import list2df
 # import sklearn
 # import scipy
 
@@ -32,7 +49,7 @@ from .capstone import ihelp, module_menu
 # import time
 # import re
 
-from .bamboo import list2df
+# from .bamboo import list2df
 
 
 
@@ -184,7 +201,7 @@ def tune_params_trees(param_name, param_values, DecisionTreeObject, X,Y,test_siz
     - Displays styled-df
     - Displays subplots of performance metrics.
     '''
-
+    from bs_ds import list2df
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(test_size=test_size)
 
@@ -589,6 +606,7 @@ def train_test_dict(X, y, test_size=.25, random_state=42):
     """
     Splits data into train/test sets and returns diction with each variable its own key and value.
     """
+    from sklearn.model_selection import train_test_split
 
     train_test = {}
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size, random_state)
@@ -607,7 +625,20 @@ def make_estimators_dict():
     """
     # instantiate classifier objects
     import xgboost
-    # from svm import
+    from sklearn.svm import SVC
+    from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
+    # from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
+    # from sklearn.pipeline import Pipeline
+    # from sklearn.decomposition import PCA
+    # from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
+    # from scipy.stats import randint, expon
+    # from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+    from sklearn.tree import DecisionTreeClassifier
+    # from sklearn.ensemble import VotingClassifier
+    # from sklearn.metrics import roc_auc_score
+
+
     xgb = xgboost.XGBClassifier()
     svc = SVC()
     lr = LogisticRegression()
@@ -628,7 +659,7 @@ def make_estimators_dict():
     return estimators
 
 
-def make_pipes(estimators_dict, scaler=StandardScaler, n_components='mle', random_state=42):
+def make_pipes(estimators_dict, scaler=None, n_components='mle', random_state=42):
 
     """
     Makes pipelines for given models, outputs dictionaries with keys as names and pipeline objects as values.
@@ -637,9 +668,14 @@ def make_pipes(estimators_dict, scaler=StandardScaler, n_components='mle', rando
     ---------------
     estimators: dict,
             dictionary with name (str) as key and estimator objects as values.
-    scaler: sklearn.preprocessing instave
+    scaler: sklearn.preprocessing instance. Defaults to StandardScaler
     """
+    from sklearn.pipeline import Pipeline
+    if scaler is None:
+        from sklearn.preprocessing import StandardScaler
+        scaler=StandardScaler()
 
+    from sklearn.decomposition import  PCA
     # Create dictionary to store pipelines
     pipe_dict = {}
 
@@ -664,7 +700,7 @@ def fit_pipes(pipes_dict, train_test, predict=True, verbose=True, score='accurac
     score can be either 'accuracy' or 'roc_auc'. rco_auc_score should be used with binary classification.
 
      """
-
+    from sklearn.metrics import roc_auc_score
     fit_pipes = {}
     score_display = [['Estimator', f'Test {score}']]
 
@@ -729,6 +765,7 @@ def make_config_dict(verbose=True):
 
     Ex: config_dict = make_config_dict()"""
     from pprint import pprint
+    import sklearn
     import xgboost
     config_dict = {
         sklearn.linear_model.LogisticRegressionCV:[{
@@ -790,7 +827,8 @@ def make_random_config_dict(verbose=True):
     from pprint import pprint
     import sklearn
     import xgboost
-
+    import scipy
+    from numpy.random import randint
     random_config_dict = {
         sklearn.ensemble.RandomForestClassifier:{ # Ideal way to structure the other random searches
             'clf__n_estimators': [100 ,500, 1000],
@@ -827,7 +865,7 @@ def make_random_config_dict(verbose=True):
 
 
 def pipe_search(estimator, params, X_train, y_train, X_test, y_test, n_components='mle',
-                scaler=StandardScaler(), random_state=42, cv=3, verbose=2, n_jobs=-1):
+                scaler=None, random_state=42, cv=3, verbose=2, n_jobs=-1):
 
     """
     Fits pipeline and performs a grid search with cross validation using with given estimator
@@ -874,6 +912,13 @@ def pipe_search(estimator, params, X_train, y_train, X_test, y_test, n_component
                 keys are: 'test_score' , 'best_accuracy' (training validation score),
                 'best_params', 'best_estimator', 'results'
     """
+    if scaler is None:
+        from sklearn.preprocessing import StandardScaler as scaler
+    from sklearn.decomposition import PCA
+    from sklearn.pipeline import Pipeline
+    from sklearn.model_selection import GridSearchCV
+
+
     # create dictionary to store results.
     results = {}
     # Instantiate pipeline object.
@@ -912,7 +957,7 @@ def pipe_search(estimator, params, X_train, y_train, X_test, y_test, n_component
 
 
 def random_pipe(estimator, params, X_train, y_train, X_test, y_test, n_components='mle',
-                scaler=StandardScaler(), n_iter=10, random_state=42, cv=3, verbose=2, n_jobs=-1):
+                scaler=None, n_iter=10, random_state=42, cv=3, verbose=2, n_jobs=-1):
 
     """
     Fits pipeline and performs a randomized grid search with cross validation.
@@ -963,6 +1008,14 @@ def random_pipe(estimator, params, X_train, y_train, X_test, y_test, n_component
                 'best_params', 'best_estimator', 'results'
 
     """
+    from sklearn.pipeline import Pipeline
+    from sklearn.decomposition import PCA
+    from sklearn.model_selection import RandomizedSearchCV
+
+    if scaler is None:
+        from sklearn.preprocessing import StandardScaler
+        scaler=StandardScaler()
+
     # Start timer
     start = time.time()
 
@@ -1006,7 +1059,7 @@ def random_pipe(estimator, params, X_train, y_train, X_test, y_test, n_component
     return results
 
 def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_components='mle',
-                 search='random',scaler=StandardScaler(), n_iter=5, random_state=42,
+                 search='random',scaler=None, n_iter=5, random_state=42,
                   cv=3, verbose=2, n_jobs=-1,save_pickle=False):
     """
     Runs any number of estimators through pipeline and gridsearch(exhaustive or radomized) with cross validations,
@@ -1055,7 +1108,11 @@ def compare_pipes( X_train, y_train, X_test, y_test, config_dict=None, n_compone
             context. -1 means using all processors. See Glossary for more details.
 
     """
-    if config_dict==None:
+    if scaler is None:
+        from sklearn.preprocessing import StandardScaler
+        scaler=StandardScaler()
+
+    if config_dict is None:
 
         config_dict = make_config_dict(verbose)
         print('Generating default config_dict.')

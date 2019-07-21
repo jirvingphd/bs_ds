@@ -207,7 +207,8 @@ class Clock(object):
     from datetime import datetime
     from pytz import timezone
     from tzlocal import get_localzone
-    from bs_ds import list2df
+    from .bs_ds import list2df
+    # from bs_ds import list2df
 
     def get_time(self,local=True):
         """Returns current time, in local time zone by default (local=True)."""

@@ -20,8 +20,13 @@
 def make_stopwords(punctuation=True):
     """Makes and returns a stopwords_list for enlgish combined with punctuation(default)."""
     import nltk
-    nltk.download('stopwords')
+    # nltk.download('stopwords')s
     from nltk.corpus import stopwords
+    try:
+        stopwords.words('english')
+    except LookupError:
+        nltk.download('stopwords')
+
     import string
     stopwords_list = []
     stopwords_list = stopwords.words('english') + list(string.punctuation)
