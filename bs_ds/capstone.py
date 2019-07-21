@@ -33,12 +33,22 @@ def ihelp(any_function, show_help=False, show_code=True):
         # print(source_DF)
         display(Markdown(output))
 
-def module_menu(mods=[x for x in dir() if '__' not in x], show_help=False, show_code=True):
+def module_menu(mods=None, show_help=False, show_code=True):
     """Displays an interactive menu of all functions available in bs_ds"""
     # from bs_ds import ihelp
+    if mods is None:
+        import bs_ds
+        mods = [x for x in dir(bs_ds) if '__' not in x]
+
     import bs_ds as bs
     from bs_ds import ihelp
-    ihelp(eval(f'bs.{mods}'), show_help, show_code)
+    from ipywidgets import interact
+
+    @interact(mods=mods, show_help=False, show_code=True)
+    def display_modules(mods, show_help, show_code):
+        import bs_ds as bs
+        bs.ihelp(eval(f'bs.{mods}'),show_help=show_help, show_code=show_code)
+    # ihelp(eval(f'bs.{mods}'), show_help, show_code)
     return
 
 
@@ -815,7 +825,7 @@ def load_raw_stock_data_from_txt(filename='IVE_bidask1min.txt',
     if verbose>0:
         display(stock_df.head())
     if verbose>1:
-        print(stock_df.index[[0,-1]],stock_dfl.index.freq)
+        print(stock_df.index[[0,-1]],stock_df.index.freq)
 
     return stock_df
 
@@ -1661,6 +1671,7 @@ def print_array_info(X, name='Array'):
 def arr2series(array,series_index=[],series_name='predictions'):
     """Accepts an array, an index, and a name. If series_index is longer than array:
     the series_index[-len(array):] """
+    import pandas as pd
     if len(series_index)==0:
         series_index=list(range(len(array)))
 
@@ -1937,6 +1948,9 @@ def load_twitter_df_stock_price():# del stock_price
 
 def get_stock_prices_for_twitter_data(twitter_df, stock_prices):
     # Get get the business day index to account for tweets during off-hours
+    import pandas as pd
+    import numpy as np
+
     twitter_df = get_B_day_time_index_shift(twitter_df,verbose=1)
 
     # Make temporary B_dt_index var in order to round that column to minute-resolution
@@ -2128,6 +2142,7 @@ def save_model_and_weights(model, filename_str = 'model'):
 
 def load_model_and_weights(model_filename='model.json',weight_filename='model_weights.h5'):
     # load json and create model
+    from keras.models import model_from_json
     json_file = open(model_filename, 'r')
     loaded_model_json = json_file.read()
     json_file.close()

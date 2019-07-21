@@ -22,7 +22,7 @@ test_requirements = requirements
 
 setup(
     author="James Irving",
-    author_email='james.irving.phd@outlook.com',
+    author_email='james.irving.phd@gmail.com',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

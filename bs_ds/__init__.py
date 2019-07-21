@@ -12,9 +12,7 @@ from .prettypandas import *
 from .glassboxes import *
 from .saycheese import *
 from .saywhat import *
-# from .capstone import *
-
-from .capstone import ihelp, module_menu
+from .capstone import * #ihelp, module_menu
 
 
 
