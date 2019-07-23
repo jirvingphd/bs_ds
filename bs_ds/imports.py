@@ -73,11 +73,14 @@ def import_packages(import_list_of_tuples = None,  display_table=True): #append_
     def global_imports(modulename,shortname = None, asfunction = False):
         """from stackoverflow: https://stackoverflow.com/questions/11990556/how-to-make-global-imports-from-a-function,
         https://stackoverflow.com/a/46878490"""
+        from importlib import import_module
+
 
         if shortname is None:
             shortname = modulename
+
         if asfunction is False:
-            globals()[shortname] = __import__(modulename)
+            globals()[shortname] = import_module(modulename) #__import__(modulename)
         else:
             globals()[shortname] = eval(modulename + "." + shortname)
 
