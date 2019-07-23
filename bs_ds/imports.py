@@ -18,23 +18,101 @@
 
 # from .prettypandas import html_on, make_CSS,html_off
 # display(df_imported)
-import pandas as pd
-from IPython.display import display
 
-imports_list = [('pandas','pd','High performance data structures and tools'),
-                ('numpy','np','scientific computing with Python'),
-                ('matplotlib','mpl',"Matplotlib's base OOP module with formatting artists"),
-                ('matplotlib.pyplot','plt',"Matplotlib's matlab-like plotting module"),
-                ('seaborn','sns',"High-level data visualization library based on matplotlib"),
-                ('bs_ds','bs','Custom data science bootcamp student package')]
+# import pandas as pd
+# from IPython.display import display
 
-for package_tuple in imports_list:
-    package=package_tuple[0]
-    handle=package_tuple[1]
-    exec(f'import {package} as {handle}')
+# imports_list = [('pandas','pd','High performance data structures and tools'),
+#                 ('numpy','np','scientific computing with Python'),
+#                 ('matplotlib','mpl',"Matplotlib's base OOP module with formatting artists"),
+#                 ('matplotlib.pyplot','plt',"Matplotlib's matlab-like plotting module"),
+#                 ('seaborn','sns',"High-level data visualization library based on matplotlib"),
+#                 ('bs_ds','bs','Custom data science bootcamp student package')]
 
-df_imported= pd.DataFrame(imports_list,columns=['Package','Handle','Description'])
-display(df_imported.sort_values('Package').style.hide_index().set_caption('Loaded Packages and Handles'))
+# for package_tuple in imports_list:
+#     package=package_tuple[0]
+#     handle=package_tuple[1]
+#     exec(f'import {package} as {handle}')
+
+# df_imported= pd.DataFrame(imports_list,columns=['Package','Handle','Description'])
+# display(df_imported.sort_values('Package').style.hide_index().set_caption('Loaded Packages and Handles'))
+
+
+def import_packages(import_list_of_tuples = None,  display_table=True): #append_to_default_list=True, imports_have_description = True):
+    """Uses the exec function to load in a list of tuples with:
+    [('module','md','example generic tuple item')] formatting.
+    >> Default imports_list:
+    [('pandas',     'pd',   'High performance data structures and tools'),
+    ('numpy',       'np',   'scientific computing with Python'),
+    ('matplotlib',  'mpl',  "Matplotlib's base OOP module with formatting artists"),
+    ('matplotlib.pyplot',   'plt',  "Matplotlib's matlab-like plotting module"),
+    ('seaborn',     'sns',  "High-level data visualization library based on matplotlib"),
+    ('bs_ds','bs','Custom data science bootcamp student package')]
+    """
+
+
+    # import_list=[]
+    from IPython.display import display
+    import pandas as pd
+    # if using default import list, create it:
+    if (import_list_of_tuples is None): #or (append_to_default_list is True):
+        import_list = [('pandas','pd','High performance data structures and tools'),
+        ('numpy','np','scientific computing with Python'),
+        ('matplotlib','mpl',"Matplotlib's base OOP module with formatting artists"),
+        ('matplotlib.pyplot','plt',"Matplotlib's matlab-like plotting module"),
+        ('seaborn','sns',"High-level data visualization library based on matplotlib"),
+        ('bs_ds','bs','Custom data science bootcamp student package')]
+
+    # if using own list, rename to 'import_list'
+    else:
+        import_list = import_list_of_tuples
+    # if (import_list_of_tuples is not None) and (append_to_default_list is True):
+    #     [import_list.append(mod) for mod in import_list_of_tuples]
+
+
+    def global_imports(modulename,shortname = None, asfunction = False):
+        """from stackoverflow: https://stackoverflow.com/questions/11990556/how-to-make-global-imports-from-a-function,
+        https://stackoverflow.com/a/46878490"""
+
+        if shortname is None:
+            shortname = modulename
+        if asfunction is False:
+            globals()[shortname] = __import__(modulename)
+        else:
+            globals()[shortname] = eval(modulename + "." + shortname)
+
+
+    # Use exec command to create global handle variables and then load in package as that handle
+    for package_tuple in import_list:
+        package=package_tuple[0]
+        handle=package_tuple[1]
+        # old way: # exec(f'import {package} as {handle}')
+        global_imports(package,handle)
+
+
+    # Display summary dataframe
+    if display_table==True:
+        ## Create Columns Names List
+        # if imports_have_description==False:
+            # columns=['Package','Handle']
+        # else:
+            # columns=['Package','Handle','Description']
+
+        # create and return styled dataframe
+        columns=['Package','Handle','Description']
+        df_imported= pd.DataFrame(import_list, columns=columns)
+        dfs = df_imported.sort_values('Package').style.hide_index().set_caption('Loaded Packages and Handles')
+        display(dfs)
+
+    # or just print statement
+    else:
+        return print('Modules successfully loaded.')
+
+
+
+
+
+import_packages()
 
 # print('To disable styled DataFrames run html_off() at the bottom of any cell.\n To re-enable use html_on() at the bottom of any cell.')
 # def sidebar():

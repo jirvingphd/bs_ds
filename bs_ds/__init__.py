@@ -16,8 +16,8 @@ from .capstone import * #ihelp, module_menu
 
 
 
-print(f"bs_ds v.{__version__}\read the docs: https://bs-ds.readthedocs.io/en/latest/index.html")
-# print(f"For convenient loading of standard modules :\n>> from bs_ds.imports import *\n")
+print(f"bs_ds v.{__version__}\n read the docs: https://bs-ds.readthedocs.io/en/latest/index.html")
+print(f"For convenient loading of standard modules :\n>> from bs_ds.imports import *\n")
 
 
 
