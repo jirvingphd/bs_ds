@@ -25,7 +25,7 @@ def make_stopwords(punctuation=True):
     try:
         stopwords.words('english')
     except LookupError:
-        nltk.download('stopwords')
+        nltk.download('stopwords',quiet=True)
 
     import string
     stopwords_list = []

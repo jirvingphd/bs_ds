@@ -248,19 +248,12 @@ class Clock(object):
         strformat = "%m/%d/%y - %I:%M:%S %p"
         self._strformat_ = strformat
 
-    #         if self._verbose_ > 0:
-    #             print(f'Clock created at {self.get_time().strftime(strformat)}.')
-
-    #         if self._verbose_>1:
-    #             print(f'\tStart: clock.tic()\tMark lap: clock.lap()\tStop: c_lap_times_list_lock.toc()\n')
-
-
-
     def mark_lap_list(self, label=None):
         """Used internally, appends the current laps' information when called by .lap()
         self._lap_times_list_ = [['Lap #' , 'Start Time','Stop Time', 'Stop Label', 'Duration']]"""
         import bs_ds as bs
 #         print(self._prior_start_time_, self._lap_end_time_)
+
         if label is None:
             label='--'
 
@@ -320,11 +313,9 @@ class Clock(object):
         self._lap_end_time_ = _final_end_time_.strftime(self._strformat_)
         self._lap_duration_ = _final_end_time_ - self._prior_start_time_
         self._total_time_ = _total_time_
-        self.mark_lap_list(label=label)
+
         decorate=self._decorate_
         # Append Summary Line
-        # print(f'Lap #{self._lap_counter_} done @ {self._lap_end_time_:>{20}} label: {self._lap_label_:>{10}} duration: {self._lap_duration_.total_seconds()} sec)')
-        # total_time_to_display = self._total_time_.total_seconds()
         if self._display_as_minutes_ == True:
             total_seconds = self._total_time_.total_seconds()
             total_mins = int(total_seconds // 60)
@@ -336,20 +327,17 @@ class Clock(object):
             sec_remain = round(total_seconds % 60,3)
 
             total_time_to_display = f'{sec_remain} sec'
+        self._lap_times_list_.append(['TOTAL',
+                                      self._start_time_.strftime(self._strformat_),
+                                      self._final_end_time_.strftime(self._strformat_),
+                                      label,
+                                      total_time_to_display]) #'Total Time: ', total_time_to_display])
 
-        # self._lap_times_list_.append(['TOTAL',self._start_time_.strftime(self._strformat_), self._final_end_time_.strftime(self._strformat_),total_time_to_display]) #'Total Time: ', total_time_to_display])
-
-        # print(self._lap_times_list_[-1])
-        # print('')
         if self._verbose_>0:
             print(f'--- TOTAL DURATION   =  {total_time_to_display:>{15}} {decorate}')
 
         if summary:
             self.summary()
-            # df_lap_times = list2df(self._lap_times_list_)#,index_col='Lap #')
-            # return df_lap_times.style.hide_index()
-
-
 
     def lap(self, label=None):
         """Records time, duration, and label for current lap. Output display varies with clock verbose level.
@@ -365,14 +353,16 @@ class Clock(object):
         self._lap_counter_+=1
         self._lap_duration_ = (_end_time_ - self._prior_start_time_)
         # Now update the record
-        self.mark_lap_list()
+        self.mark_lap_list(label=label)
 
         # Now set next lap's new _prior_start
         self._prior_start_time_=_end_time_
         spacer = ' '
 
         if self._verbose_>0:
-            print(f'       - Lap # {self._lap_counter_} @:  {self._lap_end_time_:>{25}} {spacer:{5}} Dur: {self._lap_duration_.total_seconds():.3f} sec. {spacer:{5}}Label:  {self._lap_label_:{20}}')
+            print(f'       - Lap # {self._lap_counter_} @:  \
+            {self._lap_end_time_:>{25}} {spacer:{5}} Dur: {self._lap_duration_.total_seconds():.3f} sec.\
+            {spacer:{5}}Label:  {self._lap_label_:{20}}')
 
     def summary(self):
         """Display dataframe summary table of Clock laps"""
@@ -382,9 +372,6 @@ class Clock(object):
         df_lap_times = list2df(self._lap_times_list_)#,index_col='Lap #')
         df_lap_times.drop('Stop Time',axis=1,inplace=True)
         df_lap_times = df_lap_times[['Lap #','Start Time','Duration','Label']]
-        # with pd.option_context('display.colheader_justify','left'):
         dfs = df_lap_times.style.hide_index().set_caption('Summary Table of Clocked Processes').set_properties(subset=['Start Time','Duration'],**{'width':'140px'})
-        # display(dfs.set_table_styles([dict(selector='th', props=[('text-align', 'center')])]))
         display(dfs.set_table_styles([dict(selector='table, th', props=[('text-align', 'center')])]))
-
 

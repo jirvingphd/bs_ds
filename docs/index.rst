@@ -7,9 +7,9 @@ Welcome to bs_ds's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   getting_started
    bs_ds
    installation
-   usage
    contributing
    authors
    history

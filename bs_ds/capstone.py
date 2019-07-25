@@ -2,37 +2,63 @@
 
 
 def reload(mod):
-    """Reloads the module from file."""
+    """Reloads the module from file.
+    Example:
+    import my_functions_from_file as mf
+    # after editing the source file:
+    # mf.reload(mf)"""
     from importlib import reload
     import sys
     print(f'Reloading...\n')
     return  reload(mod)
 
-def ihelp(any_function, show_help=False, show_code=True):
+
+def ihelp(function_or_mod, show_help=False, show_code=True,return_code=False,colab=False,file_location=False):
     """Call on any module or functon to display the object's
     help command printout AND/OR soruce code displayed as Markdown
     using Python-syntax"""
 
     import inspect
     from IPython.display import display, Markdown
-
+    page_header = '---'*28
+    footer = '---'*28+'\n'
+    print(page_header)
     if show_help:
-
-        print("---"*35)
-        print("---"*3,'\tHELP:\t',"---"*30)
-        print("---"*35)
-        help(any_function)
+        banner = ''.join(["---"*2,' HELP ',"---"*24,'\n'])
+        print(banner)
+        help(function_or_mod)
+        # print(footer)
 
     if show_code:
+        print(page_header)
+
+        banner = ''.join(["---"*2,' SOURCE -',"---"*23])
+        print(banner)
 
         import inspect
-        source_DF = inspect.getsource(any_function)
+        source_DF = inspect.getsource(function_or_mod)
 
-        display(Markdown('##### SOURCE CODE:\n ____'))
-        output = "```python" +'\n'+source_DF+'\n'+"```\n___"
-        # print(source_DF)
-        display(Markdown(output))
+        if colab is False:
+            # display(Markdown(f'___\n'))
+            output = "```python" +'\n'+source_DF+'\n'+"```\n"
+            # print(source_DF)
+            display(Markdown(output))
+        else:
 
+            print(banner)
+            print(source_DF)
+
+
+    if file_location:
+        file_loc = inspect.getfile(function_or_mod)
+        banner = ''.join(["---"*2,' FILE LOCATION ',"---"*21])
+        print(page_header)
+        print(banner)
+        print(file_loc)
+
+    if return_code:
+        return source_DF
+    print(footer)
 
 
 def module_menu(mods=None, show_help=False, show_code=True):
@@ -1730,18 +1756,39 @@ def get_true_vs_model_pred_df(model, n_input, test_generator, test_data_index, d
     return df_show
 
 
-# def thiels_U(ys_true, ys_pred):
-#     import numpy as np
-#     sum_list = []
-#     num_list=[]
-#     denom_list=[]
-#     for t in range(len(ys_true)-1):
-#         num_exp = (ys_pred[t+1] - ys_true[t+1])/ys_true[t]
-#         num_list.append([num_exp**2])
-#         denom_exp = (ys_true[t+1] - ys_true[t])/ys_true[t]
-#         denom_list.append([denom_exp**2])
-#     U = np.sqrt( np.sum(num_list) / np.sum(denom_list))
-#     return U
+def thiels_U(ys_true, ys_pred,display_equation=True,display_explanation=True):
+    """Calculate's Thiel's U metric for forecasting accuracy.
+    Accepts true values and predicted values.
+    Returns Thiel's U"""
+    from IPython.display import Markdown, Latex, display
+    import numpy as np
+
+    eqn=" $$U = \\sqrt{\\frac{ \\sum_{t=1 }^{n-1}\\left(\\frac{\\bar{Y}_{t+1} - Y_{t+1}}{Y_t}\\right)^2}{\\sum_{t=1 }^{n-1}\\left(\\frac{Y_{t+1} - Y_{t}}{Y_t}\\right)^2}}$$"
+
+    url="['Explanation'](https://docs.oracle.com/cd/E57185_01/CBREG/ch06s02s03s04.html)"
+    markdown_explanation ="|Thiel's U Value | Interpretation |\n\
+    | --- | --- |\n\
+    | <1 | Forecasting is better than guessing| \n\
+    | 1 | Forecasting is about as good as guessing| \n\
+    |>1 | Forecasting is worse than guessing| \n"
+    if display_equation and display_explanation:
+        display(Latex(eqn),Markdown(markdown_explanation))#, Latex(eqn))
+    elif display_equation:
+        display(Latex(eqn))
+    elif display_explanation:
+        display(Markdown(markdown_explanation))
+
+    sum_list = []
+    num_list=[]
+    denom_list=[]
+    for t in range(len(ys_true)-1):
+        num_exp = (ys_pred[t+1] - ys_true[t+1])/ys_true[t]
+        num_list.append([num_exp**2])
+        denom_exp = (ys_true[t+1] - ys_true[t])/ys_true[t]
+        denom_list.append([denom_exp**2])
+    U = np.sqrt( np.sum(num_list) / np.sum(denom_list))
+    return U
+
 
 
 # def get_u_for_shifts(df_U, shift_list,plot_all=False,plot_best=True):
@@ -2131,35 +2178,10 @@ def quick_table(tuples, col_names=None, caption =None,display_df=True):
     return df
 
 
-def save_model_and_weights(model, filename_str = 'model'):
-    model_json = model.to_json()
-    filename = filename_str+'.json'
-    with open(filename, "w") as json_file:
-        json_file.write(model_json)
-
-    # serialize weights to HDF5
-    weight_filename = filename_str+'_weights.h5'
-    model.save_weights(weight_filename)
-    print(f"Saved model to disk as: {filename} and {weight_filename}")
-
-def load_model_and_weights(model_filename='model.json',weight_filename='model_weights.h5'):
-    # load json and create model
-    from keras.models import model_from_json
-    json_file = open(model_filename, 'r')
-    loaded_model_json = json_file.read()
-    json_file.close()
-
-    loaded_model = model_from_json(loaded_model_json)
-    # load weights into new model
-    loaded_model.load_weights(weight_filename)
-    print("Loaded model and model weights from disk")
-    print("Model must be compiled again to be used.")
-    return loaded_model
-
-
-
-
-def auto_filename(prefix='model',sep='__',timeformat='%m-%d-%Y_%I%M%p'):
+def get_time(timeformat='%m-%d-%y_%T%p',raw=False,filename_friendly= False,replacement_seperator='-'):
+    """Gets current time in local time zone.
+    if raw: True then raw datetime object returned without formatting.
+    if filename_friendly: replace ':' with replacement_separator """
     from datetime import datetime
     from pytz import timezone
     from tzlocal import get_localzone
@@ -2167,6 +2189,148 @@ def auto_filename(prefix='model',sep='__',timeformat='%m-%d-%Y_%I%M%p'):
     now_utc = datetime.now(timezone('UTC'))
     now_local = now_utc.astimezone(get_localzone())
 
-    timesuffix = now_local.strftime(timeformat)
+    if raw is True:
+        return now_local
+
+    else:
+        now = now_local.strftime(timeformat)
+
+    if filename_friendly==True:
+        return now.replace(':',replacement_seperator).lower()
+    else:
+        return now
+
+
+def auto_filename_time(prefix='model',sep='_',timeformat='%m-%d-%Y_%I%M%p'):
+    """Generates a filename with a  base string + sep+ the current datetime formatted as timeformat."""
+    if prefix is None:
+        prefix=''
+    timesuffix=get_time(timeformat=timeformat, filename_friendly=True)
     filename = f"{prefix}{sep}{timesuffix}"
     return filename
+
+
+def save_model_weights_params(model,model_params=None, filename_prefix = 'models/model', check_if_exists = True, auto_increment_name=True, auto_filename_suffix=True,  sep='_', suffix_time_format = '%m-%d-%Y_%I%M%p'):
+    """Saves a fit Keras model and its weights as a .json file and a .h5 file, respectively.
+    auto_filename_suffix will use the date and time to give the model a unique name (avoiding overwrites).
+    Returns the model_filename and weight_filename"""
+
+    # create base model filename
+    if auto_filename_suffix:
+        filename = auto_filename_time(prefix=filename_prefix, sep=sep,timeformat=suffix_time_format )
+
+    full_filename = filename+'.json'
+
+    # convert model to json
+    model_json = model.to_json()
+
+    ## check if file exists
+    if check_if_exists:
+        import os
+        import pandas as pd
+        current_files = os.listdir()
+
+        # check if file already exists
+        if full_filename in current_files and auto_increment_name==False:
+            raise Exception('Filename already exists')
+
+        elif full_filename in current_files and auto_increment_name==True:
+
+            # check if filename ends in version #
+            import re
+            num_ending = re.compile(r'[vV].?(\d+).json')
+
+            curr_file_num = num_ending.findall(num_ending)
+            if len(curr_file_num)==0:
+                v_num = '_v01'
+            else:
+                v_num = f"_{int(curr_file_num)+1}"
+
+            full_filename = filename + v_num + '.json'
+
+            print(f'{filename} already exists... incrementing filename to {full_filename}.')
+
+
+    # save json model to json file
+    with open(full_filename, "w") as json_file:
+        json_file.write(model_json)
+    print(f'Model saved as {full_filename}')
+
+    if model_params is not None:
+        # import json
+        import pickle# as pickle
+
+        # get filename without extension
+        file_ext=full_filename.split('.')[-1]
+        param_filename = full_filename.replace(f'.{file_ext}','')
+        param_filename+='_params.pkl'
+        with open(param_filename,'w') as param_file:
+            pickle.dump(model_params, param_file) #sort_keys=True,indent=4)
+
+
+    # serialize weights to HDF5
+    weight_filename = full_filename+'_weights.h5'
+    model.save_weights(weight_filename)
+    print(f'Weights saved as {weight_filename}')
+    return filename, weight_filename
+
+
+def load_model_weights_params(base_filename = 'models/model_',load_params=True, model_filename=None,weight_filename=None, trainable=False,verbose=1):
+    """Loads in Keras model from json file and loads weights from .h5 file.
+    optional set model layer trainability to False"""
+    from IPython.display import display
+    from keras.models import model_from_json
+    import json
+
+    ## Set model and weight filenames from base_filename if None:
+    if model_filename is None:
+        model_filename = base_filename+'.json'
+    if weight_filename is None:
+        weight_filename = base_filename+'_weights.h5'
+
+    model_params_filename = base_filename+'_params.json'
+
+    # Load json and create model
+    with open(model_filename, 'r') as json_file:
+        loaded_model_json = json_file.read()
+    loaded_model = model_from_json(loaded_model_json)
+
+    # Load weights into new model
+    loaded_model.load_weights(weight_filename)
+    print(f"Loaded {model_filename} and loaded weights from {weight_filename}.")
+
+    # set layer trainability
+    if trainable is False:
+        for i, model_layer in enumerate(loaded_model.layers):
+            loaded_model.get_layer(index=i).trainable=False
+        if verbose>0:
+            print('All model.layers.trainable set to False.')
+        if verbose>1:
+            print(model_layer,loaded_model.get_layer(index=i).trainable)
+
+    # display summary if verbose
+    if verbose>0:
+        display(loaded_model.summary())
+        print("Note: Model must be compiled again to be used.")
+
+    if load_params:
+        with open(model_params_filename,'r') as params_file:
+            model_params = json.load(params_file)
+
+        return loaded_model, model_params
+    else:
+        return loaded_model
+
+
+def model_params_menu(model_params):
+    """Display the model_params dictionary as a dropdown menu."""
+    from ipywidgets import interact
+    from IPython.display import display
+    dash='---'
+    print(f'{dash*4} Model Parameters {dash*4}')
+    @interact(model_params=model_params)
+    def display_params(model_params):
+        # print(dash)
+        from pprint import pprint
+        pprint(model_params)
+        return #params.values();
