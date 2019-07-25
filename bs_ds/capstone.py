@@ -2210,19 +2210,19 @@ def auto_filename_time(prefix='model',sep='_',timeformat='%m-%d-%Y_%I%M%p'):
     return filename
 
 
-def save_model_weights_params(model,model_params=None, filename_prefix = 'models/model', check_if_exists = True, auto_increment_name=True, auto_filename_suffix=True,  sep='_', suffix_time_format = '%m-%d-%Y_%I%M%p'):
+def save_model_weights_params(model,model_params=None, filename_prefix = 'models/model', check_if_exists = True,
+ auto_increment_name=True, auto_filename_suffix=True,  sep='_', suffix_time_format = '%m-%d-%Y_%I%M%p'):
     """Saves a fit Keras model and its weights as a .json file and a .h5 file, respectively.
     auto_filename_suffix will use the date and time to give the model a unique name (avoiding overwrites).
     Returns the model_filename and weight_filename"""
-
+    import json
+    import pickle
     # create base model filename
     if auto_filename_suffix:
         filename = auto_filename_time(prefix=filename_prefix, sep=sep,timeformat=suffix_time_format )
 
     full_filename = filename+'.json'
 
-    # convert model to json
-    model_json = model.to_json()
 
     ## check if file exists
     if check_if_exists:
@@ -2240,7 +2240,7 @@ def save_model_weights_params(model,model_params=None, filename_prefix = 'models
             import re
             num_ending = re.compile(r'[vV].?(\d+).json')
 
-            curr_file_num = num_ending.findall(num_ending)
+            curr_file_num = num_ending.findall(full_filename)
             if len(curr_file_num)==0:
                 v_num = '_v01'
             else:
@@ -2251,20 +2251,48 @@ def save_model_weights_params(model,model_params=None, filename_prefix = 'models
             print(f'{filename} already exists... incrementing filename to {full_filename}.')
 
 
+    # convert model to json
+    model_json = model.to_json()
+
     # save json model to json file
     with open(full_filename, "w") as json_file:
-        json_file.write(model_json)
+        json.dump(model_json,json_file)
     print(f'Model saved as {full_filename}')
 
     if model_params is not None:
         # import json
+        import inspect
         import pickle# as pickle
+        def replace_function(function):
+            import inspect
+            return inspect.getsource(function)
+
+        # replace any functions with their source code before saving params
+        for k,v in model_params.items():
+
+            if inspect.isfunction(v):
+                model_params[k] = replace_function(v)
+
+            elif isinstance(v,dict):
+
+                for k2,v2 in v.items():
+                    if inspect.isfunction(v2):
+                        model_params[k][k2]=replace_function(v2)
+
+                    elif isinstance(v2,dict):
+
+                        for k3,v3 in v2.items():
+
+                            if inspect.isfunction(v3):
+                                model_params[k][k2][k3]=replace_function(v3)
+
+
 
         # get filename without extension
         file_ext=full_filename.split('.')[-1]
         param_filename = full_filename.replace(f'.{file_ext}','')
         param_filename+='_params.pkl'
-        with open(param_filename,'w') as param_file:
+        with open(param_filename,'wb') as param_file:
             pickle.dump(model_params, param_file) #sort_keys=True,indent=4)
 
 
