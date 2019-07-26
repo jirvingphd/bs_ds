@@ -2350,15 +2350,18 @@ def load_model_weights_params(base_filename = 'models/model_',load_params=True, 
         return loaded_model
 
 
-def model_params_menu(model_params):
+def display_dict_dropdown(dict_to_display ):
     """Display the model_params dictionary as a dropdown menu."""
     from ipywidgets import interact
     from IPython.display import display
+    from pprint import pprint
+
     dash='---'
-    print(f'{dash*4} Model Parameters {dash*4}')
-    @interact(model_params=model_params)
-    def display_params(model_params):
+    print(f'{dash*4} Dictionary Contents {dash*4}')
+
+    @interact(dict_to_display=dict_to_display)
+    def display_params(dict_to_display):
         # print(dash)
-        from pprint import pprint
-        pprint(model_params)
+        pprint(dict_to_display)
         return #params.values();
+
