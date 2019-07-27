@@ -10,7 +10,6 @@ from .bs_ds import *
 from .bamboo import *
 from .prettypandas import *
 from .glassboxes import *
-from .saycheese import *
 from .saywhat import *
 from .capstone import * #ihelp, module_menu
 
