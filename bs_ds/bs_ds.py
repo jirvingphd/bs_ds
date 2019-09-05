@@ -125,6 +125,7 @@ class LabelLibrary():
 
 
     def transform(self,df, columns=None):
+        import pandas as pd
         df_coded = pd.DataFrame()
 
         if columns==None:
@@ -148,6 +149,7 @@ class LabelLibrary():
         return df_coded
 
     def inverse_transform(self,df,columns = None):
+        import pandas as pd
 
         df_reverted = pd.DataFrame()
 
@@ -572,6 +574,7 @@ def select_pca(features, n_components_list=None):
     pd.DataFrame, displays number of components and their respective
     explained variance ratio
     '''
+    import numpy as np
 
     # from bs_ds import list2df
     from sklearn.decomposition import PCA
@@ -915,7 +918,9 @@ def pipe_search(estimator, params, X_train, y_train, X_test, y_test, n_component
     """
 
     if scaler is None:
-        from sklearn.preprocessing import StandardScaler as scaler
+        from sklearn.preprocessing import StandardScaler
+        scaler = StandardScaler()
+
     from sklearn.decomposition import PCA
     from sklearn.pipeline import Pipeline
     from sklearn.model_selection import GridSearchCV
@@ -1317,6 +1322,7 @@ class MetaClassifier(sklearn.base.BaseEstimator, sklearn.base.ClassifierMixin, s
 
           """
         import time
+        import numpy as np
         from scipy import sparse
         from sklearn.base import clone
 
@@ -1393,6 +1399,7 @@ class MetaClassifier(sklearn.base.BaseEstimator, sklearn.base.ClassifierMixin, s
             the 'new X' for the MetaClassifier to predict with.
 
         """
+        import numpy as np
         # Check parameters and run approriate prediction
         if self.use_probability:
 
@@ -1423,6 +1430,7 @@ class MetaClassifier(sklearn.base.BaseEstimator, sklearn.base.ClassifierMixin, s
         probabilities : array-like,  shape = [n_samples, n_classes]
 
         """
+        import numpy as np
         from scipy import sparse
         meta_features = self.predict_meta(X)
 
@@ -1450,6 +1458,8 @@ class MetaClassifier(sklearn.base.BaseEstimator, sklearn.base.ClassifierMixin, s
         predicted labels : array-like,  shape = [n_samples] or [n_samples, n_outputs]
 
         """
+        import numpy as np
+        from scipy import sparse
 
         meta_features = self.predict_meta(X)
 
@@ -1584,6 +1594,7 @@ def plot_confusion_matrix(cm, classes,
     #Other code should be equivalent to your previous function."""
     import warnings
     warnings.warn('Future versions will be moving plot_confusion_matrix to bs_ds.glassboxes module.')
+    import numpy as np
     import itertools
     import matplotlib.pyplot as plt
     if cmap==None:
