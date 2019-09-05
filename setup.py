@@ -11,7 +11,9 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost','keras','tensorflow','pytz','tzlocal'] #Click','xgboost' ,
+requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus',
+'scipy', 'shap','IPython','pprint','nltk','lime','plotly==3.10.0', 'cufflinks==0.16',
+'keras','tensorflow','pytz','tzlocal'] #Click','xgboost' ,,'catboost'
 
 setup_requirements = requirements
 
