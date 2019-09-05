@@ -1,6 +1,0 @@
-{
-    "python.testing.unittestEnabled": false,
-    "python.testing.nosetestsEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "python.pythonPath": "C:\\Users\\james\\Anaconda3\\envs\\learn-env-ext\\python.exe"
-}

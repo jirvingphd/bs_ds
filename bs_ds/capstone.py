@@ -13,7 +13,7 @@ def reload(mod):
     return  reload(mod)
 
 
-def ihelp(function_or_mod, show_help=False, show_code=True,return_code=False,colab=False,file_location=False):
+def ihelp(function_or_mod, show_help=True, show_code=True,return_code=False,colab=False,file_location=False):
     """Call on any module or functon to display the object's
     help command printout AND/OR soruce code displayed as Markdown
     using Python-syntax"""
@@ -22,8 +22,8 @@ def ihelp(function_or_mod, show_help=False, show_code=True,return_code=False,col
     from IPython.display import display, Markdown
     page_header = '---'*28
     footer = '---'*28+'\n'
-    print(page_header)
     if show_help:
+        print(page_header)
         banner = ''.join(["---"*2,' HELP ',"---"*24,'\n'])
         print(banner)
         help(function_or_mod)
@@ -34,19 +34,23 @@ def ihelp(function_or_mod, show_help=False, show_code=True,return_code=False,col
 
         banner = ''.join(["---"*2,' SOURCE -',"---"*23])
         print(banner)
+        try:
+            import inspect
+            source_DF = inspect.getsource(function_or_mod)
 
-        import inspect
-        source_DF = inspect.getsource(function_or_mod)
+            if colab == False:
+                # display(Markdown(f'___\n'))
+                output = "```python" +'\n'+source_DF+'\n'+"```"
+                # print(source_DF)
+                display(Markdown(output))
+            else:
 
-        if colab is False:
-            # display(Markdown(f'___\n'))
-            output = "```python" +'\n'+source_DF+'\n'+"```\n"
-            # print(source_DF)
-            display(Markdown(output))
-        else:
+                print(banner)
+                print(source_DF)
 
-            print(banner)
-            print(source_DF)
+        except TypeError:
+            pass
+            # display(Markdown)
 
 
     if file_location:
@@ -56,28 +60,91 @@ def ihelp(function_or_mod, show_help=False, show_code=True,return_code=False,col
         print(banner)
         print(file_loc)
 
+    # print(footer)
+
     if return_code:
         return source_DF
-    print(footer)
 
 
-def module_menu(mods=None, show_help=False, show_code=True):
-    """Displays an interactive menu of all functions available in bs_ds"""
-    # from bs_ds import ihelp
-    if mods is None:
-        import bs_ds
-        mods = [x for x in dir(bs_ds) if '__' not in x]
+def ihelp_menu(function_names,show_help=False,show_source=True):
+    """Accepts a list of functions or function_names as strings.
+    if show_help: display `help(function`.
+    if show_source: retreive source code and display as proper markdown syntax"""
+    from ipywidgets import interact, interactive, interactive_output
+    import ipywidgets as widgets
+    from IPython.display import display
+    from functions_combined_BEST import ihelp
+    import functions_combined_BEST as ji
+    import inspect
+    import pandas as pd
 
-    import bs_ds as bs
-    from bs_ds import ihelp
-    from ipywidgets import interact
+    if isinstance(function_names,list)==False:
+        function_names = [function_names]
+    functions_dict = dict()
+    for fun in function_names:
+        if isinstance(fun, str):
+            # module =
+            functions_dict[fun] = eval(fun)
 
-    @interact(mods=mods, show_help=False, show_code=True)
-    def display_modules(mods, show_help, show_code):
-        import bs_ds as bs
-        bs.ihelp(eval(f'bs.{mods}'),show_help=show_help, show_code=show_code)
-    # ihelp(eval(f'bs.{mods}'), show_help, show_code)
-    return
+        elif inspect.isfunction(fun):
+
+            members= inspect.getmembers(fun)
+            member_df = pd.DataFrame(members,columns=['param','values']).set_index('param')
+
+            fun_name = member_df.loc['__name__'].values[0]
+            functions_dict[fun_name] = fun
+
+
+
+    ## Check boxes
+    check_help = widgets.Checkbox(description='show help(function)',value=True)
+    check_source = widgets.Checkbox(description='show source code)',value=True)
+    check_boxes = widgets.HBox(children=[check_help,check_source])
+
+    ## dropdown menu (dropdown, label, button)
+    dropdown = widgets.Dropdown(options=list(functions_dict.keys()))
+    label = widgets.Label('Function Menu')
+    button = widgets.ToggleButton(description='Show/hide',value=False)
+    menu = widgets.HBox(children=[label,dropdown,button])
+    full_layout = widgets.GridBox(children=[menu,check_boxes],box_style='warning')
+
+    # out=widgets.Output(layout={'border':'1 px solid black'})
+    def dropdown_event(change):
+        show_ihelp(function=change.new)
+    dropdown.observe(dropdown_event,names='values')
+
+    def button_event(change):
+        button_state = change.new
+        if button_state:
+            button.description
+    #     show_ihelp(display_help=button_state)
+
+    button.observe(button_event)
+    show_output = widgets.Output()
+
+    def show_ihelp(display_help=button,function=dropdown.value,show_help=check_help.value,show_code=check_source.value):
+        import functions_combined_BEST as ji
+        from IPython.display import display
+        show_output.clear_output()
+        if display_help:
+            if isinstance(function, str):
+    #             with show_output:
+    #                 ihelp(eval(function),show_help=show_help,show_code=show_code)
+                display(ihelp(eval(function),show_help=show_help,show_code=show_code))
+            else:
+                display(ihelp(function,show_help=show_help,show_code=show_code))
+        else:
+            display('Press show to display ')
+    #         show_output.clear_output()
+
+    output = widgets.interactive_output(show_ihelp,{'display_help':button,
+                                                   'function':dropdown,
+                                                   'show_help':check_help,
+                                                   'show_code':check_source})
+    # with out:
+    # with show_output:
+    display(full_layout, output)#,show_output)
+
 
 
 
@@ -1791,56 +1858,7 @@ def thiels_U(ys_true, ys_pred,display_equation=True,display_explanation=True):
 
 
 
-# def get_u_for_shifts(df_U, shift_list,plot_all=False,plot_best=True):
-#     import matplotlib.pyplot as plt
-#     import matplotlib as mpl
-#     from bs_ds import list2df
-#     import pandas as pd
-#     results=[['true_data_shift','U']]
 
-#     if plot_all==True:
-#         df_U['preds_from_gen'].plot(label = 'Prediction')
-#         plt.legend()
-#         plt.title('Shifted Time Series vs Predicted')
-
-
-#     for i,shift in enumerate(shift_list):
-#         if plot_all==True:
-#             df_U['true_from_gen'].shift(shift).plot(label = f'True + Shift({shift})')
-
-#         df_shift=pd.DataFrame()
-#         df_shift['true'] = df_U['true_from_gen'].shift(shift)
-#         df_shift['pred'] =df_U['preds_from_gen']
-#         df_shift.dropna(inplace=True)
-
-#         U =thiels_U(df_shift['true'], df_shift['pred'])
-#         results.append([shift,U])
-
-
-#     df_results = list2df(results, index_col='true_data_shift')
-#     if plot_best==True:
-#         shift = df_results.idxmin()[0]
-#         df_U['preds_from_gen'].plot(label = 'Prediction')
-#         df_U['true_from_gen'].shift(shift).plot(ls='--',label = f'True + Shift({shift})')
-#         plt.legend()
-#         plt.title("Best Thiel's U for Shifted Time Series")
-# #         plt.show()
-#     return df_results
-
-
-
-
-## TO CHECK FOR STRINGS IN BOTH DATASETS:
-def check_dfs_for_exp_list(df_controls, df_trolls, list_of_exp_to_check):
-    df_resample = df_trolls
-    for exp in list_of_exp_to_check:
-    #     exp = '[Pp]eggy'
-        print(f'For {exp}:')
-        print(f"\tControl tweets: {len(df_controls.loc[df_controls['content_min_clean'].str.contains(exp)])}")
-        print(f"\tTroll tweets: {len(df_resample.loc[df_resample['content_min_clean'].str.contains(exp)])}\n")
-
-# list_of_exp_to_check = ['[Pp]eggy','[Mm]exico','nasty','impeachment','[mM]ueller']
-# check_dfs_for_exp_list(df_controls, df_resample, list_of_exp_to_check=list_of_exp_to_check)
 
 
 def get_group_texts_tokens(df_small, groupby_col='troll_tweet', group_dict={0:'controls',1:'trolls'}, column='content_stopped'):
@@ -2049,54 +2067,112 @@ def train_test_val_split(X,y,test_size=0.20,val_size=0.1):
 
 
 
-def plot_keras_history(history):
+def plot_keras_history(history, title_text='',fig_size=(6,6),save_fig=False,no_val_data=False, filename_base='results/keras_history'):
     """Plots the history['acc','val','val_acc','val_loss']"""
-    import matplotlib.pyplot as plt
-    acc = history.history['acc']
-    loss = history.history['loss']
-    val_acc = history.history['val_acc']
-    val_loss = history.history['val_loss']
-    x = range(1,len(acc)+1)
+    import functions_combined_BEST as ji
 
-    fig,ax = plt.subplots(nrows=2, ncols=1, figsize=(6,8))
-    ax[0].plot(x, acc,'b',label='Training Acc')
-    ax[0].plot(x, val_acc,'r',label='Validation Acc')
-    ax[0].legend()
-    ax[1].plot(x, loss,'b',label='Training Loss')
-    ax[1].plot(x, val_loss, 'r', label='Validation Loss')
-    ax[1].legend()
-    plt.show()
+
+    metrics = ['acc','loss','val_acc','val_loss']
+
+    import matplotlib.pyplot as plt
+    import matplotlib as mpl
+
+    plot_metrics={}
+    for metric in metrics:
+        if metric in history.history.keys():
+            plot_metrics[metric] = history.history[metric]
+
+    # Set font styles:
+    fontDict = {
+        'xlabel':{
+            'fontsize':14,
+            'fontweight':'normal',
+            },
+        'ylabel':{
+            'fontsize':14,
+            'fontweight':'normal',
+            },
+        'title':{
+            'fontsize':14,
+            'fontweight':'normal',
+            'ha':'center',
+            }
+        }
+    # x = range(1,len(acc)+1)
+    if no_val_data == True:
+        fig_size = (fig_size[0],fig_size[1]//2)
+        fig, ax = plt.subplots(figsize=fig_size)
+
+        for k,v in plot_metrics.items():
+            if 'acc' in k:
+                color='b'
+                label = 'Accuracy'
+            if 'loss' in k:
+                color='r'
+                label = 'Loss'
+            ax.plot(range(len(v)),v, label=label,color=color)
+
+        plt.title('Model Training History')
+        fig.suptitle(title_text,y=1.01,**fontDict['title'])
+        ax.set_xlabel('Training Epoch',**fontDict['xlabel'])
+        ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
+
+        plt.legend()
+        plt.show()
+
+    else:
+        ## CREATE SUBPLOTS
+        fig,ax = plt.subplots(nrows=2, ncols=1, figsize=fig_size, sharex=True)
+
+        # Set color scheme for data type
+        color_dict = {'val':'red','default':'b'}
+
+
+
+        # Title Subplots
+        fig.suptitle(title_text,y=1.01,**fontDict['title'])
+        ax[1].set_xlabel('Training Epoch',**fontDict['xlabel'])
+
+        ## Set plot params by metric and data type
+        for metric, data in plot_metrics.items():
+            x = range(1,len(data)+1)
+            ## SET AXIS AND LABEL BY METRIC TYPE
+            if 'acc' in metric.lower():
+                ax_i = 0
+                metric_title = 'Accuracy'
+
+            elif 'loss' in metric.lower():
+                ax_i=1
+                metric_title = 'Loss'
+
+            ## SET COLOR AND LABEL PREFIX BY DATA TYPE
+            if 'val' in metric.lower():
+                color = color_dict['val']
+                data_label = 'Validation '+metric_title
+
+            else:
+                color = color_dict['default']
+                data_label='Training ' + metric_title
+
+            ## PLOT THE CURRENT METRIC AND LABEL
+            ax[ax_i].plot(x, data, color=color,label=data_label)
+            ax[ax_i].set_ylabel(metric_title,**fontDict['ylabel'])
+            ax[ax_i].legend()
+
+        plt.tight_layout()
+        plt.show()
+
+    if save_fig:
+        if '.' not in filename_base:
+            filename = filename_base+'.png'
+        else:
+            filename = filename_base
+        fig.savefig(filename,facecolor='white', format='png', frameon=True)
+
+        print(f'[io] Figure saved as {filename}')
     return fig, ax
 
 
-def plot_keras_history_custom(history,metrics=[('acc','loss'),('val_acc','val_loss')], figsize=(8,6)):
-    """Plots the history['acc','val','val_acc','val_loss']"""
-    plot_dict = {}
-
-    import matplotlib.pyplot as plt
-    for i,metric_tuple in enumerate(metrics):
-
-        plot_dict[i] = {}
-
-        for metric in metric_tuple:
-            plot_dict[i][metric]= history.history[metric]
-
-
-    x_len = len(history.history[metrics[0][0]])
-    x = range(1,x_len)
-
-    fig,ax = plt.subplots(nrows=metrics.shape[0], ncols=1, figsize=figsize)
-
-    for p in plot_dict.keys():
-
-        for k,v in plot_dict[p]:
-            ax[p].plot(x, plot_dict[p][v], label=k)
-            ax[p].legend()
-
-    plt.tight_layout()
-    plt.show()
-
-    return fig, ax
 
 
 def plot_auc_roc_curve(y_test, y_test_pred):
@@ -2179,9 +2255,11 @@ def quick_table(tuples, col_names=None, caption =None,display_df=True):
 
 
 def get_time(timeformat='%m-%d-%y_%T%p',raw=False,filename_friendly= False,replacement_seperator='-'):
-    """Gets current time in local time zone.
+    """
+    Gets current time in local time zone.
     if raw: True then raw datetime object returned without formatting.
-    if filename_friendly: replace ':' with replacement_separator """
+    if filename_friendly: replace ':' with replacement_separator
+    """
     from datetime import datetime
     from pytz import timezone
     from tzlocal import get_localzone
@@ -2189,7 +2267,7 @@ def get_time(timeformat='%m-%d-%y_%T%p',raw=False,filename_friendly= False,repla
     now_utc = datetime.now(timezone('UTC'))
     now_local = now_utc.astimezone(get_localzone())
 
-    if raw is True:
+    if raw == True:
         return now_local
 
     else:
@@ -2201,27 +2279,40 @@ def get_time(timeformat='%m-%d-%y_%T%p',raw=False,filename_friendly= False,repla
         return now
 
 
-def auto_filename_time(prefix='model',sep='_',timeformat='%m-%d-%Y_%I%M%p'):
-    """Generates a filename with a  base string + sep+ the current datetime formatted as timeformat."""
+def auto_filename_time(prefix='',sep=' ',suffix='',ext='',fname_friendly=True,timeformat='%m-%d-%Y %T'):
+    '''Generates a filename with a  base string + sep+ the current datetime formatted as timeformat.
+     filename = f"{prefix}{sep}{suffix}{sep}{timesuffix}{ext}
+    '''
     if prefix is None:
         prefix=''
-    timesuffix=get_time(timeformat=timeformat, filename_friendly=True)
-    filename = f"{prefix}{sep}{timesuffix}"
+    timesuffix=get_time(timeformat=timeformat, filename_friendly=fname_friendly)
+
+    filename = f"{prefix}{sep}{suffix}{sep}{timesuffix}{ext}"
     return filename
 
 
-def save_model_weights_params(model,model_params=None, filename_prefix = 'models/model', check_if_exists = True,
- auto_increment_name=True, auto_filename_suffix=True,  sep='_', suffix_time_format = '%m-%d-%Y_%I%M%p'):
+
+
+def save_model_weights_params(model,model_params=None, filename_prefix = 'models/model', filename_suffix='', check_if_exists = True,
+ auto_increment_name=True, auto_filename_suffix=True, save_model_layer_config_xlsx=True, sep='_', suffix_time_format = '%m-%d-%Y_%I%M%p'):
     """Saves a fit Keras model and its weights as a .json file and a .h5 file, respectively.
     auto_filename_suffix will use the date and time to give the model a unique name (avoiding overwrites).
     Returns the model_filename and weight_filename"""
     import json
     import pickle
+    from functions_combined_BEST import auto_filename_time
+    import functions_combined_BEST as ji
+
     # create base model filename
     if auto_filename_suffix:
         filename = auto_filename_time(prefix=filename_prefix, sep=sep,timeformat=suffix_time_format )
+    else:
+        filename=filename_prefix
 
-    full_filename = filename+'.json'
+
+    ## Add suffix to filename
+    full_filename = filename + filename_suffix
+    full_filename = full_filename+'.json'
 
 
     ## check if file exists
@@ -2250,60 +2341,86 @@ def save_model_weights_params(model,model_params=None, filename_prefix = 'models
 
             print(f'{filename} already exists... incrementing filename to {full_filename}.')
 
-
+    ## SAVE MODEL AS JSON FILE
     # convert model to json
     model_json = model.to_json()
 
+    ji.create_required_folders(full_filename)
     # save json model to json file
     with open(full_filename, "w") as json_file:
         json.dump(model_json,json_file)
     print(f'Model saved as {full_filename}')
 
+
+    ## GET BASE FILENAME WITHOUT EXTENSION
+    file_ext=full_filename.split('.')[-1]
+    filename = full_filename.replace(f'.{file_ext}','')
+
+    ## SAVE MODEL WEIGHTS AS HDF5 FILE
+    weight_filename = filename+'_weights.h5'
+    model.save_weights(weight_filename)
+    print(f'Weights saved as {weight_filename}')
+
+
+    ## SAVE MODEL LAYER CONFIG TO EXCEL FILE
+    if save_model_layer_config_xlsx == True:
+
+        excel_filename=filename+'_model_layers.xlsx'
+        # Get modelo config df
+        df_model_config = get_model_config_df(model)
+        df_model_config.to_excel(excel_filename, sheet_name='Keras Model Config')
+        print(f"Model configuration table saved as {excel_filename }")
+
+
+
+    ## SAVE MODEL PARAMS TO PICKLE
     if model_params is not None:
         # import json
         import inspect
         import pickle# as pickle
+
         def replace_function(function):
             import inspect
             return inspect.getsource(function)
 
-        # replace any functions with their source code before saving params
-        for k,v in model_params.items():
+        ## Select good model params to save
+        model_params_to_save = {}
+        model_params_to_save['data_params'] = model_params['data_params']
+        model_params_to_save['input_params'] = model_params['input_params']
 
-            if inspect.isfunction(v):
-                model_params[k] = replace_function(v)
+        model_params_to_save['compile_params'] = {}
+        model_params_to_save['compile_params']['loss'] = model_params['compile_params']['loss']
 
-            elif isinstance(v,dict):
+        ## Check for and replace functins in metrics
+        metric_list =  model_params['compile_params']['metrics']
 
-                for k2,v2 in v.items():
-                    if inspect.isfunction(v2):
-                        model_params[k][k2]=replace_function(v2)
-
-                    elif isinstance(v2,dict):
-
-                        for k3,v3 in v2.items():
-
-                            if inspect.isfunction(v3):
-                                model_params[k][k2][k3]=replace_function(v3)
+        # replace functions in metric list with source code
+        for i,metric in enumerate(metric_list):
+            if inspect.isfunction(metric):
+                metric_list[i] = replace_function(metric)
+        metric_list =  model_params['compile_params']['metrics']
 
 
+        # model_params_to_save['compile_params']['metrics'] = model_params['compile_params']['metrics']
+        model_params_to_save['compile_params']['optimizer_name'] = model_params['compile_params']['optimizer_name']
+        model_params_to_save['fit_params'] = model_params['fit_params']
 
-        # get filename without extension
-        file_ext=full_filename.split('.')[-1]
-        param_filename = full_filename.replace(f'.{file_ext}','')
-        param_filename+='_params.pkl'
-        with open(param_filename,'wb') as param_file:
-            pickle.dump(model_params, param_file) #sort_keys=True,indent=4)
+        ## save model_params_to_save to pickle
+        model_params_filename=filename+'_model_params.pkl'
+        try:
+            with open(model_params_filename,'wb') as param_file:
+                pickle.dump(model_params_to_save, param_file) #sort_keys=True,indent=4)
+        except:
+            print('Pickling failed')
+    else:
+        model_params_filename=''
+
+    filename_dict = {'model':filename,'weights':weight_filename,'excel':excel_filename,'params':model_params_filename}
+    return filename_dict#[filename, weight_filename, excel_filename, model_params_filename]
 
 
-    # serialize weights to HDF5
-    weight_filename = full_filename+'_weights.h5'
-    model.save_weights(weight_filename)
-    print(f'Weights saved as {weight_filename}')
-    return filename, weight_filename
-
-
-def load_model_weights_params(base_filename = 'models/model_',load_params=True, model_filename=None,weight_filename=None, trainable=False,verbose=1):
+def load_model_weights_params(base_filename = 'models/model_',load_model_params=True, load_model_layers_excel=True, trainable=False,
+model_filename=None,weight_filename=None, model_params_filename = None, excel_filename=None, verbose=1):
     """Loads in Keras model from json file and loads weights from .h5 file.
     optional set model layer trainability to False"""
     from IPython.display import display
@@ -2313,21 +2430,27 @@ def load_model_weights_params(base_filename = 'models/model_',load_params=True, 
     ## Set model and weight filenames from base_filename if None:
     if model_filename is None:
         model_filename = base_filename+'.json'
+
     if weight_filename is None:
         weight_filename = base_filename+'_weights.h5'
 
-    model_params_filename = base_filename+'_params.json'
+    if model_params_filename is None:
+        model_params_filename = base_filename + '_model_params.pkl'
 
-    # Load json and create model
+    if excel_filename is None:
+        excel_filename = base_filename + '_model_layers.xlsx'
+
+
+    ## LOAD JSON MODEL
     with open(model_filename, 'r') as json_file:
-        loaded_model_json = json_file.read()
+        loaded_model_json = json.loads(json_file.read())
     loaded_model = model_from_json(loaded_model_json)
 
-    # Load weights into new model
+    ## LOAD MODEL WEIGHTS
     loaded_model.load_weights(weight_filename)
     print(f"Loaded {model_filename} and loaded weights from {weight_filename}.")
 
-    # set layer trainability
+    # SET LAYER TRAINABILITY
     if trainable is False:
         for i, model_layer in enumerate(loaded_model.layers):
             loaded_model.get_layer(index=i).trainable=False
@@ -2336,18 +2459,32 @@ def load_model_weights_params(base_filename = 'models/model_',load_params=True, 
         if verbose>1:
             print(model_layer,loaded_model.get_layer(index=i).trainable)
 
-    # display summary if verbose
+    # IF VERBOSE, DISPLAY SUMMARY
     if verbose>0:
         display(loaded_model.summary())
         print("Note: Model must be compiled again to be used.")
 
-    if load_params:
-        with open(model_params_filename,'r') as params_file:
-            model_params = json.load(params_file)
 
-        return loaded_model, model_params
-    else:
-        return loaded_model
+    ## START RETURN LIST WITH MODEL
+    return_list = [loaded_model]
+
+    ## LOAD MODEL_PARAMS PICKLE
+    if load_model_params:
+        import pickle
+        model_params = pickle.load(model_params_filename)
+        return_list.append(model_params)
+
+    ## LOAD EXCEL OF MODEL LAYERS CONFIG
+    if load_model_layers_excel:
+        import pandas as pd
+        df_model_layers = pd.read_excel(excel_filename)
+        return_list.append(df_model_layers)
+
+    return return_list[:]
+    #     return loaded_model, model_params
+    # else:
+    #     return loaded_model
+
 
 
 def display_dict_dropdown(dict_to_display ):
@@ -2379,3 +2516,1668 @@ def show_random_img(image_array, n=1):
         display(array_to_img(image_array[choice]))
         i+=1
     return
+
+
+def check_class_balance(df,col ='delta_price_class_int',note='',
+                        as_percent=True, as_raw=True):
+    import numpy as np
+    dashes = '---'*20
+    print(dashes)
+    print(f'CLASS VALUE COUNTS FOR COL "{col}":')
+    print(dashes)
+    # print(f'Class Value Counts (col: {col}) {note}\n')
+
+    ## Check for class value counts to see if resampling/balancing is needed
+    class_counts = df[col].value_counts()
+
+    if as_percent:
+        print('- Classes (%):')
+        print(np.round(class_counts/len(df)*100,2))
+    # if as_percent and as_raw:
+    #     # print('\n')
+    if as_raw:
+        print('- Class Counts:')
+        print(class_counts)
+    print('---\n')
+
+
+def index_report(df, label='',time_fmt = '%Y-%m-%d %T', return_index_dict=False):
+    """Sorts dataframe index, prints index's start and end points and its datetime frequency.
+    if return_index_dict=True then it returns these values in a dictionary as well as printing them."""
+    import pandas as pd
+    df.sort_index(inplace=True)
+
+    index_info = {'index_start': df.index[0].strftime(time_fmt), 'index_end':df.index[-1].strftime(time_fmt),
+                'index_freq':df.index.freq}
+
+    if df.index.freq is None:
+        try:
+            index_info['inferred_index_freq'] = pd.infer_freq(df.index)
+        except:
+            index_info['inferred_index_freq'] = 'error'
+    dashes = '---'*20
+    # print('\n')
+    print(dashes)
+    print(f"\tINDEX REPORT:\t{label}")
+    print(dashes)
+    print(f"* Index Endpoints:\n\t{df.index[0].strftime(time_fmt)} -- to -- {df.index[-1].strftime(time_fmt)}")
+    print(f'* Index Freq:\n\t{df.index.freq}')
+    # print('\n')
+    # print(dashes)
+
+    if return_index_dict == True:
+        return index_info
+    else:
+        return
+
+
+
+def undersample_df_to_match_classes(df,class_column='delta_price_class', class_values_to_keep=None,verbose=1):
+    """Resamples (undersamples) input df so that the classes in class_column have equal number of occruances.
+    If class_values_to_keep is None: uses all classes. """
+    import pandas as pd
+    import numpy as np
+
+    ##  Get value counts and classes
+    class_counts = df[class_column].value_counts()
+    classes = list(class_counts.index)
+
+    if verbose>0:
+        print('Initial Class Value Counts:')
+        print('%: ',class_counts/len(df))
+
+    ## use all classes if None
+    if class_values_to_keep is None:
+        class_values_to_keep = classes
+
+
+    ## save each group's indices in dict
+    class_dict = {}
+    for curr_class in classes:
+
+        if curr_class in class_values_to_keep:
+            class_dict[curr_class] = {}
+
+            idx = df.loc[df[class_column]==curr_class].index
+
+            class_dict[curr_class]['idx'] = idx
+            class_dict[curr_class]['count'] = len(idx)
+        else:
+            continue
+
+
+    ## determine which class count to match
+    counts = [class_dict[k]['count'] for k in class_dict.keys()]
+    # get number of samples to match
+    count_to_match = np.min(counts)
+
+    if len(np.unique(counts))==1:
+        raise Exception('Classes are already balanced')
+
+    # dict_resample = {}
+    df_sampled = pd.DataFrame()
+    for k,v in class_dict.items():
+        temp_df = df.loc[class_dict[k]['idx']]
+        temp_df =  temp_df.sample(n=count_to_match)
+        # dict_resample[k] = temp_df
+        df_sampled =pd.concat([df_sampled,temp_df],axis=0)
+
+    ## sort index of final
+    df_sampled.sort_index(ascending=False, inplace=True)
+
+    # print(df_sampled[class_column].value_counts())
+
+    if verbose>0:
+        check_class_balance(df_sampled, col=class_column)
+        # class_counts = [class_column].value_counts()
+
+        # print('Final Class Value Counts:')
+        # print('%: ',class_counts/len(df))
+
+    return df_sampled
+
+def show_del_me_code(called_by_inspect_vars=False):
+    """Prints code to copy and paste into a cell to delete vars using a list of their names.
+    Companion function inspect_variables(locals(),print_names=True) will provide var names tocopy/paste """
+    from pprint import pprint
+    if called_by_inspect_vars==False:
+        print("#[i]Call: `inspect_variables(locals(), print_names=True)` for list of var names")
+
+    del_me = """
+    del_me= []#list of variable names
+    for me in del_me:
+        try:
+            exec(f'del {me}')
+            print(f'del {me} succeeded')
+        except:
+            print(f'del {me} failed')
+            continue
+        """
+    print(del_me)
+
+
+def check_null_small(df,null_index_column=None):# return_idx=False):
+    import pandas as pd
+    import numpy as np
+
+    res = df.isna().sum()
+    idx = res.loc[res>0].index
+    print('\n')
+    print('---'*10)
+    print('Columns with Null Values')
+    print('---'*10)
+    print(res[idx])
+    print('\n')
+    if null_index_column is not None:
+        idx_null = df.loc[ df[null_index_column].isna()==True].index
+        # return_index = idx_null[idx_null==True]
+        return idx_null
+
+
+
+def find_null_idx(df,column=None):
+    """returns the indices of null values found in the series/column.
+    if df is a dataframe and column is none, it returns a dictionary
+    with the column names as a value and  null_idx for each column as the values.
+    Example Usage:
+    1)
+    >> null_idx = get_null_idx(series)
+    >> series_null_removed = series[null_idx]
+    2)
+    >> null_dict = get_null_idx()
+    """
+    import pandas as pd
+    import numpy as np
+    idx_null = []
+    # Raise an error if df is a series and a column name is given
+    if isinstance(df, pd.Series) and column is not None:
+        raise Exception('If passing a series, column must be None')
+    # else if its a series, get its idx_null
+    elif isinstance(df, pd.Series):
+        series = df
+        idx_null = series.loc[series.isna()==True].index
+
+    # else if its a dataframe and column is a string:
+    elif isinstance(df,pd.DataFrame) and isinstance(column,str):
+            series=df[column]
+            idx_null = series.loc[series.isna()==True].index
+
+    # else if its a dataframe
+    elif isinstance(df, pd.DataFrame):
+        idx_null = {}
+
+        # if no column name given, use all columns as col_list
+        if column is None:
+            col_list =  df.columns
+        # else use input column as col_list
+        else:
+            col_list = column
+
+        ## for each column, get its null idx and add to dictioanry
+        for col in col_list:
+            series = df[col]
+            idx_null[col] = series.loc[series.isna()==True].index
+    else:
+        raise Exception('Input df must be a pandas DataFrame or Series.')
+    ## return the index or dictionary idx_null
+    return idx_null
+
+
+
+def dict_dropdown(dict_to_display,title='Dictionary Contents'):
+    """Display the model_params dictionary as a dropdown menu."""
+    from ipywidgets import interact
+    from IPython.display import display
+    from pprint import pprint
+
+    dash='---'
+    print(f'{dash*4} {title} {dash*4}')
+
+    @interact(dict_to_display=dict_to_display)
+    def display_params(dict_to_display=dict_to_display):
+
+        # # if the contents of the first level of keys is dicts:, display another dropdown
+        # if dict_to_display.values()
+        display(pprint(dict_to_display))
+        return #params.values();
+
+
+def display_df_dict_dropdown(dict_to_display, selected_key=None):
+    import ipywidgets as widgets
+    from IPython.display import display
+    from ipywidgets import interact, interactive
+    import pandas as pd
+
+    key_list = list(dict_to_display.keys())
+    key_list.append('_All_')
+
+    if selected_key is not None:
+        selected_key = selected_key
+
+    def view(eval_dict=dict_to_display,selected_key=''):
+
+        from IPython.display import display
+        from pprint import pprint
+
+        if selected_key=='_All_':
+
+            key_list = list(eval_dict.keys())
+            outputs=[]
+
+            for k in key_list:
+
+                if type(eval_dict[k]) == pd.DataFrame:
+                    outputs.append(eval_dict[k])
+                    display(eval_dict[k].style.set_caption(k).hide_index())
+                else:
+                    outputs.append(f"{k}:\n{eval_dict[k]}\n\n")
+                    pprint('\n',eval_dict[k])
+
+            return outputs#pprint(outputs)
+
+        else:
+                k = selected_key
+#                 if type(eval_dict(k)) == pd.DataFrame:
+                if type(eval_dict[k]) == pd.DataFrame:
+                     display(eval_dict[k].style.set_caption(k))
+                else:
+                    pprint(eval_dict[k])
+                return [eval_dict[k]]
+
+    w= widgets.Dropdown(options=key_list,value='_All_', description='Key Word')
+
+    # old, simple
+    out = widgets.interactive_output(view, {'selected_key':w})
+
+
+    # new, flashier
+    output = widgets.Output(layout={'border': '1px solid black'})
+    if type(out)==list:
+        output.append_display_data(out)
+#         out =widgets.HBox([x for x in out])
+    else:
+        output = out
+#     widgets.HBox([])
+    final_out =  widgets.VBox([widgets.HBox([w]),output])
+    display(final_out)
+    return final_out#widgets.VBox([widgets.HBox([w]),output])#out])
+
+
+def def_plotly_date_range_widgets(my_rangeselector=None,as_layout=True,as_dict=False):
+    """old name; def_my_plotly_stock_layout,
+    REPLACES DEF_RANGE_SELECTOR"""
+    if as_dict:
+        as_layout=False
+
+    from plotly import graph_objs as go
+    if my_rangeselector is None:
+        my_rangeselector={'bgcolor': 'lightgray', #rgba(150, 200, 250, 1)',
+                            'buttons': [{'count': 1, 'label': '1m', 'step': 'month', 'stepmode': 'backward'},
+                                        {'count':3,'label':'3m','step':'month','stepmode':'backward'},
+                                        {'count':6,'label':'6m','step':'month','stepmode':'backward'},
+                                        {'count': 1, 'label': '1y', 'step': 'year', 'stepmode': 'backward'},
+                                        {'step':'all'}, {'count':1,'step':'year', 'stepmode':'todate'}
+                                        ],
+                        'visible': True}
+
+    my_layout = {'xaxis':{
+        'rangeselector': my_rangeselector,
+        'rangeslider':{'visible':True},
+                         'type':'date'}}
+
+    if as_layout:
+        return go.Layout(my_layout)
+    else:
+        return my_layout
+
+def def_cufflinks_solar_theme(as_layout=True, as_dict=False):
+    from plotly import graph_objs as go
+    if as_dict:
+        as_layout=False
+    # if as_layout and as_dict:
+        # raise Exception('only 1 of as_layout, as_dict can be True')
+
+    theme_dict = {'annotations': {'arrowcolor': 'grey11', 'fontcolor': 'beige'},
+     'bargap': 0.01,
+     'colorscale': 'original',
+     'layout': {'legend': {'bgcolor': 'black', 'font': {'color': 'beige'}},
+                'paper_bgcolor': 'black',
+                'plot_bgcolor': 'black',
+                'titlefont': {'color': 'beige'},
+                'xaxis': {'gridcolor': 'lightgray',
+                          'showgrid': True,
+                          'tickfont': {'color': 'darkgray'},
+                          'titlefont': {'color': 'beige'},
+                          'zerolinecolor': 'gray'},
+                'yaxis': {'gridcolor': 'lightgrey',
+                          'showgrid': True,
+                          'tickfont': {'color': 'darkgray'},
+                          'titlefont': {'color': 'beige'},
+                          'zerolinecolor': 'grey'}},
+     'linewidth': 1.3}
+
+    theme = go.Layout(theme_dict['layout'])
+    if as_layout:
+        return theme
+    if as_dict:
+        return theme.to_plotly_json()
+
+
+
+def def_plotly_solar_theme_with_date_selector_slider(as_layout=True, as_dict=False):
+    ## using code above
+    if as_dict:
+        as_layout=False
+    solar_theme = def_cufflinks_solar_theme(as_layout=True)#['layout']
+    stock_range_widget_layout = def_plotly_date_range_widgets()
+    new_layout = solar_theme.update(stock_range_widget_layout)
+    # new_layout = merge_dicts_by_keys(solar_theme['layout'],my_layout)
+    if as_layout:
+        return new_layout
+    if as_dict:
+        return new_layout.to_plotly_json()
+
+
+
+
+def match_data_colors(fig1,fig2):
+    color_dict = {}
+    for data in fig1['data']:
+        name = data['name']
+        color_dict[name] = {'color':data['line']['color']}
+
+    data_list =  fig2['data']
+    for i,trace in enumerate(data_list):
+        if trace['name'] in color_dict.keys():
+            data_list[i]['line']['color'] = color_dict[trace['name']]['color']
+    fig2['data'] = data_list
+    return fig1,fig2
+
+
+
+
+
+def plotly_true_vs_preds_subplots(df_model_preds,
+                                true_train_col='true_train_price',
+                                true_test_col='true_test_price',
+                                pred_test_columns='pred_from_gen',
+                                subplot_mode='lines+markers',marker_size=5,
+                                title='S&P 500 True Price Vs Predictions ($)',
+                                theme='solar',
+                                verbose=0,figsize=(1000,500),
+                                       debug=False,
+                                show_fig=True):
+    """y_col_kws={'col_name':line_color}"""
+
+    import pandas as pd
+    import numpy as np
+    import plotly.graph_objs as go
+    import cufflinks as cf
+    cf.go_offline()
+
+    from plotly.offline import iplot#download_plotlyjs, init_notebook_mode, plot, iplot
+#     init_notebook_mode(connected=True)
+    import functions_combined_BEST as ji
+    import bs_ds as bs
+
+
+    ### MAKE THE LIST OF COLUMNS TO CREATE SEPARATE DATAFRAMES TO PLOT
+    if isinstance(pred_test_columns,str):
+        pred_test_columns = [pred_test_columns]
+    if pred_test_columns is None:
+        exclude_list = [true_train_col,true_test_col]
+        pred_test_columns = [col for col in df_model_preds.columns if col not in exclude_list]
+
+    fig1cols = [true_train_col,true_test_col]
+    fig2cols = [true_test_col]
+
+    [fig1cols.append(x) for x in pred_test_columns]
+    [fig2cols.append(x) for x in pred_test_columns]
+
+    ## CREATE FIGURE DATAFRAMES
+    fig1_df = df_model_preds[fig1cols]
+    fig2_df = df_model_preds[fig2cols].dropna()
+
+
+
+
+    ## Get my_layout
+    fig_1 = ji.plotly_time_series(fig1_df,theme=theme,show_fig=False, as_figure=True,
+                                  iplot_kwargs={'mode':'lines'})
+
+    fig_2 = ji.plotly_time_series(fig2_df,theme=theme,show_fig=False,as_figure=True,
+                                  iplot_kwargs={'mode':subplot_mode,
+                                               'size':marker_size})
+
+    fig_1,fig_2 = match_data_colors(fig_1,fig_2)
+
+    ## Create base layout and add figsize
+    base_layout = ji.def_plotly_solar_theme_with_date_selector_slider()
+    update_dict={'height':figsize[1],
+                 'width':figsize[0],
+                 'title': title,
+                'xaxis':{'autorange':True, 'rangeselector':{'y':-0.3}},
+                 'yaxis':{'autorange':True},
+                 'legend':{'orientation':'h',
+                 'y':1.0,
+                 'bgcolor':None}
+                }
+
+    base_layout.update(update_dict)
+    base_layout=base_layout.to_plotly_json()
+
+    # Create combined figure with uneven-sized plots
+    specs= [[{'colspan':3},None,None,{'colspan':2},None]]#specs= [[{'colspan':2},None,{'colspan':1}]]
+    big_fig = cf.subplots(theme=theme,
+                          base_layout=base_layout,
+                          figures=[fig_1,fig_2],
+                          horizontal_spacing=0.1,
+                          shape=[1,5],specs=specs)#,
+    # big_fig['layout']['legend']['bgcolor']=None
+    big_fig['layout']['legend']['y'] = 1.0
+    big_fig['layout']['xaxis']['rangeselector']['y']=-0.3
+    big_fig['layout']['xaxis2']['rangeselector'] = {'bgcolor': 'lightgray',
+                                                    'buttons': [
+                                                        {'count': 1,
+                                                         'label': '1d',
+                                                         'step': 'day',
+                                                         'stepmode': 'backward'},
+                                                        {'step':'all'}
+                                                    ],'visible': True,
+                                                    'y':-0.5}
+    update_layout_dict={
+                        'yaxis':{
+                            'title':{'text': 'True Train/Test Price vs Predictions',
+                                     'font':{'color':'white'}}},
+                        'yaxis2':{'title':{'text':'Test Price vs Pred Price',
+                                           'font':{'color':'white'}}},
+                        'title':{'text':'S&P 500 True Price Vs Predictions ($)',
+                        'font':{'color':'white'},
+                        'y':0.95, 'pad':{'b':0.1,'t':0.1}
+                        }
+                       }
+
+
+    layout = go.Layout(big_fig['layout'])
+    # title_layout = go.layout.Title(text='S&P 500 True Price Vs Predictions ($)',font={'color':'white'},pad={'b':0.1,'t':0.1}, y=0.95)#                                'font':{'color':'white'}
+    layout = layout.update(update_layout_dict)
+    # big_fig['layout'] = layout.to_plotly_json()
+    big_fig = go.Figure(data=big_fig['data'],layout=layout)
+
+    fig_dict={}
+    fig_dict['fig_1']=fig_1
+    fig_dict['fig_2'] =fig_2
+    fig_dict['big_fig']=big_fig
+
+
+    if show_fig:
+        iplot(big_fig)
+    if debug == True:
+        return fig_dict
+    else:
+        return big_fig
+
+
+def plotly_time_series(stock_df,x_col=None, y_col=None,layout_dict=None,title='S&P500 Hourly Price',theme='solar',
+as_figure = True,show_fig=True,fig_dim=(900,400),iplot_kwargs=None): #,name='S&P500 Price'):
+    import plotly
+    from IPython.display import display
+
+    # else:
+    import plotly.offline as py
+    from plotly.offline import plot, iplot, init_notebook_mode
+
+    import plotly.tools as tls
+    import plotly.graph_objs as go
+    import cufflinks as cf
+    cf.go_offline()
+    init_notebook_mode(connected=False)
+
+    # py.init_notebook_mode(connected=True)
+    # Set title
+    if title is None:
+        title = "Time series with range slider and selector"
+
+    # %matplotlib inline
+    if plotly.__version__<'4.0':
+        if theme=='solar':
+            solar_layout = def_cufflinks_solar_theme(as_layout=True)
+            range_widgets = def_plotly_date_range_widgets(as_layout=True)
+            my_layout = solar_layout.update(range_widgets)
+        else:
+            my_layout = def_plotly_date_range_widgets()
+
+        ## Define properties to update layout
+        update_dict = {'title':
+                    {'text': title},
+                    'xaxis':{'title':{'text':'Market Trading Day-Hour'}},
+                    'yaxis':{'title':{'text':'Closing Price (USD)'}},
+                    'height':fig_dim[1],
+                    'width':fig_dim[0]}
+        my_layout.update(update_dict)
+
+
+        ## UPDATE LAYOUT WITH ANY OTHER USER PARAMS
+        if layout_dict is not None:
+            my_layout = my_layout.update(layout_dict)
+
+        if iplot_kwargs is None:
+
+            # if no columns specified, use the whole df
+            if (y_col is None) and (x_col is None):
+                fig = stock_df.iplot( layout=my_layout,world_readable=True,asFigure=True)#asDates=True,
+
+            # else plot y_col
+            elif (y_col is not None) and (x_col is None):
+                fig = stock_df[y_col].iplot(layout=my_layout,world_readable=True,asFigure=True)#asDates=True,
+
+            #  else plot x_col vs y_col
+            else:
+                fig = stock_df.iplot(x=x_col,y=y_col,  layout=my_layout,world_readable=True,asFigure=True)#asDates=True,
+
+        else:
+
+            # if no columns specified, use the whole df
+            if (y_col is None) and (x_col is None):
+                fig = stock_df.iplot( layout=my_layout,world_readable=True,asFigure=True,**iplot_kwargs)#asDates=True,
+
+            # else plot y_col
+            elif (y_col is not None) and (x_col is None):
+                fig = stock_df[y_col].iplot(asDates=True, layout=my_layout,world_readable=True,asFigure=True,**iplot_kwargs)
+
+            #  else plot x_col vs y_col
+            else:
+                fig = stock_df.iplot(x=x_col,y=y_col,  layout=my_layout,world_readable=True,asFigure=True,**iplot_kwargs)#asDates=True,
+
+
+    ## IF using verson v4.0 of plotly
+    else:
+        # LEARNING HOW TO CUSTOMIZE SLIDER
+        # ** https://plot.ly/python/range-slider/
+        fig = go.Figure()
+
+        fig.update_layout(
+            title_text=title
+        )
+
+        fig.add_trace(go.Scatter(x=stock_df[x_col], y=stock_df[y_col]))#, name=name)) #df.Date, y=df['AAPL.Low'], name="AAPL Low",
+        #                          line_color='dimgray'))
+        # Add range slider
+        fig.update_layout(
+            xaxis=go.layout.XAxis(
+
+                rangeselector=dict(
+                    buttons=list([
+                        dict(count=1,
+                            label="1m",
+                            step="month",
+                            stepmode="backward"),
+                        dict(count=6,
+                            label="6m",
+                            step="month",
+                            stepmode="backward"),
+                        dict(count=1,
+                            label="YTD",
+                            step="year",
+                            stepmode="todate"),
+                        dict(count=1,
+                            label="1y",
+                            step="year",
+                            stepmode="backward"),
+                        dict(step="all")
+                    ])
+                ),
+                rangeslider=dict(
+                    visible=True
+                ),
+                type="date"
+            ),
+
+            yaxis = go.layout.YAxis(
+                        autorange=True,
+                        title=go.layout.yaxis.Title(
+                            text = 'S&P500 Price',
+                            font=dict(
+                                # family="Courier New, monospace",
+                                size=18,
+                                color="#7f7f7f")
+                        )
+                )
+            )
+
+    if show_fig:
+        iplot(fig)
+    if as_figure:
+        return fig
+
+
+
+def preview_dict(d, n=5,print_or_menu='print',return_list=False):
+    """Previews the first n keys and values from the dict"""
+    import functions_combined_BEST as ji
+    from pprint import pprint
+    list_keys = list(d.keys())
+    prev_d = {}
+    for key in list_keys[:n]:
+        prev_d[key]=d[key]
+
+    if 'print' in print_or_menu:
+        pprint(prev_d)
+    elif 'menu' in print_or_menu:
+        ji.display_dict_dropdown(prev_d)
+    else:
+        raise Exception("print_or_menu must be 'print' or 'menu'")
+
+    if return_list:
+        out = [(k,v) for k,v in prev_d.items()]
+        return out
+    else:
+        pass
+
+
+def disp_df_head_tail(df,n_head=3, n_tail=3,head_capt='df.head',tail_capt='df.tail'):
+    """Displays the df.head(n_head) and df.tail(n_tail) and sets captions using df.style"""
+    from IPython.display import display
+    import pandas as pd
+    df_h = df.head(n_head).style.set_caption(head_capt)
+    df_t = df.tail(n_tail).style.set_caption(tail_capt)
+    display(df_h, df_t)
+
+
+def create_required_folders(full_filenamepath,folder_delim='/',verbose=1):
+    """Accepts a full file name path include folders with '/' as default delimiter.
+    Recursively checks for all sub-folders in filepath and creates those that are missing."""
+    import os
+    ## Creating folders needed
+    check_for_folders = full_filenamepath.split(folder_delim)#'/')
+
+    # if the splits creates more than 1 filepath:
+    if len(check_for_folders)==1:
+        return print('[!] No folders detected in provided full_filenamepath')
+    else:# len(check_for_folders) >1:
+
+        # set first foler to check
+        check_path = check_for_folders[0]
+
+        if check_path not in os.listdir():
+            if verbose>0:
+                print(f'\t- creating folder "{check_path}"')
+            os.mkdir(check_path)
+
+        ## handle multiple subfolders
+        if len(check_for_folders)>2:
+
+            ## for each subfolder:
+            for folder in check_for_folders[1:-1]:
+                base_folder_contents = os.listdir(check_path)
+
+                # add the subfolder to prior path
+                check_path = check_path + '/' + folder
+
+                if folder not in base_folder_contents:#os.listdir():
+                    if verbose>0:
+                        print(f'\t- creating folder "{check_path}"')
+                    os.mkdir(check_path)
+        if verbose>1:
+            print('Finished. All required folders have been created.')
+        else:
+            return
+
+
+def inspect_variables(local_vars = None,sort_col='size',exclude_funcs_mods=True, top_n=10,return_df=False,always_display=True,
+show_how_to_delete=True,print_names=False):
+    """Displays a dataframe of all variables and their size in memory, with the
+    largest variables at the top."""
+    import sys
+    import inspect
+    import pandas as pd
+    from IPython.display import display
+    if local_vars is None:
+        raise Exception('Must pass "locals()" in function call. i.e. inspect_variables(locals())')
+
+
+    glob_vars= [k for k in globals().keys()]
+    loc_vars = [k for k in local_vars.keys()]
+
+    var_list = glob_vars+loc_vars
+
+    var_df = pd.DataFrame(columns=['variable','size','type'])
+
+    exclude = ['In','Out']
+    var_list = [x for x in var_list if (x.startswith('_') == False) and (x not in exclude)]
+
+    i=0
+    for var in var_list:#globals().items():#locals().items():
+
+        if var in loc_vars:
+            real_var = local_vars[var]
+        elif var in glob_vars:
+            real_var = globals()[var]
+        else:
+            print(f"{var} not found.")
+
+        var_size = sys.getsizeof(real_var)
+
+        var_type = []
+        if inspect.isfunction(real_var):
+            var_type = 'function'
+            if exclude_funcs_mods:
+                continue
+        elif inspect.ismodule(real_var):
+            var_type = 'module'
+            if exclude_funcs_mods:
+                continue
+        elif inspect.isbuiltin(real_var):
+            var_type = 'builtin'
+        elif inspect.isclass(real_var):
+            var_type = 'class'
+        else:
+
+            var_type = real_var.__class__.__name__
+
+
+        var_row = pd.Series({'variable':var,'size':var_size,'type':var_type})
+        var_df.loc[i] = var_row#pd.concat([var_df,var_row],axis=0)#.join(var_row,)
+        i+=1
+
+    # if exclude_funcs_mods:
+    #     var_df = var_df.loc[var_df['type'] not in ['function', 'module'] ]
+
+    var_df.sort_values(sort_col,ascending=False,inplace=True)
+    var_df.reset_index(inplace=True,drop=True)
+    var_df.set_index('variable',inplace=True)
+    var_df = var_df[['type','size']]
+
+    if top_n is not None:
+        var_df = var_df.iloc[:top_n]
+
+
+
+    if always_display:
+        display(var_df.style.set_caption('Current Variables by Size in Memory'))
+
+    if show_how_to_delete:
+        print('---'*15)
+        print('## CODE TO DELETE MANY VARS AT ONCE:')
+        show_del_me_code(called_by_inspect_vars=True)
+
+
+    if print_names ==False:
+        print('#[i] set `print_names=True` for var names to copy/paste.')
+        print('---'*15)
+    else:
+        print('---'*15)
+        print('Variable Names:\n')
+        print_me = [f"{str(x)}" for x in var_df.index]
+        print(print_me)
+
+    if return_df:
+        return var_df
+
+
+
+def replace_bad_filename_chars(filename,replace_spaces=False, replace_with='_'):
+    """removes any characters not allowed in Windows filenames"""
+    bad_chars= ['<','>','*','/',':','\\','|','?']
+    if replace_spaces:
+        bad_chars.append(' ')
+
+    for char in bad_chars:
+        filename=filename.replace(char,replace_with)
+
+    # verify name is not too long for windows
+    if len(filename)>255:
+        filename = filename[:256]
+    return filename
+
+
+
+
+def evaluate_classification_model(model, history, X_train,X_test,y_train,y_test, binary_classes=True,
+                            conf_matrix_classes= ['Decrease','Increase'],
+                            normalize_conf_matrix=True,conf_matrix_figsize=(8,4),save_history=False,
+                            history_filename ='results/keras_history.png', save_conf_matrix_png=False,
+                            conf_mat_filename= 'results/confusion_matrix.png',save_summary=False,
+                            summary_filename = 'results/model_summary.txt',auto_unique_filenames=True):
+
+    """Evaluates kera's model's performance, plots model's history,displays classification report,
+    and plots a confusion matrix.
+    conf_matrix_classes are the labels for the matrix. [negative, positive]
+    Returns df of classification report and fig object for  confusion matrix's plot."""
+
+    from sklearn.metrics import roc_auc_score, roc_curve, classification_report,confusion_matrix
+    import bs_ds as bs
+    import functions_combined_BEST as ji
+    from IPython.display import display
+    import pandas as pd
+    import matplotlib as mpl
+    numFmt = '.4f'
+    num_dashes = 30
+
+    # results_list=[['Metric','Value']]
+    # metric_list = ['accuracy','precision','recall','f1']
+    print('---'*num_dashes)
+    print('\tTRAINING HISTORY:')
+    print('---'*num_dashes)
+
+    if auto_unique_filenames:
+        ## Get same time suffix for all files
+        time_suffix = ji.auto_filename_time(fname_friendly=True)
+
+        filename_dict= {'history':history_filename,'conf_mat':conf_mat_filename,'summary':summary_filename}
+        ## update filenames
+        for filetype,filename in filename_dict.items():
+            if '.' in filename:
+                filename_dict[filetype] = filename.split('.')[0]+time_suffix + '.'+filename.split('.')[-1]
+            else:
+                if filetype =='summary':
+                    ext='.txt'
+                else:
+                    ext='.png'
+                filename_dict[filetype] = filename+time_suffix + ext
+
+
+        history_filename = filename_dict['history']
+        conf_mat_filename = filename_dict['conf_mat']
+        summary_filename = filename_dict['summary']
+
+
+    ## PLOT HISTORY
+    ji.plot_keras_history( history,filename_base=history_filename, save_fig=save_history,title_text='')
+
+    print('\n')
+    print('---'*num_dashes)
+    print('\tEVALUATE MODEL:')
+    print('---'*num_dashes)
+
+    print('\n- Evaluating Training Data:')
+    loss_train, accuracy_train = model.evaluate(X_train, y_train, verbose=True)
+    print(f'    - Accuracy:{accuracy_train:{numFmt}}')
+    print(f'    - Loss:{loss_train:{numFmt}}')
+
+    print('\n- Evaluating Test Data:')
+    loss_test, accuracy_test = model.evaluate(X_test, y_test, verbose=True)
+    print(f'    - Accuracy:{accuracy_test:{numFmt}}')
+    print(f'    - Loss:{loss_test:{numFmt}}\n')
+
+
+    ## Get model predictions
+    y_hat_train = model.predict_classes(X_train)
+    y_hat_test = model.predict_classes(X_test)
+
+    if binary_classes==False:
+        y_train = y_train.argmax(axis=1)
+        y_test = y_test.argmax(axis=1)
+        # y_hat_train = y_hat_train.argmax(axis=1)
+        # y_hat_test = y_hat_test.argmax(axis=1)
+        # matrix = metrics.confusion_matrix(y_test.argmax(axis=1), y_pred.argmax(axis=1))
+    # if binary_classes:
+        # get both versions of classification report output
+    report_str = classification_report(y_test,y_hat_test)
+    report_dict = classification_report(y_test,y_hat_test,output_dict=True)
+
+    if save_summary:
+        with open(summary_filename,'w') as f:
+            model.summary(print_fn=lambda x: f.write(x+"\n"))
+            f.write(f"\nSaved at {time_suffix}\n")
+            f.write(report_str)
+
+
+
+    ## Create and display classification report
+    df_report =pd.DataFrame.from_dict(report_dict,orient='index')#class_rows,orient='index')
+    df_report.reset_index(inplace=True)
+
+
+    print('---'*num_dashes)
+    print('\tCLASSIFICATION REPORT:')
+    print('---'*num_dashes)
+
+    display(df_report.round(4).style.hide_index().set_caption('Classification Report'))
+    print('\n')
+
+
+    ## Create and plot confusion_matrix
+    conf_mat = confusion_matrix(y_test, y_hat_test)
+    mpl.rcParams['figure.figsize'] = conf_matrix_figsize
+    fig = plot_confusion_matrix(conf_mat,classes=conf_matrix_classes,
+                                   normalize=normalize_conf_matrix, fig_size=conf_matrix_figsize)
+    if save_conf_matrix_png:
+        fig.savefig(conf_mat_filename,facecolor='white', format='png', frameon=True)
+    return df_report, fig
+
+
+
+
+
+def evaluate_regression_model(model, history, train_generator, test_generator,true_train_series,
+true_test_series,include_train_data=True,return_preds_df = False, save_history=False, history_filename ='results/keras_history.png', save_summary=False,
+                            summary_filename = 'results/model_summary.txt',auto_unique_filenames=True):
+
+    """Evaluates kera's model's performance, plots model's history,displays classification report,
+    and plots a confusion matrix.
+    conf_matrix_classes are the labels for the matrix. [negative, positive]
+    Returns df of classification report and fig object for  confusion matrix's plot."""
+
+    from sklearn.metrics import roc_auc_score, roc_curve, classification_report,confusion_matrix
+    import bs_ds as bs
+    import functions_combined_BEST as ji
+    from IPython.display import display
+    import pandas as pd
+    import matplotlib as mpl
+    numFmt = '.4f'
+    num_dashes = 30
+
+    # results_list=[['Metric','Value']]
+    # metric_list = ['accuracy','precision','recall','f1']
+    print('---'*num_dashes)
+    print('\tTRAINING HISTORY:')
+    print('---'*num_dashes)
+
+    if auto_unique_filenames:
+        ## Get same time suffix for all files
+        time_suffix = ji.auto_filename_time(fname_friendly=True)
+
+        filename_dict= {'history':history_filename,'summary':summary_filename}
+        ## update filenames
+        for filetype,filename in filename_dict.items():
+            if '.' in filename:
+                filename_dict[filetype] = filename.split('.')[0]+time_suffix + '.'+filename.split('.')[-1]
+            else:
+                if filetype =='summary':
+                    ext='.txt'
+                else:
+                    ext='.png'
+                filename_dict[filetype] = filename+time_suffix + ext
+
+
+        history_filename = filename_dict['history']
+        summary_filename = filename_dict['summary']
+
+
+    ## PLOT HISTORY
+    ji.plot_keras_history( history,filename_base=history_filename,no_val_data=True, save_fig=save_history,title_text='')
+
+    print('\n')
+    print('---'*num_dashes)
+    print('\tEVALUATE MODEL:')
+    print('---'*num_dashes)
+
+        # # EVALUATE MODEL PREDICTIONS FROM GENERATOR
+    print('Evaluating Train Generator:')
+    model_metrics_train = model.evaluate_generator(train_generator,verbose=1)
+    print(f'    - Accuracy:{model_metrics_train[1]:{numFmt}}')
+    print(f'    - Loss:{model_metrics_train[0]:{numFmt}}')
+
+    print('Evaluating Test Generator:')
+    model_metrics_test = model.evaluate_generator(test_generator,verbose=1)
+    print(f'    - Accuracy:{model_metrics_test[1]:{numFmt}}')
+    print(f'    - Loss:{model_metrics_test[0]:{numFmt}}')
+
+    x_window = test_generator.length
+    n_features = test_generator.data[0].shape[0]
+    gen_df = ji.get_model_preds_from_gen(model=model, test_generator=test_generator,true_test_data=true_test_series,
+        n_input=x_window, n_features=n_features,  suffix='_from_gen',return_df=True)
+
+    regr_results = evaluate_regression(y_true=gen_df['true_from_gen'], y_pred=gen_df['pred_from_gen'],show_results=True,
+                                metrics=['r2', 'RMSE', 'U'])
+
+
+    if save_summary:
+        with open(summary_filename,'w') as f:
+            model.summary(print_fn=lambda x: f.write(x+"\n"))
+            f.write(f"\nSaved at {time_suffix}\n")
+            f.write(regr_results.__repr__())
+
+
+    if include_train_data:
+        true_train_series=true_train_series.rename('true_train_price')
+        df_all_preds=pd.concat([true_train_series,gen_df],axis=1)
+    else:
+        df_all_preds = gen_df
+
+    if return_preds_df:
+        return df_all_preds
+
+
+
+def evaluate_regression(y_true, y_pred, metrics=None, show_results=False, display_thiels_u_info=False):
+    """Calculates and displays any of the following evaluation metrics: (passed as strings in metrics param)
+    r2, MAE,MSE,RMSE,U
+    if metrics=None:
+        metrics=['r2','RMSE','U']
+    """
+    from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+    import numpy as np
+    from bs_ds import list2df
+    import inspect
+
+    import functions_combined_BEST as ji
+    idx_true_null = ji.find_null_idx(y_true)
+    idx_pred_null = ji.find_null_idx(y_pred)
+    if all(idx_true_null == idx_pred_null):
+        y_true.dropna(inplace=True)
+        y_pred.dropna(inplace=True)
+    else:
+        raise Exception('There are non-overlapping null values in y_true and y_pred')
+
+    results=[['Metric','Value']]
+    metric_list = []
+    if metrics is None:
+        metrics=['r2','rmse','u']
+
+    else:
+        for metric in metrics:
+            if isinstance(metric,str):
+                metric_list.append(metric.lower())
+            elif inspect.isfunction(metric):
+                custom_res = metric(y_true,y_pred)
+                results.append([metric.__name__,custom_res])
+                metric_list.append(metric.__name__)
+        metrics=metric_list
+
+    # metrics = [m.lower() for m in metrics]
+
+    if any(m in metrics for m in ('r2','r squared','R_squared')): #'r2' in metrics: #any(m in metrics for m in ('r2','r squared','R_squared'))
+        r2 = r2_score(y_true, y_pred)
+        results.append(['R Squared',r2])##f'R\N{SUPERSCRIPT TWO}',r2])
+
+    if any(m in metrics for m in ('RMSE','rmse','root_mean_squared_error','root mean squared error')): #'RMSE' in metrics:
+        RMSE = np.sqrt(mean_squared_error(y_true,y_pred))
+        results.append(['Root Mean Squared Error',RMSE])
+
+    if any(m in metrics for m in ('MSE','mse','mean_squared_error','mean squared error')):
+        MSE = mean_squared_error(y_true,y_pred)
+        results.append(['Mean Squared Error',MSE])
+
+    if any(m in metrics for m in ('MAE','mae','mean_absolute_error','mean absolute error')):#'MAE' in metrics or 'mean_absolute_error' in metrics:
+        MAE = mean_absolute_error(y_true,y_pred)
+        results.append(['Mean Absolute Error',MAE])
+
+
+    if any(m in metrics for m in ('u',"thiel's u")):# in metrics:
+        if display_thiels_u_info is True:
+            show_eqn=True
+            show_table=True
+        else:
+            show_eqn=False
+            show_table=False
+
+        U = thiels_U(y_true, y_pred,display_equation=show_eqn,display_table=show_table )
+        results.append(["Thiel's U", U])
+
+    results_df = list2df(results)#, index_col='Metric')
+    results_df.set_index('Metric', inplace=True)
+    if show_results:
+        from IPython.display import display
+        dfs = results_df.round(3).reset_index().style.hide_index().set_caption('Evaluation Metrics')
+        display(dfs)
+    return results_df.round(4)
+
+
+
+
+def plot_confusion_matrix(conf_matrix, classes = None, normalize=False,
+                          title='Confusion Matrix', cmap=None,
+                          print_raw_matrix=False,fig_size=(5,5), show_help=False):
+    """Check if Normalization Option is Set to True. If so, normalize the raw confusion matrix before visualizing
+    #Other code should be equivalent to your previous function.
+    Note: Taken from bs_ds and modified"""
+    import itertools
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    cm = conf_matrix
+    ## Set plot style properties
+    if cmap==None:
+        cmap = plt.get_cmap("Blues")
+
+    ## Text Properties
+    fmt = '.2f' if normalize else 'd'
+
+    fontDict = {
+        'title':{
+            'fontsize':16,
+            'fontweight':'semibold',
+            'ha':'center',
+            },
+        'xlabel':{
+            'fontsize':14,
+            'fontweight':'normal',
+            },
+        'ylabel':{
+            'fontsize':14,
+            'fontweight':'normal',
+            },
+        'xtick_labels':{
+            'fontsize':10,
+            'fontweight':'normal',
+            'rotation':45,
+            'ha':'right',
+            },
+        'ytick_labels':{
+            'fontsize':10,
+            'fontweight':'normal',
+            'rotation':0,
+            'ha':'right',
+            },
+        'data_labels':{
+            'ha':'center',
+            'fontweight':'semibold',
+
+        }
+    }
+
+
+    ## Normalize data
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+    # Create plot
+    fig,ax = plt.subplots(figsize=fig_size)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title,**fontDict['title'])
+    plt.colorbar()
+
+    if classes is None:
+        classes = ['negative','positive']
+
+    tick_marks = np.arange(len(classes))
+
+
+    plt.xticks(tick_marks, classes, **fontDict['xtick_labels'])
+    plt.yticks(tick_marks, classes,**fontDict['ytick_labels'])
+
+
+    # Determine threshold for b/w text
+    thresh = cm.max() / 2.
+
+    # fig,ax = plt.subplots()
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt), color='darkgray',**fontDict['data_labels'])#color="white" if cm[i, j] > thresh else "black"
+
+    plt.tight_layout()
+    plt.ylabel('True label',**fontDict['ylabel'])
+    plt.xlabel('Predicted label',**fontDict['xlabel'])
+    fig = plt.gcf()
+    plt.show()
+
+    if print_raw_matrix:
+        print_title = 'Raw Confusion Matrix Counts:'
+        print('\n',print_title)
+        print(conf_matrix)
+
+    if show_help:
+        print('''For binary classifications:
+        [[0,0(true_neg),  0,1(false_pos)]
+        [1,0(false_neg), 1,1(true_pos)] ]
+
+        to get vals as vars:
+        >>  tn,fp,fn,tp=confusion_matrix(y_test,y_hat_test).ravel()
+                ''')
+
+    return fig
+
+
+def thiels_U(ys_true=None, ys_pred=None,display_equation=True,display_table=True):
+    """Calculate's Thiel's U metric for forecasting accuracy.
+    Accepts true values and predicted values.
+    Returns Thiel's U"""
+
+
+    from IPython.display import Markdown, Latex, display
+    import numpy as np
+    display(Markdown(""))
+    eqn=" $$U = \\sqrt{\\frac{ \\sum_{t=1 }^{n-1}\\left(\\frac{\\bar{Y}_{t+1} - Y_{t+1}}{Y_t}\\right)^2}{\\sum_{t=1 }^{n-1}\\left(\\frac{Y_{t+1} - Y_{t}}{Y_t}\\right)^2}}$$"
+
+    # url="['Explanation'](https://docs.oracle.com/cd/E57185_01/CBREG/ch06s02s03s04.html)"
+    markdown_explanation ="|Thiel's U Value | Interpretation |\n\
+    | --- | --- |\n\
+    | <1 | Forecasting is better than guessing| \n\
+    | 1 | Forecasting is about as good as guessing| \n\
+    |>1 | Forecasting is worse than guessing| \n"
+
+
+    if display_equation and display_table:
+        display(Latex(eqn),Markdown(markdown_explanation))#, Latex(eqn))
+    elif display_equation:
+        display(Latex(eqn))
+    elif display_table:
+        display(Markdown(markdown_explanation))
+
+    if ys_true is None and ys_pred is None:
+        return
+
+    # sum_list = []
+    num_list=[]
+    denom_list=[]
+    for t in range(len(ys_true)-1):
+        num_exp = (ys_pred[t+1] - ys_true[t+1])/ys_true[t]
+        num_list.append([num_exp**2])
+        denom_exp = (ys_true[t+1] - ys_true[t])/ys_true[t]
+        denom_list.append([denom_exp**2])
+    U = np.sqrt( np.sum(num_list) / np.sum(denom_list))
+    return U
+
+
+def my_rmse(y_true,y_pred):
+    """RMSE calculation using keras.backend"""
+    from keras import backend as kb
+    sq_err = kb.square(y_pred - y_true)
+    mse = kb.mean(sq_err,axis=-1)
+    rmse =kb.sqrt(mse)
+    return rmse
+
+
+
+def quick_ref_pandas_freqs():
+    from IPython.display import Markdown, display
+    mkdwn_notes = """
+    - **Pandas Frequency Abbreviations**<br><br>
+
+    | Alias | 	Description |
+    |----|-----|
+    |B|	business day frequency|
+    |C|	custom business day frequency|
+    |D|	calendar day frequency|
+    |W|	weekly frequency|
+    |M|	month end frequency|
+    |SM|	semi-month end frequency (15th and end of month)|
+    |BM|	business month end frequency|
+    |CBM|	custom business month end frequency|
+    |MS|	month start frequency|
+    |SMS|	semi-month start frequency (1st and 15th)|
+    |BMS|	business month start frequency|
+    |CBMS|	custom business month start frequency|
+    |Q|	quarter end frequency|
+    |BQ|	business quarter end frequency|
+    |QS|	quarter start frequency|
+    |BQS|	business quarter start frequency|
+    |A|, Y	year end frequency|
+    |BA|, BY	business year end frequency|
+    |AS|, YS	year start frequency|
+    |BAS|, BYS	business year start frequency|
+    |BH|	business hour frequency|
+    |H|	hourly frequency|
+    |T|, min	minutely frequency|
+    |S|	secondly frequency|
+    |L|, ms	milliseconds|
+    |U|, us	microseconds|
+    |N|	nanoseconds|
+    """
+
+    # **Time/data properties of Timestamps**<br><br>
+
+    # |Property|	Description|
+    # |---|---|
+    # |year|	The year of the datetime|
+    # |month|	The month of the datetime|
+    # |day|	The days of the datetime|
+    # |hour|	The hour of the datetime|
+    # |minute|	The minutes of the datetime|
+    # |second|	The seconds of the datetime|
+    # |microsecond|	The microseconds of the datetime|
+    # |nanosecond|	The nanoseconds of the datetime|
+    # |date|	Returns datetime.date (does not contain timezone information)|
+    # |time|	Returns datetime.time (does not contain timezone information)|
+    # |timetz|	Returns datetime.time as local time with timezone information|
+    # |dayofyear|	The ordinal day of year|
+    # |weekofyear|	The week ordinal of the year|
+    # |week|	The week ordinal of the year|
+    # |dayofweek|	The number of the day of the week with Monday=0, Sunday=6|
+    # |weekday|	The number of the day of the week with Monday=0, Sunday=6|
+    # |weekday_name|	The name of the day in a week (ex: Friday)|
+    # |quarter|	Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, etc.|
+    # |days_in_month|	The number of days in the month of the datetime|
+    # |is_month_start|	Logical indicating if first day of month (defined by frequency)|
+    # |is_month_end|	Logical indicating if last day of month (defined by frequency)|
+    # |is_quarter_start|	Logical indicating if first day of quarter (defined by frequency)|
+    # |is_quarter_end|	Logical indicating if last day of quarter (defined by frequency)|
+    # |is_year_start|	Logical indicating if first day of year (defined by frequency)|
+    # |is_year_end|	Logical indicating if last day of year (defined by frequency)|
+    # |is_leap_year|	Logical indicating if the date belongs to a leap year|
+    # """
+    display(Markdown(mkdwn_notes))
+    return
+
+
+## REFERNCE FOR CONTENTS OF CONFIG (for writing function below)
+def make_model_menu(model1, multi_index=True):
+    import bs_ds as bs
+    import functions_combined_BEST as ji
+    import pandas as pd
+    from IPython.display import display
+    import ipywidgets as widgets
+    from ipywidgets import interact, interactive, interactive_output
+
+    def get_model_config_df(model1, multi_index=True):
+        model_config_dict = model1.get_config()
+        model_layer_list=model_config_dict['layers']
+        output = [['#','layer_name', 'layer_config_level','layer_param','param_value']]#,'param_sub_value','param_sub_value_details' ]]
+
+        for num,layer_dict in enumerate(model_layer_list):
+        #     layer_dict = model_layer_list[0]
+
+
+            # layer_dict['config'].keys()
+            # config_keys = list(layer_dict.keys())
+            # combine class and name into 1 column
+            layer_class = layer_dict['class_name']
+            layer_name = layer_dict['config'].pop('name')
+            col_000 = f"{num}: {layer_class}"
+            col_00 = layer_name#f"{layer_class} ({layer_name})"
+
+            # get layer's config dict
+            layer_config = layer_dict['config']
+
+
+            # config_keys = list(layer_config.keys())
+
+
+            # for each parameter in layer_config
+            for param_name,col2_v_or_dict in layer_config.items():
+                # col_1 is the key( name of param)
+            #     col_1 = param_name
+
+
+                # check the contents of col2_:
+
+                # if list, append col2_, fill blank cols
+                if isinstance(col2_v_or_dict,dict)==False:
+                    col_0 = 'top-level'
+                    col_1 = param_name
+                    col_2 = col2_v_or_dict
+
+                    output.append([col_000,col_00,col_0,col_1 ,col_2])#,col_3,col_4])
+
+
+                # else, set col_2 as the param name,
+                if isinstance(col2_v_or_dict,dict):
+
+                    param_sub_type = col2_v_or_dict['class_name']
+                    col_0 = param_name +'  ('+param_sub_type+'):'
+
+                    # then loop through keys,vals of col_2's dict for col3,4
+                    param_dict = col2_v_or_dict['config']
+
+                    for sub_param,sub_param_val in param_dict.items():
+                        col_1 =sub_param
+                        col_2 = sub_param_val
+                        col_3 = ''
+
+
+                        output.append([col_000,col_00,col_0, col_1 ,col_2])#,col_3,col_4])
+
+        df = bs.list2df(output)
+        if multi_index==True:
+            df.sort_values(by=['#','layer_config_level'], ascending=False,inplace=True)
+            df.set_index(['#','layer_name','layer_config_level','layer_param'],inplace=True) #=pd.MultiIndex()
+        return df
+
+
+    # https://blog.ouseful.info/2016/12/29/simple-view-controls-for-pandas-dataframes-using-ipython-widgets/
+    def model_layer_config_menu(df):
+        import ipywidgets as widgets
+        from IPython.display import display
+        from ipywidgets import interact, interactive
+        # from IPython.html.widgets import interactive
+
+
+        ## SOLUION for getting values https://stackoverflow.com/questions/53927460/select-rows-in-pandas-multiindex-dataframe
+        layer_names = pd.MultiIndex.get_level_values(df.index,level=0).unique().to_list()
+        param_level = pd.MultiIndex.get_level_values(df.index, level=2).unique().to_list()
+
+        # items = ['All']+sorted(df['layer_name'].unique().tolist())
+        # layer_names.append('All') # 'All'+layer_names[:]#+param_level]
+        layer_names=sorted(layer_names)
+        layer_names.append('All')
+
+        layer_levels = param_level
+        layer_levels.append('All')
+
+
+        def view(df=df,layer_num='',param_level=''):
+            import pandas as pd
+            idx = pd.IndexSlice
+
+            if layer_num=='All':
+                # df = df.sort_index(by='#')
+                if param_level=='All':
+                    # return display(df.sort_index(by='#'))
+                    # return display(df.sort_index(by='#'))
+                    df_out=df
+                else:
+                    # return display(df.loc[idx[:,:,param_level],:])#display(df.xs(param_level,level=2).sort_index(by='#'))
+                    # return display(df.loc[idx[:,:,param_level],:].sort_index(by='#'))#display(df.xs(param_level,level=2).sort_index(by='#'))
+                    df_out = df.loc[idx[:,:,param_level],:]
+
+            else:
+                if param_level=='All':
+                    # return display(df.loc[idx[layer_num,:,:],:])#display(df.xs(layer_num,level=0))
+                    # return display(df.loc[idx[layer_num,:,:],:].sort_index(by='#'))#display(df.xs(layer_num,level=0))
+                    df_out = df.loc[idx[layer_num,:,:],:]
+                else:
+                    # return display(df.loc[idx[layer_num,:, param_level],:])#display(df.loc[layer][:][level]) #[df.xs(layer)])
+                    # return display(df.loc[idx[layer_num,:, param_level],:].sort_index(by='#'))#display(df.loc[layer][:][level]) #[df.xs(layer)])
+                    df_out = df.loc[idx[layer_num,:, param_level],:]
+
+            display(df_out.sort_index(by='#').style.set_caption('Model Layer Parameters'))
+            return df_out
+
+
+        w = widgets.Select(options=layer_names,value='All',description='Layer #')
+        # interactive(view,layer=w)
+
+        w2 = widgets.Select(options=layer_levels,value='All',desription='Level')
+        # interactive(view,layer=w,level=w2)
+
+        out= widgets.interactive_output(view,{'layer_num':w,'param_level':w2})
+        return widgets.VBox([widgets.HBox([w,w2]),out])
+
+    ## APPLYING FUNCTIONS
+    df = get_model_config_df(model1,multi_index=True)
+
+    return model_layer_config_menu(df)
+
+# interactive(view, Menu) #layer=Menu.children[0],level=Menu.children[1])
+
+# df.head()
+def make_qgrid_model_menu(model, return_df = False):
+
+    df=get_model_config_df(model)
+    import qgrid
+    from IPython.display import display
+    import pandas as pd
+
+    pd.set_option('display.max_rows',None)
+
+    qgrid_menu = qgrid.show_grid(df,  grid_options={'highlightSelectedCell':True}, show_toolbar=True)
+
+    display(qgrid_menu)
+    if return_df:
+        return df
+    else:
+        return
+
+
+
+def get_model_config_df(model1, multi_index=True):
+
+    import bs_ds as bs
+    import functions_combined_BEST as ji
+    import pandas as pd
+    pd.set_option('display.max_rows',None)
+
+    model_config_dict = model1.get_config()
+    model_layer_list=model_config_dict['layers']
+    output = [['#','layer_name', 'layer_config_level','layer_param','param_value']]#,'param_sub_value','param_sub_value_details' ]]
+
+    for num,layer_dict in enumerate(model_layer_list):
+    #     layer_dict = model_layer_list[0]
+
+
+        # layer_dict['config'].keys()
+        # config_keys = list(layer_dict.keys())
+        # combine class and name into 1 column
+        layer_class = layer_dict['class_name']
+        layer_name = layer_dict['config'].pop('name')
+
+        # col_000 = f"{num}: {layer_class}"
+        # col_00 = layer_name#f"{layer_class} ({layer_name})"
+
+        # get layer's config dict
+        layer_config = layer_dict['config']
+
+
+        # config_keys = list(layer_config.keys())
+
+
+        # for each parameter in layer_config
+        for param_name,col2_v_or_dict in layer_config.items():
+            # col_1 is the key( name of param)
+        #     col_1 = param_name
+
+
+            col_000 = f"{num}: {layer_class}"
+
+            ### DETERMINE LAYER_NAME WITH UNITS OF
+            if 'units' in layer_config.keys():
+                units = layer_config['units'] #col2_v_or_dict
+                col_00 = layer_name+' ('+str(units)+' units)'
+
+            elif 'batch_input_shape' in layer_config.keys():
+                input_length =  layer_config['input_length']
+                output_dim =  layer_config['output_dim']
+                col_00 = layer_name+' \n('+str(input_length)+' words, '+str(output_dim)+')'
+            else:
+                col_00 = layer_name#+' '+f"({}"#f"{layer_class} ({layer_name})"
+
+            # check the contents of col2_:
+
+            # if list, append col2_, fill blank cols
+            if isinstance(col2_v_or_dict,dict)==False:
+
+
+                col_0 = 'top-level'
+                col_1 = param_name
+                col_2 = col2_v_or_dict
+
+                output.append([col_000,col_00,col_0,col_1 ,col_2])#,col_3,col_4])
+
+
+            # else, set col_2 as the param name,
+            if isinstance(col2_v_or_dict,dict):
+
+                param_sub_type = col2_v_or_dict['class_name']
+                col_0 = param_name +'  ('+param_sub_type+'):'
+
+                # then loop through keys,vals of col_2's dict for col3,4
+                param_dict = col2_v_or_dict['config']
+
+                for sub_param,sub_param_val in param_dict.items():
+                    col_1 =sub_param
+                    col_2 = sub_param_val
+                    # col_3 = ''
+
+
+                    output.append([col_000,col_00,col_0, col_1 ,col_2])#,col_3,col_4])
+
+    df = bs.list2df(output)
+    if multi_index==True:
+        df.sort_values(by=['#','layer_config_level'], ascending=False,inplace=True)
+        df.set_index(['#','layer_name','layer_config_level','layer_param'],inplace=True) #=pd.MultiIndex()
+        df.sort_index(level=0, inplace=True)
+    return df
+
+
+from sklearn.model_selection._split import _BaseKFold
+class BlockTimeSeriesSplit(_BaseKFold): #sklearn.model_selection.TimeSeriesSplit):
+    """A variant of sklearn.model_selection.TimeSeriesSplit that keeps train_size and test_size
+    constant across folds.
+    Requires n_splits,train_size,test_size. train_size/test_size can be integer indices or float ratios """
+    def __init__(self, n_splits=5,train_size=None, test_size=None, step_size=None, method='sliding'):
+        super().__init__(n_splits, shuffle=False, random_state=None)
+        self.train_size = train_size
+        self.test_size = test_size
+        self.step_size = step_size
+        if 'sliding' in method or 'normal' in method:
+            self.method = method
+        else:
+            raise  Exception("Method may only be 'normal' or 'sliding'")
+
+    def split(self,X,y=None, groups=None):
+        import numpy as np
+        import math
+        method = self.method
+        ## Get n_samples, trian_size, test_size, step_size
+        n_samples = len(X)
+        test_size = self.test_size
+        train_size =self.train_size
+
+
+        ## If train size and test sze are ratios, calculate number of indices
+        if train_size<1.0:
+            train_size = math.floor(n_samples*train_size)
+
+        if test_size <1.0:
+            test_size = math.floor(n_samples*test_size)
+
+        ## Save the sizes (all in integer form)
+        self._train_size = train_size
+        self._test_size = test_size
+
+        ## calcualte and save k_fold_size
+        k_fold_size = self._test_size + self._train_size
+        self._k_fold_size = k_fold_size
+
+
+
+        indices = np.arange(n_samples)
+
+        ## Verify there is enough data to have non-overlapping k_folds
+        if method=='normal':
+            import warnings
+            if n_samples // self._k_fold_size <self.n_splits:
+                warnings.warn('The train and test sizes are too big for n_splits using method="normal"\n\
+                switching to method="sliding"')
+                method='sliding'
+                self.method='sliding'
+
+
+
+        if method=='normal':
+
+            margin = 0
+            for i in range(self.n_splits):
+
+                start = i * k_fold_size
+                stop = start+k_fold_size
+
+                ## change mid to match my own needs
+                mid = int(start+self._train_size)
+                yield indices[start: mid], indices[mid + margin: stop]
+
+
+        elif method=='sliding':
+
+            step_size = self.step_size
+            if step_size is None: ## if no step_size, calculate one
+                ## DETERMINE STEP_SIZE
+                last_possible_start = n_samples-self._k_fold_size #index[-1]-k_fold_size)\
+                step_range =  range(last_possible_start)
+                step_size = len(step_range)//self.n_splits
+            self._step_size = step_size
+
+
+            for i in range(self.n_splits):
+                if i==0:
+                    start = 0
+                else:
+                    start = prior_start+self._step_size #(i * step_size)
+
+                stop =  start+k_fold_size
+                ## change mid to match my own needs
+                mid = int(start+self._train_size)
+                prior_start = start
+                yield indices[start: mid], indices[mid: stop]
