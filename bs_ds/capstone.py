@@ -3292,7 +3292,7 @@ def replace_bad_filename_chars(filename,replace_spaces=False, replace_with='_'):
 
 
 
-def evaluate_classification_model(model, history, X_train,X_test,y_train,y_test, binary_classes=True,
+def evaluate_classification_model(model,  X_train,X_test,y_train,y_test, history=None,binary_classes=True,
                             conf_matrix_classes= ['Decrease','Increase'],
                             normalize_conf_matrix=True,conf_matrix_figsize=(8,4),save_history=False,
                             history_filename ='results/keras_history.png', save_conf_matrix_png=False,
@@ -3341,7 +3341,8 @@ def evaluate_classification_model(model, history, X_train,X_test,y_train,y_test,
 
 
     ## PLOT HISTORY
-    plot_keras_history( history,filename_base=history_filename, save_fig=save_history,title_text='')
+    if history is not None:
+        plot_keras_history( history,filename_base=history_filename, save_fig=save_history,title_text='')
 
     print('\n')
     print('---'*num_dashes)
@@ -3363,45 +3364,61 @@ def evaluate_classification_model(model, history, X_train,X_test,y_train,y_test,
     y_hat_train = model.predict_classes(X_train)
     y_hat_test = model.predict_classes(X_test)
 
-    if binary_classes==False:
+    if y_test.ndim>1 or binary_classes==False:
+        if binary_classes==False: 
+            pass
+        else:
+            binary_classes = False
+            print(f"[!] y_test was >1 dim, setting binary_classes to False")
+        
+        ## reduce dimensions of y_train and y_test
         y_train = y_train.argmax(axis=1)
         y_test = y_test.argmax(axis=1)
-        # y_hat_train = y_hat_train.argmax(axis=1)
-        # y_hat_test = y_hat_test.argmax(axis=1)
-        # matrix = metrics.confusion_matrix(y_test.argmax(axis=1), y_pred.argmax(axis=1))
-    # if binary_classes:
-        # get both versions of classification report output
-    report_str = classification_report(y_test,y_hat_test)
-    report_dict = classification_report(y_test,y_hat_test,output_dict=True)
-
-    if save_summary:
-        with open(summary_filename,'w') as f:
-            model.summary(print_fn=lambda x: f.write(x+"\n"))
-            f.write(f"\nSaved at {time_suffix}\n")
-            f.write(report_str)
-
-
-
-    ## Create and display classification report
-    df_report =pd.DataFrame.from_dict(report_dict,orient='index')#class_rows,orient='index')
-    df_report.reset_index(inplace=True)
 
 
     print('---'*num_dashes)
     print('\tCLASSIFICATION REPORT:')
     print('---'*num_dashes)
 
-    display(df_report.round(4).style.hide_index().set_caption('Classification Report'))
-    print('\n')
+    ## Get sklearn classification report 
+    report_str = classification_report(y_test,y_hat_test)
+    report_dict = classification_report(y_test,y_hat_test,output_dict=True)
+    
+    
+    try:
+        ## Create and display classification report
+        # df_report =pd.DataFrame.from_dict(report_dict,orient='columns')#'index')#class_rows,orient='index')
+        df_report_temp = pd.DataFrame(report_dict)
+        df_report_temp = df_report_temp.T#reset_index(inplace=True)
 
+        df_report = df_report_temp[['precision','recall','f1-score','support']]
+        display(df_report.round(4).style.set_caption('Classification Report'))
+        print('\n')
+    
+    except:
+        print(report_str)
+        # print(report_dict)
+        df_report = pd.DataFrame()
+
+    ## if saving the model.summary() printout 
+    if save_summary:
+        with open(summary_filename,'w') as f:
+            model.summary(print_fn=lambda x: f.write(x+"\n"))
+            f.write(f"\nSaved at {time_suffix}\n")
+            f.write(report_str)
 
     ## Create and plot confusion_matrix
+    import matplotlib.pyplot as plt
     conf_mat = confusion_matrix(y_test, y_hat_test)
-    mpl.rcParams['figure.figsize'] = conf_matrix_figsize
-    fig = plot_confusion_matrix(conf_mat,classes=conf_matrix_classes,
-                                   normalize=normalize_conf_matrix, fig_size=conf_matrix_figsize)
+    with plt.rc_context(rc={'figure.figsize':conf_matrix_figsize}): # rcParams['figure.figsize']
+        fig = plot_confusion_matrix(conf_mat,classes=conf_matrix_classes,
+                                    normalize=normalize_conf_matrix, fig_size=conf_matrix_figsize)
     if save_conf_matrix_png:
         fig.savefig(conf_mat_filename,facecolor='white', format='png', frameon=True)
+        
+        
+
+
     return df_report, fig
 
 
@@ -3717,13 +3734,13 @@ def thiels_U(ys_true=None, ys_pred=None,display_equation=True,display_table=True
     return U
 
 
-def my_rmse(y_true,y_pred):
-    """RMSE calculation using keras.backend"""
-    from keras import backend as kb
-    sq_err = kb.square(y_pred - y_true)
-    mse = kb.mean(sq_err,axis=-1)
-    rmse =kb.sqrt(mse)
-    return rmse
+# def my_rmse(y_true,y_pred):
+#     """RMSE calculation using keras.backend"""
+#     from keras import backend as kb
+#     sq_err = kb.square(y_pred - y_true)
+#     mse = kb.mean(sq_err,axis=-1)
+#     rmse =kb.sqrt(mse)
+#     return rmse
 
 
 

@@ -507,7 +507,7 @@ def scale_data(data, scaler='standard', log=False):
 
     # takes log if log=True
     if log == True:
-        scale = np.log(scale)
+        np.log(scale)
 
 
     # creates chosen scaler instance
