@@ -74,7 +74,6 @@ def ihelp_menu(function_names,show_help=False,show_source=True):
     import ipywidgets as widgets
     from IPython.display import display
     # from functions_combined_BEST import ihelp
-    import bs_ds as ji
 
     import inspect
     import pandas as pd
@@ -124,7 +123,6 @@ def ihelp_menu(function_names,show_help=False,show_source=True):
     show_output = widgets.Output()
 
     def show_ihelp(display_help=button,function=dropdown.value,show_help=check_help.value,show_code=check_source.value):
-        import bs_ds as ji
         from IPython.display import display
         show_output.clear_output()
         if display_help:
@@ -456,8 +454,8 @@ def make_time_index_intervals(twitter_df,col ='date', start=None,end=None, freq=
 
     if freq=='CBH':
         freq=pd.offsets.CustomBusinessHour(n=num_offset,start='09:30',end='16:30')
-        ofst = pd.offsets.CustomBusinessHour(n=num_offset,start='09:30',end='16:30') #freq=bs.custom_BH_freq()
-        ofst_early = pd.offsets.CustomBusinessHour(n=-num_offset,start='09:30',end='16:30') #freq=bs.custom_BH_freq()
+        ofst = pd.offsets.CustomBusinessHour(n=num_offset,start='09:30',end='16:30') #freq=custom_BH_freq()
+        ofst_early = pd.offsets.CustomBusinessHour(n=-num_offset,start='09:30',end='16:30') #freq=custom_BH_freq()
     if freq=='T':
         ofst = pd.offsets.Minute(n=num_offset)
         ofst_early = pd.offsets.Minute(n=-num_offset)
@@ -692,36 +690,36 @@ def load_stock_price_series(filename='IVE_bidask1min.txt',
 def load_twitter_df(overwrite=True,set_index='time_index',verbose=2,replace_na=''):
     import pandas as pd
     from IPython.display import display
-    try: twitter_df
-    except NameError: twitter_df = None
-    if twitter_df is not None:
-        print('twitter_df already exists.')
-        if overwrite==True:
-            print('Overwrite=True. deleting original...')
-            del(twitter_df)
+    # try: twitter_df
+    # except NameError: twitter_df = None
+    # if twitter_df is not None:
+    #     print('twitter_df already exists.')
+    #     if overwrite==True:
+    #         print('Overwrite=True. deleting original...')
+    #         del(twitter_df)
 
-    if twitter_df is None:
-        print('loading twitter_df')
+    # if twitter_df is None:
+    print('loading twitter_df')
 
-        twitter_df = pd.read_csv('data/trump_twitter_archive_df.csv', encoding='utf-8', parse_dates=True)
-        twitter_df.drop('Unnamed: 0',axis=1,inplace=True)
+    twitter_df = pd.read_csv('data/trump_twitter_archive_df.csv', encoding='utf-8', parse_dates=True)
+    twitter_df.drop('Unnamed: 0',axis=1,inplace=True)
 
-        twitter_df['date']  = pd.to_datetime(twitter_df['date'])
-        twitter_df['time_index'] = twitter_df['date'].copy()
-        twitter_df.set_index(set_index,inplace=True,drop=True)
+    twitter_df['date']  = pd.to_datetime(twitter_df['date'])
+    twitter_df['time_index'] = twitter_df['date'].copy()
+    twitter_df.set_index(set_index,inplace=True,drop=True)
 
 
-        # Fill in missing values before merging with stock data
-        twitter_df.fillna(replace_na, inplace=True)
-        twitter_df.sort_index(ascending=True, inplace=True)
+    # Fill in missing values before merging with stock data
+    twitter_df.fillna(replace_na, inplace=True)
+    twitter_df.sort_index(ascending=True, inplace=True)
 
-        # RECASTING A COUPLE COLUMNS
-        twitter_df['is_retweet'] = twitter_df['is_retweet'].astype('bool')
-        twitter_df['id_str'] = twitter_df['id_str'].astype('str')
-        twitter_df['sentiment_class'] = twitter_df['sentiment_class'].astype('category')
+    # RECASTING A COUPLE COLUMNS
+    twitter_df['is_retweet'] = twitter_df['is_retweet'].astype('bool')
+    twitter_df['id_str'] = twitter_df['id_str'].astype('str')
+    twitter_df['sentiment_class'] = twitter_df['sentiment_class'].astype('category')
 
 #         twitter_df.reset_index(inplace=True)
-        # Check header and daterange of index
+    # Check header and daterange of index
     if verbose>0:
         display(twitter_df.head(2))
         print(twitter_df.index[[0,-1]])
@@ -851,7 +849,7 @@ def  set_timeindex_freq(ive_df, col_to_fill=None, freq='CBH',fill_method='ffill'
 
     # display header
     if verbose>2:
-        from ipython import display
+        from IPython.display import display
         display(ive_df.head())
 
     return ive_df
@@ -1981,15 +1979,11 @@ def display_random_tweets(df_tokenize,n=5 ,display_cols=['content','text_for_vec
 ## twitter_df, stock_price = load_twitter_df_stock_price()
 ## twitter_df = get_stock_prices_for_twitter_data(twitter_df, stock_prices)
 #
-def load_twitter_df_stock_price():# del stock_price
+def load_twitter_df_stock_price(twitter_df,stock_price=None):# del stock_price
     from IPython.display import display
-    try: stock_price
-    except NameError: stock_price = None
-    if stock_price is  None:
-        print('loading stock_price')
+    if stock_price is None:
         stock_price = load_stock_price_series()
-    else:
-        print('using pre-existing stock_price')
+
 
     # Make sure stock_price is loaded as minute data
     stock_price = stock_price.asfreq('T')
@@ -1998,12 +1992,12 @@ def load_twitter_df_stock_price():# del stock_price
 
     ## LOAD TWEETS, SELECT THE PROPER DATE RANGE AND COLUMNS
     # twitter_df = load_twitter_df(verbose=0)
-    try: twitter_df
-    except NameError: twitter_df=None
-    if twitter_df is None:
-        print('Loading twitter_df')
-        twitter_df= load_raw_twitter_file()
-        twitter_df = full_twitter_df_processing(twitter_df,cleaned_tweet_col='clean_content')
+    # try: twitter_df
+    # except NameError: twitter_df=None
+    # if twitter_df is None:
+    #     print('Loading twitter_df')
+    #     twitter_df= load_raw_twitter_file()
+    #     twitter_df = full_twitter_df_processing(twitter_df,cleaned_tweet_col='clean_content')
 
     stock_price.sort_index(inplace=True)
     twitter_df.sort_index(inplace=True)
@@ -2070,8 +2064,6 @@ def train_test_val_split(X,y,test_size=0.20,val_size=0.1):
 
 def plot_keras_history(history, title_text='',fig_size=(6,6),save_fig=False,no_val_data=False, filename_base='results/keras_history'):
     """Plots the history['acc','val','val_acc','val_loss']"""
-    # import functions_combined_BEST as ji
-    import bs_ds as ji
 
 
     metrics = ['acc','loss','val_acc','val_loss']
@@ -2304,7 +2296,6 @@ def save_model_weights_params(model,model_params=None, filename_prefix = 'models
     import pickle
     # from functions_combined_BEST import auto_filename_time
     from bs_ds import auto_filename_time
-    import bs_ds as ji#functions_combined_BEST as ji
 
     # create base model filename
     if auto_filename_suffix:
@@ -2348,7 +2339,7 @@ def save_model_weights_params(model,model_params=None, filename_prefix = 'models
     # convert model to json
     model_json = model.to_json()
 
-    bs.create_required_folders(full_filename)
+    create_required_folders(full_filename)
     # save json model to json file
     with open(full_filename, "w") as json_file:
         json.dump(model_json,json_file)
@@ -2920,9 +2911,6 @@ def plotly_true_vs_preds_subplots(df_model_preds,
 
     from plotly.offline import iplot#download_plotlyjs, init_notebook_mode, plot, iplot
 #     init_notebook_mode(connected=True)
-    # import bs_ds as bs
-    import bs_ds as ji
-    # import bs_ds as bs
 
 
     ### MAKE THE LIST OF COLUMNS TO CREATE SEPARATE DATAFRAMES TO PLOT
@@ -2946,17 +2934,17 @@ def plotly_true_vs_preds_subplots(df_model_preds,
 
 
     ## Get my_layout
-    fig_1 = bs.plotly_time_series(fig1_df,theme=theme,show_fig=False, as_figure=True,
+    fig_1 = plotly_time_series(fig1_df,theme=theme,show_fig=False, as_figure=True,
                                   iplot_kwargs={'mode':'lines'})
 
-    fig_2 = bs.plotly_time_series(fig2_df,theme=theme,show_fig=False,as_figure=True,
+    fig_2 = plotly_time_series(fig2_df,theme=theme,show_fig=False,as_figure=True,
                                   iplot_kwargs={'mode':subplot_mode,
                                                'size':marker_size})
 
     fig_1,fig_2 = match_data_colors(fig_1,fig_2)
 
     ## Create base layout and add figsize
-    base_layout = bs.def_plotly_solar_theme_with_date_selector_slider()
+    base_layout = def_plotly_solar_theme_with_date_selector_slider()
     update_dict={'height':figsize[1],
                  'width':figsize[0],
                  'title': title,
@@ -3158,7 +3146,7 @@ as_figure = True,show_fig=True,fig_dim=(900,400),iplot_kwargs=None): #,name='S&P
 
 def preview_dict(d, n=5,print_or_menu='print',return_list=False):
     """Previews the first n keys and values from the dict"""
-    import bs_ds as bs
+
     from pprint import pprint
     list_keys = list(d.keys())
     prev_d = {}
@@ -3168,7 +3156,7 @@ def preview_dict(d, n=5,print_or_menu='print',return_list=False):
     if 'print' in print_or_menu:
         pprint(prev_d)
     elif 'menu' in print_or_menu:
-        bs.display_dict_dropdown(prev_d)
+        display_dict_dropdown(prev_d)
     else:
         raise Exception("print_or_menu must be 'print' or 'menu'")
 
@@ -3350,8 +3338,7 @@ def evaluate_classification_model(model, history, X_train,X_test,y_train,y_test,
     Returns df of classification report and fig object for  confusion matrix's plot."""
 
     from sklearn.metrics import roc_auc_score, roc_curve, classification_report,confusion_matrix
-    import bs_ds as bs
-    import bs_ds as bs
+
     from IPython.display import display
     import pandas as pd
     import matplotlib as mpl
@@ -3366,7 +3353,7 @@ def evaluate_classification_model(model, history, X_train,X_test,y_train,y_test,
 
     if auto_unique_filenames:
         ## Get same time suffix for all files
-        time_suffix = bs.auto_filename_time(fname_friendly=True)
+        time_suffix = auto_filename_time(fname_friendly=True)
 
         filename_dict= {'history':history_filename,'conf_mat':conf_mat_filename,'summary':summary_filename}
         ## update filenames
@@ -3387,7 +3374,7 @@ def evaluate_classification_model(model, history, X_train,X_test,y_train,y_test,
 
 
     ## PLOT HISTORY
-    bs.plot_keras_history( history,filename_base=history_filename, save_fig=save_history,title_text='')
+    plot_keras_history( history,filename_base=history_filename, save_fig=save_history,title_text='')
 
     print('\n')
     print('---'*num_dashes)
@@ -3464,8 +3451,7 @@ true_test_series,include_train_data=True,return_preds_df = False, save_history=F
     Returns df of classification report and fig object for  confusion matrix's plot."""
 
     from sklearn.metrics import roc_auc_score, roc_curve, classification_report,confusion_matrix
-    import bs_ds as bs
-    import bs_ds as bs
+
     from IPython.display import display
     import pandas as pd
     import matplotlib as mpl
@@ -3480,7 +3466,7 @@ true_test_series,include_train_data=True,return_preds_df = False, save_history=F
 
     if auto_unique_filenames:
         ## Get same time suffix for all files
-        time_suffix = bs.auto_filename_time(fname_friendly=True)
+        time_suffix = auto_filename_time(fname_friendly=True)
 
         filename_dict= {'history':history_filename,'summary':summary_filename}
         ## update filenames
@@ -3500,7 +3486,7 @@ true_test_series,include_train_data=True,return_preds_df = False, save_history=F
 
 
     ## PLOT HISTORY
-    bs.plot_keras_history( history,filename_base=history_filename,no_val_data=True, save_fig=save_history,title_text='')
+    plot_keras_history( history,filename_base=history_filename,no_val_data=True, save_fig=save_history,title_text='')
 
     print('\n')
     print('---'*num_dashes)
@@ -3520,7 +3506,7 @@ true_test_series,include_train_data=True,return_preds_df = False, save_history=F
 
     x_window = test_generator.length
     n_features = test_generator.data[0].shape[0]
-    gen_df = bs.get_model_preds_from_gen(model=model, test_generator=test_generator,true_test_data=true_test_series,
+    gen_df = get_model_preds_from_gen(model=model, test_generator=test_generator,true_test_data=true_test_series,
         n_input=x_window, n_features=n_features,  suffix='_from_gen',return_df=True)
 
     regr_results = evaluate_regression(y_true=gen_df['true_from_gen'], y_pred=gen_df['pred_from_gen'],show_results=True,
@@ -3556,9 +3542,8 @@ def evaluate_regression(y_true, y_pred, metrics=None, show_results=False, displa
     from bs_ds import list2df
     import inspect
 
-    import bs_ds as bs
-    idx_true_null = bs.find_null_idx(y_true)
-    idx_pred_null = bs.find_null_idx(y_pred)
+    idx_true_null = find_null_idx(y_true)
+    idx_pred_null = find_null_idx(y_pred)
     if all(idx_true_null == idx_pred_null):
         y_true.dropna(inplace=True)
         y_pred.dropna(inplace=True)
@@ -3848,12 +3833,12 @@ def quick_ref_pandas_freqs():
 
 ## REFERNCE FOR CONTENTS OF CONFIG (for writing function below)
 def make_model_menu(model1, multi_index=True):
-    import bs_ds as bs
-    import bs_ds as bs
+
     import pandas as pd
     from IPython.display import display
     import ipywidgets as widgets
     from ipywidgets import interact, interactive, interactive_output
+    from bs_ds import list2df
 
     def get_model_config_df(model1, multi_index=True):
         model_config_dict = model1.get_config()
@@ -3913,7 +3898,7 @@ def make_model_menu(model1, multi_index=True):
 
                         output.append([col_000,col_00,col_0, col_1 ,col_2])#,col_3,col_4])
 
-        df = bs.list2df(output)
+        df = list2df(output)
         if multi_index==True:
             df.sort_values(by=['#','layer_config_level'], ascending=False,inplace=True)
             df.set_index(['#','layer_name','layer_config_level','layer_param'],inplace=True) #=pd.MultiIndex()
@@ -4008,9 +3993,8 @@ def make_qgrid_model_menu(model, return_df = False):
 
 def get_model_config_df(model1, multi_index=True):
 
-    import bs_ds as bs
-    import bs_ds as bs
     import pandas as pd
+    from bs_ds import list2df
     pd.set_option('display.max_rows',None)
 
     model_config_dict = model1.get_config()
@@ -4087,7 +4071,7 @@ def get_model_config_df(model1, multi_index=True):
 
                     output.append([col_000,col_00,col_0, col_1 ,col_2])#,col_3,col_4])
 
-    df = bs.list2df(output)
+    df = list2df(output)
     if multi_index==True:
         df.sort_values(by=['#','layer_config_level'], ascending=False,inplace=True)
         df.set_index(['#','layer_name','layer_config_level','layer_param'],inplace=True) #=pd.MultiIndex()
@@ -4187,3 +4171,55 @@ class BlockTimeSeriesSplit(_BaseKFold): #sklearn.model_selection.TimeSeriesSplit
                 yield indices[start: mid], indices[mid: stop]
 
 
+
+def get_model_preds_from_gen(model,test_generator, true_test_data, model_params=None,
+                       n_input=None, n_features=None, suffix=None, verbose=0,return_df=True):
+        """
+        Gets prediction from model using the generator's timeseries using model.predict_generator()
+        Must provide a model_params dictionary with 'input_params' OR must define ('n_input','n_features').
+
+        """
+        import pandas as pd
+        import numpy as np
+
+        if model_params is not None:
+            n_input= model_params['input_params']['n_input']
+            n_features = model_params['input_params']['n_features']
+
+        if model_params is None:
+            if n_input is None:
+                n_input= test_generator.length
+            if n_features is None:
+                n_features=test_generator.data[0].shape[0]
+
+        # GET TRUE VALUES AND DATETIME INDEX FROM GENERATOR
+
+        # Get true time index from the generator's start_index and end_index
+        gen_index = true_test_data.index[test_generator.start_index:test_generator.end_index+1]
+        gen_true_targets = test_generator.targets[test_generator.start_index:test_generator.end_index+1]
+
+        # Generate predictions from the test_generator
+        gen_preds = model.predict_generator(test_generator)
+        gen_preds_flat = gen_preds.ravel()
+        gen_true_targets = gen_true_targets.ravel()
+
+
+        # RETURN OUTPUT AS DATAFRAME OR ARRAY OF PREDS
+        if return_df == False:
+            return gen_preds
+
+        else:
+            # Combine the outputs
+            if verbose>0:
+                print(len(gen_index),len(gen_true_targets), len(gen_preds_flat))
+
+            gen_pred_df = pd.DataFrame({'index':gen_index,'true':gen_true_targets,'pred':gen_preds_flat})
+            gen_pred_df['index'] = pd.to_datetime(gen_pred_df['index'])
+            gen_pred_df.set_index('index',inplace=True)
+
+            if suffix is not None:
+                colnames = [name+suffix for name in gen_pred_df.columns]
+            else:
+                colnames = gen_pred_df.columns
+            gen_pred_df.columns=colnames
+            return gen_pred_df
