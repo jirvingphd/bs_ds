@@ -1664,7 +1664,7 @@ def column_report(twitter_df,index_col='iloc', sort_column='iloc', ascending=Tru
     import qgrid
     small_col_width = 20
 
-    default_col_options={'width':20}
+    # default_col_options={'width':20}
 
     default_column_definitions={'column name':{'width':60}, '.iloc[:,i]':{'width':small_col_width}, 'dtypes':{'width':30}, '# zeros':{'width':small_col_width},
                     '# null':{'width':small_col_width},'% null':{'width':small_col_width}, name_for_notes_col:{'width':100}}
@@ -1694,7 +1694,7 @@ def column_report(twitter_df,index_col='iloc', sort_column='iloc', ascending=Tru
     ## Set the params to defaults, to then be overriden
     column_definitions = default_column_definitions
     grid_options=default_grid_options
-    column_options = default_col_options
+    # column_options = default_col_options
 
     if qgrid_options is not None:
         for k,v in qgrid_options.items():
