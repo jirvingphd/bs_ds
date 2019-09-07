@@ -1634,7 +1634,11 @@ def column_report(df,index_col='iloc', sort_column='iloc', ascending=True,name_f
 
     """
     Returns a datafarme summary of the columns, their dtype,  a summary dataframe with the column name, column dtypes, and a `decision_map` dictionary of
-    datatype
+    datatype.
+    [!] Please note if qgrid does not display properly, enter this into your terminal and restart your temrinal.
+        'jupyter nbextension enable --py --sys-prefix qgrid'# required for qgrid
+        'jupyter nbextension enable --py --sys-prefix widgetsnbextension' # only required if you have not enabled the ipywidgets nbextension yet
+    
     Default qgrid options:
        default_grid_options={
         # SlickGrid options
