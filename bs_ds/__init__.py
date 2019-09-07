@@ -4,7 +4,7 @@
 
 __author__ = """James Irving, Michael Moravetz"""
 __email__ = 'james.irving.phd@outlook.com'
-__version__ = '0.9.6'
+__version__ = '0.9.7'
 
 from .bs_ds import *
 from .bamboo import *
