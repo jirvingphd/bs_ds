@@ -15,7 +15,7 @@ requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pyd
 'scipy', 'shap','LIME','IPython','pprint','graphviz','nltk','lime','plotly==3.10.0', 'cufflinks==0.16',
 'qgrid','fake-useragent','keras>=2.2.4','tensorflow','eli5','ipywidgets',
 'pytz','tzlocal','gensim','openpyxl','beautifulsoup4',
-'imgkit','xgboost','catboost'] #Click'
+'imgkit','xgboost','catboost','pypercip'] #Click'
 setup_requirements = requirements
 
 test_requirements_to_add = ['tweepy','jsonpickle','jinja2']
