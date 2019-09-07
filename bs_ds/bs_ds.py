@@ -1628,9 +1628,9 @@ def plot_confusion_matrix(cm, classes,
     plt.show()
 
 
-def column_report(twitter_df,index_col='iloc', sort_column='iloc', ascending=True,name_for_notes_col = 'Notes',notes_by_dtype=False,
+def column_report(df,index_col='iloc', sort_column='iloc', ascending=True,name_for_notes_col = 'Notes',notes_by_dtype=False,
  decision_map=None, format_dict=None,   as_qgrid=True, qgrid_options=None, qgrid_column_options=None,qgrid_col_defs=None, qgrid_callback=None,
- as_df = False, as_interactive_df=False, show_and_return=False):
+ as_df = False, as_interactive_df=False, show_and_return=True):
 
     """
     Returns a datafarme summary of the columns, their dtype,  a summary dataframe with the column name, column dtypes, and a `decision_map` dictionary of
@@ -1725,12 +1725,12 @@ def column_report(twitter_df,index_col='iloc', sort_column='iloc', ascending=Tru
 
 
     ##
-    df_report = pd.DataFrame({'.iloc[:,i]': range(len(twitter_df.columns)),
-                            'column name':twitter_df.columns,
-                            'dtypes':twitter_df.dtypes.astype('str'),
-                            '# zeros': count_col_zeros(twitter_df),
-                            '# null': twitter_df.isna().sum(),
-                            '% null':twitter_df.isna().sum().divide(twitter_df.shape[0]).mul(100).round(2)})
+    df_report = pd.DataFrame({'.iloc[:,i]': range(len(df.columns)),
+                            'column name':df.columns,
+                            'dtypes':df.dtypes.astype('str'),
+                            '# zeros': count_col_zeros(df),
+                            '# null': df.isna().sum(),
+                            '% null':df.isna().sum().divide(df.shape[0]).mul(100).round(2)})
     ## Sort by index_col
     if 'iloc' in index_col:
         index_col = '.iloc[:,i]'
