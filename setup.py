@@ -12,9 +12,10 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus',
-'scipy', 'shap','IPython','pprint','nltk','lime','plotly==3.10.0', 'cufflinks==0.16',
-'keras','tensorflow','pytz','tzlocal'] #Click','xgboost' ,,'catboost'
-
+'scipy', 'shap','LIME','IPython','pprint','graphviz','nltk','lime','plotly==3.10.0', 'cufflinks==0.16',
+'qgrid','fake-useragent','keras>=2.2.4','tensorflow','eli5','ipywidgets',
+'pytz','tzlocal','gensim','openpyxl','beautifulsoup4',
+'imgkit','xgboost','catboost'] #Click'
 setup_requirements = requirements
 
 test_requirements_to_add = ['tweepy','jsonpickle','jinja2']
