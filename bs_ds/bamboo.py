@@ -8,7 +8,7 @@ import seaborn as sns
 import scipy.stats as sts
 from IPython.display import display
 
-def big_pandas(user_options=None):
+def big_pandas(user_options=None,verbose=0):
     """Changes the default pandas display setttings to show all columns and all rows.
     User may replace settings with a kwd dictionary matching available options.
     """
@@ -29,7 +29,8 @@ def big_pandas(user_options=None):
     for category, option in options.items():
         for op, value in option.items():
             pd.set_option(f'{category}.{op}', value)  # Python 3.6+
-            print(f'{category}.{op}={value}')
+            if verbose>0:
+                print(f'{category}.{op}={value}')
     return options
 
 
@@ -397,7 +398,7 @@ def inspect_df(df, n_rows=3, verbose=True):
 
 
 
-def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
+def drop_cols(df, list_of_strings_or_regexp,verbose=0):#,axis=1):
     """EDA: Take a df, a list of strings or regular expression and recursively
     removes all matching column names containing those strings or expressions.
     # Example: if the df_in columns are ['price','sqft','sqft_living','sqft15','sqft_living15','floors','bedrooms']
@@ -417,7 +418,8 @@ def drop_cols(df, list_of_strings_or_regexp):#,axis=1):
     df_cut = df.copy()
     for r in regex_list:
         df_cut = df_cut[df_cut.columns.drop(list(df_cut.filter(regex=r)))]
-        print(f'Removed {r}.')
+        if verbose>0:
+            print(f'Removed {r}.')
     df_dropped = df_cut
     return df_dropped
 
@@ -678,43 +680,7 @@ def plot_hist_scat(df, target=None, figsize=(12,9),fig_style='dark_background',f
     return fig, ax
 
 
-## Mike's Plotting Functions
-def draw_violinplot(x , y, hue=None, data=None, title=None,
-                    ticklabels=None, leg_label=None):
 
-    '''Plots a violin plot with horizontal mean line, inner stick lines
-    y must be arraylike in order to plot mean line. x can be label in data'''
-
-
-    fig,ax = plt.subplots(figsize=(12,10))
-
-    sns.violinplot(x, y, hue=hue,
-                   data = data,
-                   cut=2,
-                   split=True,
-                   scale='count',
-                   scale_hue=True,
-                   saturation=.7,
-                   alpha=.9,
-                   bw=.25,
-                   palette='Dark2',
-                   inner='stick'
-                  ).set_title(title)
-
-    ax.set(xlabel= x.name.title(),
-          ylabel= y.name.title(),
-           xticklabels=ticklabels)
-
-    ax.axhline( y.mean(),
-               label='Total Mean',
-               ls=':',
-               alpha=.2,
-               color='xkcd:yellow')
-
-    ax.legend().set_title(leg_label)
-
-    plt.show()
-    return fig, ax
 ## Finding outliers and statistics
 # Tukey's method using IQR to eliminate
 def detect_outliers(df, n, features):
@@ -759,26 +725,3 @@ def detect_outliers(df, n, features):
         outlier_indices = Counter(outlier_indices)
         multiple_outliers = list( k for k, v in outlier_indices.items() if v > n )
     return multiple_outliers
-
-
-def find_outliers(column):
-    quartile_1, quartile_3 = np.percentile(column, [25, 75])
-    IQR = quartile_3 - quartile_1
-    low_outlier = quartile_1 - (IQR * 1.5)
-    high_outlier = quartile_3 + (IQR * 1.5)
-    outlier_index = column[(column < low_outlier) | (column > high_outlier)].index
-    return outlier_index
-
-# describe_outliers -- calls find_outliers
-def describe_outliers(df):
-    """ Returns a new_df of outliers, and % outliers each col using detect_outliers.
-    """
-    out_count = 0
-    new_df = pd.DataFrame(columns=['total_outliers', 'percent_total'])
-    for col in df.columns:
-        outies = find_outliers(df[col])
-        out_count += len(outies)
-        new_df.loc[col] = [len(outies), round((len(outies)/len(df.index))*100, 2)]
-    new_df.loc['grand_total'] = [sum(new_df['total_outliers']), sum(new_df['percent_total'])]
-    return new_df
-
