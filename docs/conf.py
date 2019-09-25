@@ -35,7 +35,8 @@ import bs_ds
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode','sphinx.ext.apidoc','sphinx.ext.napoleon']
 napoleon_numpy_docstring = True
-napoleon_include_private_with_doc = True
+napoleon_google_docstring = True
+napoleon_include_private_with_doc = False
 napoleon_include_init_with_doc = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -52,7 +53,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'bs_ds'
 copyright = u"2019, James Irving"
-author = u"James Irving, Michael Moravetz"
+author = u"James M. Irving, Ph.D."#, Michael Moravetz"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -165,6 +166,7 @@ texinfo_documents = [
 
 
 def run_apidoc(_):
+    #https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html
 	from sphinx.ext.apidoc import main
 	import os
 	import sys
