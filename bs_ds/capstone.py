@@ -13,7 +13,7 @@ def reload(mod):
     return  reload(mod)
 
 
-def ihelp(function_or_mod, show_help=True, show_code=True,return_code=False,colab=False,file_location=False):
+def ihelp(function_or_mod, show_help=True, show_code=True,return_code=False,markdown=True,file_location=False):
     """Call on any module or functon to display the object's
     help command printout AND/OR soruce code displayed as Markdown
     using Python-syntax"""
@@ -28,6 +28,10 @@ def ihelp(function_or_mod, show_help=True, show_code=True,return_code=False,cola
         print(banner)
         help(function_or_mod)
         # print(footer)
+        
+    import sys
+    if "google.colab" in sys.modules:
+        markdown=False
 
     if show_code:
         print(page_header)
@@ -38,14 +42,11 @@ def ihelp(function_or_mod, show_help=True, show_code=True,return_code=False,cola
             import inspect
             source_DF = inspect.getsource(function_or_mod)
 
-            if colab == False:
-                # display(Markdown(f'___\n'))
+            if markdown == True:
+                
                 output = "```python" +'\n'+source_DF+'\n'+"```"
-                # print(source_DF)
                 display(Markdown(output))
             else:
-
-                print(banner)
                 print(source_DF)
 
         except TypeError:
