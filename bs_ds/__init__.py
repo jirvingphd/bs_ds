@@ -13,10 +13,18 @@ from .glassboxes import *
 from .saywhat import *
 from .capstone import * #ihelp, module_menu
 
+try:
+    import cufflinks as cf
+    cf.go_offline()
+    # print('[i] df.iplot() should be available.')
+except:
+    pass
+    
+
 
 
 print(f"bs_ds  v{__version__} loaded.  Read the docs: https://bs-ds.readthedocs.io/en/latest/index.html")
-print(f"For convenient loading of standard modules use: from bs_ds.imports import *\n")
+print(f"> For convenient loading of standard modules use: `from bs_ds.imports import *`\n")
 
 # def welcome_message():
 #     from IPython.display import Markdown as md
