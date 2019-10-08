@@ -9,7 +9,8 @@
 # import scipy.stats as sts
 from IPython.display import display
 
-def list2df(list, index_col=None):#, sort_values='index'):
+def list2df(list, index_col=None): #, sort_values='index'):
+    
     """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
     Ex: list_results = [["Test","N","p-val"]] #... (some sort of analysis performed to produce results)
         list_results.append([test_Name,length(data),p])
@@ -34,6 +35,10 @@ def list2df(list, index_col=None):#, sort_values='index'):
 
 ######
 def make_gdrive_file_url(share_url_from_gdrive):
+    raise Exception('You want to use "convert_gdrive_url()"')
+
+
+def convert_gdrive_url(share_url_from_gdrive):
     """accepts gdrive share url with format 'https://drive.google.com/open?id=`
     and returns a pandas-usable link with format ''https://drive.google.com/uc?export=download&id='"""
     import re
