@@ -33,8 +33,7 @@ def list2df(list, index_col=None, set_caption=None, return_df=True,df_kwds=None)
     
 
     """
-    # with pd.option_context("display.max_rows", None, "display.max_columns", None ,
-    # 'display.precision',3,'display.notebook_repr_htm',True):
+    from IPython.display import display
     import pandas as pd
     df_list = pd.DataFrame(list[1:],columns=list[0],**df_kwds)
     
@@ -45,6 +44,7 @@ def list2df(list, index_col=None, set_caption=None, return_df=True,df_kwds=None)
         
     if set_caption is not None:
         dfs = df_list.style.set_caption()
+        display(dfs)
     return df_list
 
 
