@@ -9,27 +9,45 @@
 # import scipy.stats as sts
 from IPython.display import display
 
-def list2df(list, index_col=None): #, sort_values='index'):
+def list2df(list, index_col=None, set_caption=None, return_df=True,df_kwds=None): #, sort_values='index'):
     
     """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
-    Ex: list_results = [["Test","N","p-val"]] #... (some sort of analysis performed to produce results)
-        list_results.append([test_Name,length(data),p])
-        list2df(list_results)
+
+        
+        Args
+            list (list of lists):
+            index_col (string): name of column to set as index; None (Default) has integer index.
+            set_caption (string):
+            show_and_return (bool):
+    
+    EXAMPLE USE:
+    >> list_results = [["Test","N","p-val"]] 
+    
+    # ... run test and append list of result values ...
+    
+    >> list_results.append([test_Name,length(data),p])
+    
+    ## Displays styled dataframe if caption:
+    >> df = list2df(list_results, index_col="Test",
+                     set_caption="Stat Test for Significance")
+    
+
     """
     # with pd.option_context("display.max_rows", None, "display.max_columns", None ,
     # 'display.precision',3,'display.notebook_repr_htm',True):
     import pandas as pd
-    df_list = pd.DataFrame(list[1:],columns=list[0])
-    if index_col==None:
-        return df_list
-    else:
+    df_list = pd.DataFrame(list[1:],columns=list[0],**df_kwds)
+    
+        
+    if index_col is not None:
         df_list.reset_index(inplace=True)
         df_list.set_index(index_col, inplace=True)
+        
+    if set_caption is not None:
+        dfs = df_list.style.set_caption()
     return df_list
 
-# from .bs_ds import list2df
-# import sklearn
-# import scipy
+
 
 
 
