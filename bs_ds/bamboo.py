@@ -36,18 +36,18 @@ def big_pandas(user_options=None,verbose=0):
 
 def reset_pandas():
     """Resets all pandas options back to default state."""
-    pd.reset_option('all')
+    return pd.reset_option('all')
 
 
 def ignore_warnings():
     """Ignores all deprecation warnings (future,and pending categories too)."""
     import warnings
-    warnings.simplefilter(action='ignore', category=(FutureWarning,DeprecationWarning,PendingDeprecationWarning))
+    return warnings.filterwarnings('ignore')#simplefilter(action='ignore', category=(FutureWarning,DeprecationWarning,PendingDeprecationWarning))
 
 def reset_warnings():
     """Restore the default warnings settings"""
     import warnings
-    warnings.simplefilter(action='default', category=(FutureWarning,DeprecationWarning,PendingDeprecationWarning))
+    return warnings.simplefilter(action='default')#, category=(FutureWarning,DeprecationWarning,PendingDeprecationWarning))
 
 
 # def list2df(list, index_col=None):#, sort_values='index'):

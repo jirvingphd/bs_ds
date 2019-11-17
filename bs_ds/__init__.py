@@ -5,7 +5,7 @@
 __author__ = """James Irving, Michael Moravetz"""
 __email__ = 'james.irving.phd@outlook.com'
 __version__ = '0.10.0'
-
+from .imports import *
 from .bs_ds import *
 from .bamboo import *
 from .prettypandas import *
@@ -16,6 +16,7 @@ from .capstone import * #ihelp, module_menu
 try:
     import cufflinks as cf
     cf.go_offline()
+    # '>> `df.iplot()` is enabled.'
     # print('[i] df.iplot() should be available.')
 except:
     pass

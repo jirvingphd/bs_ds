@@ -527,7 +527,6 @@ def plot_confusion_matrix(cm, classes,
 def column_report(df,index_col='iloc', sort_column='iloc', ascending=True,name_for_notes_col = 'Notes',notes_by_dtype=False,
  decision_map=None, format_dict=None,   as_qgrid=True, qgrid_options=None, qgrid_column_options=None,qgrid_col_defs=None, qgrid_callback=None,
  as_df = False, as_interactive_df=False, show_and_return=True):
-
     """
     Returns a datafarme summary of the columns, their dtype,  a summary dataframe with the column name, column dtypes, and a `decision_map` dictionary of
     datatype.

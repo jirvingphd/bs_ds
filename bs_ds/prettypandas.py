@@ -177,7 +177,7 @@ def make_CSS(show=False):
 
 def html_off():
     from IPython.display import HTML
-    return HTML('<style></style>')
+    return HTML('<style>{}</style>'.format(''))
 
 def html_on(CSS=None, verbose=False):
     """Applies HTML/CSS styling to all dataframes. 'CSS' variable is created by make_CSS() if not supplied.
