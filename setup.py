@@ -53,6 +53,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/jirvingphd/bs_ds',
-    version='0.10.3',
+    version='0.10.4',
     zip_safe=False,
 )
