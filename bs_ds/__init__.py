@@ -13,13 +13,13 @@ from .glassboxes import *
 from .saywhat import *
 from .capstone import * #ihelp, module_menu
 
-try:
-    import cufflinks as cf
-    cf.go_offline()
-    # '>> `df.iplot()` is enabled.'
-    # print('[i] df.iplot() should be available.')
-except:
-    pass
+# try:
+#     import cufflinks as cf
+#     cf.go_offline()
+#     # '>> `df.iplot()` is enabled.'
+#     # print('[i] df.iplot() should be available.')
+# except:
+#     pass
     
 
 
