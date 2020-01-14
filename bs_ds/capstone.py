@@ -3417,9 +3417,7 @@ def evaluate_classification_model(model,  X_train,X_test,y_train,y_test, history
     if save_conf_matrix_png:
         fig.savefig(conf_mat_filename,facecolor='white', format='png', frameon=True)
         
-        
-
-
+    
     return df_report, fig
 
 
