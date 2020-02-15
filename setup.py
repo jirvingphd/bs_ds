@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['IPython','pprint', #'nltk', #'cufflinks==0.16','plotly==3.10.0',
+requirements = ['IPython','pprint', 'seaborn',#'nltk', #'cufflinks==0.16','plotly==3.10.0',
 'qgrid','fake-useragent','gensim','openpyxl','beautifulsoup4','cufflinks',#'plotly==3.10.0',
 'xgboost','pyperclip','tweepy']  #['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus',
 # 'scipy', 'shap','LIME','IPython','pprint','graphviz','nltk','lime', 'cufflinks==0.16','plotly==3.10.0',
@@ -20,7 +20,7 @@ requirements = ['IPython','pprint', #'nltk', #'cufflinks==0.16','plotly==3.10.0'
 # 'imgkit','xgboost','pyperclip'] #Click'
 setup_requirements = requirements
 
-test_requirements_to_add = ['tweepy','jsonpickle','jinja2','catboost'] #,'cufflinks==0.16','plotly==3.10.0']
+test_requirements_to_add = ['tweepy','jsonpickle','jinja2','catboost','seaborn'] #,'cufflinks==0.16','plotly==3.10.0']
 test_requirements = requirements
 [test_requirements.append(x) for x in test_requirements_to_add]
 # test_requirements = ['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus', 'scipy', 'shap','IPython','pprint','nltk','lime','catboost','keras'] #,'xgboost']
