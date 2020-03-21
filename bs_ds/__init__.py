@@ -4,13 +4,8 @@
 
 __author__ = """James Irving, Michael Moravetz"""
 __email__ = 'james.irving.phd@outlook.com'
-<<<<<<< HEAD
-__version__ = '0.10.8'
-from .imports import *
-=======
 __version__ = '0.9.12'
 
->>>>>>> parent of c3fa8c1... Bump version: 0.9.12 → 0.10.0
 from .bs_ds import *
 from .bamboo import *
 from .prettypandas import *
