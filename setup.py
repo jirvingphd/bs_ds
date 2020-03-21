@@ -53,6 +53,10 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/jirvingphd/bs_ds',
+<<<<<<< HEAD
     version='0.10.8',
+=======
+    version='0.9.12',
+>>>>>>> parent of c3fa8c1... Bump version: 0.9.12 → 0.10.0
     zip_safe=False,
 )
