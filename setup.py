@@ -11,8 +11,8 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['IPython','pprint', 'seaborn','tzlocal',#'nltk', #'cufflinks==0.16','plotly==3.10.0',
-'qgrid','fake-useragent','gensim','openpyxl','beautifulsoup4','cufflinks',#'plotly==3.10.0',
+requirements = ['IPython','pprint', 'seaborn','tzlocal','cufflinks','scikit-learn>=0.22.2','matplotlib>=3.2',
+'qgrid','fake-useragent','gensim','openpyxl','beautifulsoup4',#'plotly==3.10.0',
 'xgboost','pyperclip','tweepy']  #['numpy', 'pandas', 'seaborn', 'matplotlib', 'scikit-learn', 'pydotplus',
 # 'scipy', 'shap','LIME','IPython','pprint','graphviz','nltk','lime', 'cufflinks==0.16','plotly==3.10.0',
 # 'qgrid','fake-useragent','keras>=2.2.4','tensorflow','eli5','ipywidgets',
