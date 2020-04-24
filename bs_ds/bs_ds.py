@@ -9,7 +9,7 @@
 # import scipy.stats as sts
 from IPython.display import display
 
-def list2df(list, index_col=None, set_caption=None, return_df=True,df_kwds=None): #, sort_values='index'):
+def list2df(list, index_col=None, set_caption=None, return_df=True,df_kwds={}): #, sort_values='index'):
     
     """ Quick turn an appened list with a header (row[0]) into a pretty dataframe.
 
